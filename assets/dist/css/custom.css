@@ -1,0 +1,9 @@
+/* file custom.css */
+/* Ẩn row chi tiết khi collapse chưa mở */
+.collapse-row .collapse:not(.show) {
+  display: none;   /* ẩn luôn cả hàng chi tiết khi chưa expand */
+}
+
+#phoneTags { cursor:text; }
+#phoneTags input { min-height: 28px; }
+#phoneTags .badge { font-size: 0.875rem; }

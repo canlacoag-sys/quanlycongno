@@ -1,62 +1,116 @@
+
+
 <div class="content-wrapper">
   <section class="content">
 	<div class="container-fluid">
-	  <div class="card">
-		<div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-		<h3 class="card-title mb-0">Danh sách khách hàng</h3>
-		<div class="ml-auto">
-			<a href="<?= site_url('khachhang/add'); ?>" class="btn btn-success">
-			<i class="fas fa-plus mr-1"></i> Thêm khách hàng
-			</a>
-		</div>
-		</div>
-		
-		<div class="card-body">
-		<!-- Ô tìm kiếm -->
-		<form method="get" action="<?= site_url('khachhang'); ?>" class="form-inline mb-3">
-		  <div class="input-group mr-2">
-			<input type="text" name="keyword" value="<?= isset($keyword) ? html_escape($keyword) : '' ?>" class="form-control" style="min-width:300px;width:350px;" placeholder="Tìm tên, điện thoại, địa chỉ">
+		<br  />
+	  <!-- Tìm kiếm + Nút thêm -->
+	  <div class="d-flex justify-content-between align-items-center mb-3">
+		<form class="form-inline" method="get">
+		  <div class="input-group" style="width:400px; max-width:100%;">
+			<input type="text" name="keyword" class="form-control"
+				   value="<?= html_escape($keyword) ?>"
+				   placeholder="Tìm tên, điện thoại, địa chỉ">
 			<div class="input-group-append">
-			  <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Tìm kiếm</button>
+			  <button type="submit" class="btn btn-primary">
+				<i class="fas fa-search"></i> Tìm kiếm
+			  </button>
 			</div>
 		  </div>
-		  <?php if (!empty($keyword)): ?>
-			<a href="<?= site_url('khachhang'); ?>" class="btn btn-secondary ml-2">Xóa tìm</a>
-		  <?php endif; ?>
 		</form>
-		<!-- Hết ô tìm kiếm -->
-
-		  <table class="table table-bordered table-striped">
-			<thead>
-			  <tr>
-				<th>Tên</th>
-				<th>Điện thoại</th>
-				<th>Địa chỉ</th>
-				<th style="width:110px">Tác vụ</th>
-			  </tr>
-			</thead>
-			<tbody>
-			  <?php foreach($list as $kh): ?>
-			  <tr>
-				<td><?= $kh->ten ?></td>
-				<td><?= $kh->dienthoai ?></td>
-				<td><?= $kh->diachi ?></td>
-				<td>
-				  <a href="<?= site_url('khachhang/edit/'.$kh->id); ?>" class="btn btn-sm btn-info" title="Sửa"><i class="fas fa-edit"></i></a>
-				  <a href="<?= site_url('khachhang/delete/'.$kh->id); ?>" class="btn btn-sm btn-danger"
-					 onclick="return confirm('Xác nhận xóa khách hàng này?')" title="Xoá">
-					<i class="fas fa-trash-alt"></i>
-				  </a>
-				</td>
-			  </tr>
-			  <?php endforeach; ?>
-			</tbody>
-		  </table>
-		  <div class="mt-3">
-			<?= isset($pagination) ? $pagination : '' ?>
-		  </div>
-		</div>
+		<a href="#" class="btn btn-success" data-toggle="modal" data-target="#addCustomerModal" id="btnOpenAdd">
+		  <i class="fas fa-plus"></i> Thêm khách hàng
+		</a>
 	  </div>
-	</div>
-  </section>
+
+	  <div class="card">
+			  <div class="card-body p-0">
+				<table class="table table-hover mb-0">
+				  <thead class="thead-light">
+					<tr>
+					  <th style="width:44px;"></th>
+					  <th>Tên</th>
+					  <th>Điện thoại</th>
+					  <th>Địa chỉ</th>
+					  <th class="text-right" style="width:120px;">Tác vụ</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					<?php if (!empty($list)): foreach ($list as $row): 
+						  $rowId = (int)$row->id;
+						  $collapseId = "khachhang-row-{$rowId}";
+					?>
+					<!-- Hàng chính -->
+					<tr>
+					  <td class="align-middle">
+						<button class="btn btn-sm btn-light border toggle-row" type="button"
+								data-toggle="collapse" data-target="#<?= $collapseId ?>"
+								aria-expanded="false" aria-controls="<?= $collapseId ?>">
+						  <i class="fas fa-chevron-down"></i>
+						</button>
+					  </td>
+					  <td class="align-middle"><?= html_escape($row->ten) ?></td>
+					  <?php $this->load->helper('phone'); ?>
+					  <td class="align-middle"><?= html_escape(phones_pretty($row->dienthoai)) ?></td>
+					  <td class="align-middle"><?= html_escape($row->diachi) ?></td>
+					  <td class="text-right align-middle">
+						<a href="#"
+						   class="btn btn-sm btn-info btn-edit"
+						   data-action="<?= site_url('khachhang/edit/'.$row->id) ?>"
+						   data-id="<?= (int)$row->id ?>"
+						   data-name="<?= html_escape($row->ten) ?>"
+						   data-address="<?= html_escape($row->diachi) ?>"
+						   data-phones="<?= html_escape($row->dienthoai) ?>">
+						  <i class="fas fa-edit"></i>
+						</a>
+						<a href="<?= site_url('khachhang/delete/'.$row->id) ?>"
+						   class="btn btn-sm btn-danger btn-delete"
+						   data-id="<?= (int)$row->id ?>"
+						   data-name="<?= html_escape($row->ten) ?>"
+						   data-phone="<?= html_escape($row->dienthoai) ?>">
+						  <i class="fas fa-trash"></i>
+						</a>
+					  </td>
+					</tr>
+	  
+					<!-- Hàng chi tiết (collapse) -->
+					<tr class="bg-light">
+					  <td colspan="5" class="p-0">
+						<div id="<?= $collapseId ?>" class="collapse" data-parent="">
+						  <div class="p-3">
+							<!-- Nội dung chi tiết: bạn tuỳ biến theo DB của bạn -->
+							<div class="row">
+							  <div class="col-md-4">
+								<h6 class="mb-2"><i class="fas fa-id-card mr-1"></i> Thông tin</h6>
+								<ul class="list-unstyled mb-0">
+								  <li><strong>Tên:</strong> <?= html_escape($row->ten) ?></li>
+								  <li><strong>Điện thoại:</strong> <?= html_escape(phones_pretty($row->dienthoai)) ?></li>
+								  <li><strong>Địa chỉ:</strong> <?= html_escape($row->diachi) ?></li>
+								</ul>
+							  </div>
+							  <div class="col-md-4">
+								<h6 class="mb-2"><i class="fas fa-shopping-cart mr-1"></i> Đơn hàng gần đây</h6>
+								<div class="text-muted">Chưa có dữ liệu — tích hợp sau.</div>
+							  </div>
+							  <div class="col-md-4">
+								<h6 class="mb-2"><i class="fas fa-sticky-note mr-1"></i> Ghi chú</h6>
+								<div class="text-muted">—</div>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </td>
+					</tr>
+					<?php endforeach; else: ?>
+					  <tr><td colspan="5" class="text-center text-muted">Chưa có khách hàng</td></tr>
+					<?php endif; ?>
+				  </tbody>
+				</table>
+			  </div>
+			  <div class="card-footer clearfix">
+				<?= $pagination ?? '' ?>
+			  </div>
+			</div>
+	  	</div>
+	</section>
 </div>

@@ -11,9 +11,13 @@ class Dashboard extends CI_Controller {
 		}
 	}
 	public function index() {
-		$this->load->view('template/header');
-		$this->load->view('template/topnav');  // hoặc sidebar nếu bạn dùng layout sidebar
-		$this->load->view('dashboard/index');
-		$this->load->view('template/footer');
+		$data['title']  = 'Bảng điều khiển';
+		$data['active'] = 'dashboard';
+		
+		$this->load->view('templates/header', $data);
+		$this->load->view('templates/navbar', $data);   // ✅ nhớ include navbar
+		$this->load->view('templates/sidebar', $data);
+		$this->load->view('dashboard/index', $data);
+		$this->load->view('templates/footer');
 	}
 }
