@@ -229,4 +229,27 @@ class Khachhang extends CI_Controller
 		$exists  = $phone !== '' ? $this->phone_exists($phone, $exclude) : false;
 		$this->output->set_content_type('application/json')->set_output(json_encode(['exists'=>$exists]));
 	}
+	
+	/** Lấy dữ liệu 1 khách hàng (AJAX) */
+	public function get($id = 0)
+	{
+		if (!$this->input->is_ajax_request()) show_404();
+		$this->output->set_content_type('application/json');
+
+		$id = (int)$id;
+		if ($id <= 0) { echo json_encode(['success'=>false,'msg'=>'ID không hợp lệ']); return; }
+
+		$row = $this->db->get_where('khachhang', ['id'=>$id])->row();
+		if (!$row) { echo json_encode(['success'=>false,'msg'=>'Không tìm thấy khách hàng']); return; }
+
+		echo json_encode([
+			'success' => true,
+			'data' => [
+				'id'        => (int)$row->id,
+				'ten'       => (string)($row->ten ?? ''),
+				'dienthoai' => (string)($row->dienthoai ?? ''), // CSV
+				'diachi'    => (string)($row->diachi ?? '')
+			]
+		]);
+	}
 }
