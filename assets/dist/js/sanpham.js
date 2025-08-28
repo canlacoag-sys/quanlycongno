@@ -1,24 +1,56 @@
+$('.btn-edit-product').on('click', function() {
+  let id = $(this).data('id');
+  $.get(APP.routes.sanpham_get + '/' + id, function(res) {
+    if (!res || !res.success) {
+      alert(res && res.msg ? res.msg : 'Không thể tải dữ liệu sản phẩm');
+      return;
+    }
+    let d = res.data;
+    $('#editIdSP').val(d.id);
+    $('#editMaSP').val(d.ma_sp);
+    $('#editTenSP').val(d.ten_sp);
+    $('#editGiaSP').val(d.gia);
+    $('#coChietKhau').prop('checked', d.co_chiet_khau == 1);
+    $('#editProductModal').modal('show');
+  }, 'json');
+});
+
 $(function() {
   // Mở modal Thêm sản phẩm
   $('#btnAddProduct').on('click', function() {
     $('#addProductForm')[0].reset();
+    $('#addCoChietKhau').prop('checked', false);
+    $('#dupMaSPHelpAdd').addClass('d-none');
+    $('#btnSaveProductAdd').prop('disabled', false);
     $('#addProductModal').modal('show');
   });
 
   // Submit Thêm sản phẩm
   $('#addProductForm').on('submit', function(e) {
     e.preventDefault();
-    let form = $(this);
-    let data = {
-      ma_sp: $('#addMaSP').val(),
-      ten_sp: $('#addTenSP').val(),
-      gia: $('#addGiaSP').val()
-    };
-    $.post(APP.routes.ajax_add_product, data, function(res) {
-      if(res.success) {
-        location.reload();
+    let ma_sp = $('#addMaSP').val().trim();
+    let ten_sp = $('#addTenSP').val().trim();
+    let gia = $('#addGiaSP').val().trim();
+    let co_chiet_khau = $('#addCoChietKhau').is(':checked') ? 1 : 0;
+    let $btnSave = $('#btnSaveProductAdd');
+    let $dupHelp = $('#dupMaSPHelpAdd');
+
+    $.get(APP.routes.check_ma_sp, {ma_sp: ma_sp}, function(res) {
+      if (res.exists) {
+        $dupHelp.removeClass('d-none');
+        $btnSave.prop('disabled', true);
+        return;
       } else {
-        alert(res.msg || 'Có lỗi xảy ra!');
+        $dupHelp.addClass('d-none');
+        $btnSave.prop('disabled', false);
+        // Gửi AJAX thêm sản phẩm
+        $.post(APP.routes.ajax_add_product, {ma_sp, ten_sp, gia, co_chiet_khau}, function(res) {
+          if(res.success) {
+            location.reload();
+          } else {
+            alert(res.msg || 'Có lỗi xảy ra!');
+          }
+        }, 'json');
       }
     }, 'json');
   });
@@ -30,6 +62,7 @@ $(function() {
     $('#editMaSP').val(row.find('.col-ma-sp').text().trim());
     $('#editTenSP').val(row.find('.col-ten-sp').text().trim());
     $('#editGiaSP').val(row.find('.col-gia-sp').data('gia'));
+    $('#coChietKhau').prop('checked', $(this).data('chietkhau') == 1);
     $('#editProductModal').modal('show');
   });
 
@@ -37,13 +70,11 @@ $(function() {
   $('#editProductForm').on('submit', function(e) {
     e.preventDefault();
     let id = $('#editIdSP').val();
-    let data = {
-      id: id,
-      ma_sp: $('#editMaSP').val(),
-      ten_sp: $('#editTenSP').val(),
-      gia: $('#editGiaSP').val()
-    };
-    $.post(APP.routes.ajax_edit_product, data, function(res) {
+    let ma_sp = $('#editMaSP').val().trim();
+    let ten_sp = $('#editTenSP').val().trim();
+    let gia = $('#editGiaSP').val().trim();
+    let co_chiet_khau = $('#coChietKhau').is(':checked') ? 1 : 0;
+    $.post(APP.routes.ajax_edit_product, {id, ma_sp, ten_sp, gia, co_chiet_khau}, function(res) {
       if(res.success) {
         location.reload();
       } else {
@@ -75,63 +106,24 @@ $(function() {
     }, 'json');
   });
 
-
   // Kiểm tra trùng mã sản phẩm khi nhập (chỉ dùng 'input' để check realtime)
-$('#addMaSP').on('input', function() {
-  let ma_sp = $(this).val().trim();
-  let $btnSave = $('#btnSaveProductAdd');
-  let $dupHelp = $('#dupMaSPHelpAdd');
-  if (!ma_sp) {
-    $dupHelp.addClass('d-none');
-    $btnSave.prop('disabled', false);
-    return;
-  }
-  $.get(APP.routes.check_ma_sp, {ma_sp: ma_sp}, function(res) {
-    if (res.exists) {
-      $dupHelp.removeClass('d-none');
-      $btnSave.prop('disabled', true);
-    } else {
-      $dupHelp.addClass('d-none');
-      $btnSave.prop('disabled', false);
-    }
-  }, 'json');
-});
-
-  // Khi mở modal thêm sản phẩm, reset trạng thái cảnh báo và nút lưu
-  $('#btnAddProduct').on('click', function() {
-    $('#addProductForm')[0].reset();
-    $('#dupMaSPHelpAdd').addClass('d-none');
-    $('#btnSaveProductAdd').prop('disabled', false);
-    $('#addProductModal').modal('show');
-  });
-
-  // Khi submit form thêm sản phẩm, kiểm tra lại lần nữa
-  $('#addProductForm').on('submit', function(e) {
-    e.preventDefault();
-    let ma_sp = $('#addMaSP').val().trim();
-    let ten_sp = $('#addTenSP').val().trim();
-    let gia = $('#addGiaSP').val().trim();
+  $('#addMaSP').on('input', function() {
+    let ma_sp = $(this).val().trim();
     let $btnSave = $('#btnSaveProductAdd');
     let $dupHelp = $('#dupMaSPHelpAdd');
-
+    if (!ma_sp) {
+      $dupHelp.addClass('d-none');
+      $btnSave.prop('disabled', false);
+      return;
+    }
     $.get(APP.routes.check_ma_sp, {ma_sp: ma_sp}, function(res) {
       if (res.exists) {
         $dupHelp.removeClass('d-none');
         $btnSave.prop('disabled', true);
-        return;
       } else {
         $dupHelp.addClass('d-none');
         $btnSave.prop('disabled', false);
-        // Gửi AJAX thêm sản phẩm như cũ
-        $.post(APP.routes.ajax_add_product, {ma_sp, ten_sp, gia}, function(res) {
-          if(res.success) {
-            location.reload();
-          } else {
-            alert(res.msg || 'Có lỗi xảy ra!');
-          }
-        }, 'json');
       }
     }, 'json');
   });
-
 });

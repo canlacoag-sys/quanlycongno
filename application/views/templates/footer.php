@@ -140,7 +140,9 @@
 <script src="<?= base_url('assets/dist/js/khachhang.js') ?>"></script>
 
 <script>
-  window.APP = window.APP || { routes:{} };
+  window.APP = window.APP || {};
+window.APP.routes = window.APP.routes || {};
+window.APP.routes.sanpham_get = "<?= site_url('sanpham/get') ?>";
   window.APP.routes.ajax_add_product    = "<?= site_url('sanpham/ajax_add') ?>";
   window.APP.routes.ajax_edit_product   = "<?= site_url('sanpham/ajax_edit') ?>";
   window.APP.routes.ajax_delete_product = "<?= site_url('sanpham/ajax_delete') ?>";

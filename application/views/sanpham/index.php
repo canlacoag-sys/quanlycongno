@@ -27,6 +27,7 @@
       <th class="text-center" style="width:120px;">Mã SP</th>
       <th>Tên sản phẩm</th>
       <th class="text-right" style="width:120px;">Giá bán</th>
+      <th>Chiết khấu</th>
       <th class="text-center" style="width:120px;">Tác vụ</th>
     </tr>
   </thead>
@@ -36,6 +37,7 @@
       <td class="text-center col-ma-sp"><?= $sp->ma_sp ?></td>
       <td class="col-ten-sp"><?= $sp->ten_sp ?></td>
       <td class="text-right col-gia-sp" data-gia="<?= $sp->gia ?>"><?= number_format($sp->gia) ?></td>
+      <td><?= $sp->co_chiet_khau ? 'Có' : 'Không' ?></td>
       <td class="text-center align-middle">
         <a href="#" class="btn btn-info btn-sm btn-edit-product" data-id="<?= $sp->id ?>"><i class="fas fa-edit"></i></a>
         <a href="#" class="btn btn-danger btn-sm btn-delete-product" data-id="<?= $sp->id ?>"><i class="fas fa-trash-alt"></i></a>
@@ -107,6 +109,10 @@
           <label>Giá bán</label>
           <input type="number" class="form-control" id="addGiaSP" name="gia" min="0" required>
         </div>
+        <div class="form-group form-check">
+          <input type="checkbox" id="addCoChietKhau" name="co_chiet_khau" value="1">
+<label for="addCoChietKhau">Sản phẩm có chiết khấu</label>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
@@ -138,6 +144,10 @@
         <div class="form-group">
           <label>Giá bán</label>
           <input type="number" class="form-control" id="editGiaSP" name="gia" min="0" required>
+        </div>
+        <div class="form-group form-check">
+          <input type="checkbox" class="form-check-input" id="coChietKhau" name="co_chiet_khau" value="1">
+          <label class="form-check-label" for="coChietKhau">Sản phẩm có chiết khấu</label>
         </div>
         <input type="hidden" id="editIdSP" name="id">
       </div>

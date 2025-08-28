@@ -94,6 +94,7 @@ class Sanpham extends CI_Controller {
         $ma_sp  = trim($this->input->post('ma_sp', true));
         $ten_sp = trim($this->input->post('ten_sp', true));
         $gia    = (int)$this->input->post('gia', true);
+        $co_chiet_khau = (int)$this->input->post('co_chiet_khau', true);
 
         if ($ma_sp === '' || $ten_sp === '') {
             echo json_encode(['success'=>false, 'msg'=>'Vui lòng nhập đầy đủ thông tin!']); return;
@@ -108,6 +109,7 @@ class Sanpham extends CI_Controller {
             'ma_sp'  => $ma_sp,
             'ten_sp' => $ten_sp,
             'gia'    => $gia,
+            'co_chiet_khau' => $co_chiet_khau,
         ]);
         echo json_encode(['success'=>true, 'msg'=>'Đã thêm sản phẩm!']);
     }
@@ -121,6 +123,7 @@ class Sanpham extends CI_Controller {
         $ma_sp  = trim($this->input->post('ma_sp', true));
         $ten_sp = trim($this->input->post('ten_sp', true));
         $gia    = (int)$this->input->post('gia', true);
+        $co_chiet_khau = (int)$this->input->post('co_chiet_khau', true);
 
         if ($id <= 0 || $ma_sp === '' || $ten_sp === '') {
             echo json_encode(['success'=>false, 'msg'=>'Thiếu thông tin!']); return;
@@ -135,6 +138,7 @@ class Sanpham extends CI_Controller {
             'ma_sp'  => $ma_sp,
             'ten_sp' => $ten_sp,
             'gia'    => $gia,
+            'co_chiet_khau' => $co_chiet_khau,
         ]);
         echo json_encode(['success'=>true, 'msg'=>'Đã cập nhật sản phẩm!']);
     }
@@ -171,4 +175,25 @@ class Sanpham extends CI_Controller {
 
         echo json_encode(['exists'=>$exists]);
     }
+    // Trong Sanpham.php
+public function get($id = 0)
+{
+    if (!$this->input->is_ajax_request()) show_404();
+    $id = (int)$id;
+    $row = $this->db->get_where('sanpham', ['id' => $id])->row();
+    if (!$row) {
+        echo json_encode(['success' => false, 'msg' => 'Không tìm thấy sản phẩm']);
+        return;
+    }
+    echo json_encode([
+        'success' => true,
+        'data' => [
+            'id'             => (int)$row->id,
+            'ma_sp'          => $row->ma_sp,
+            'ten_sp'         => $row->ten_sp,
+            'gia'            => $row->gia,
+            'co_chiet_khau'  => (int)$row->co_chiet_khau,
+        ]
+    ]);
+}
 }
