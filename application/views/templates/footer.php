@@ -145,7 +145,14 @@
 </script>
 <script src="<?= base_url('assets/dist/js/khachhang.js') ?>"></script>
 
-
+<script>
+  window.APP = window.APP || { routes:{} };
+  window.APP.routes.ajax_add_product    = "<?= site_url('sanpham/ajax_add') ?>";
+  window.APP.routes.ajax_edit_product   = "<?= site_url('sanpham/ajax_edit') ?>";
+  window.APP.routes.ajax_delete_product = "<?= site_url('sanpham/ajax_delete') ?>";
+  window.APP.routes.check_ma_sp = "<?= site_url('sanpham/check_ma_sp') ?>";
+</script>
+<script src="<?= base_url('assets/dist/js/sanpham.js') ?>"></script>
 
 
 </body>

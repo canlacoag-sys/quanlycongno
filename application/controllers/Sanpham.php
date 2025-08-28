@@ -2,115 +2,173 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Sanpham extends CI_Controller {
-	public function __construct() {
-		parent::__construct();
-		$this->load->database();
-		$this->load->library('session');
-		$this->load->helper('url');
-		$this->load->library('pagination');
-		if(!$this->session->userdata('user_id')) {
-			redirect('auth/login');
-		}
-	}
+    public function __construct() {
+        parent::__construct();
+        $this->load->database();
+        $this->load->library(['session', 'pagination']);
+        $this->load->helper('url');
+        if(!$this->session->userdata('user_id')) {
+            redirect('auth/login');
+        }
+    }
 
-	// Danh sách sản phẩm
-	public function index()
-	{
-		$keyword = $this->input->get('keyword'); // Lấy từ ô tìm kiếm
-		$this->load->library('pagination');
-	
-		// Đếm tổng dòng (có search)
-		if ($keyword) {
-			$this->db->like('ten_sp', $keyword);
-			$this->db->or_like('ma_sp', $keyword);
-		}
-		$total = $this->db->count_all_results('sanpham');
-	
-		// Phân trang
-		$config['base_url'] = site_url('sanpham/index');
-		$config['total_rows'] = $total;
-		$config['per_page'] = 30;
-		$config['page_query_string'] = TRUE;
-		$config['query_string_segment'] = 'per_page';
-	
-		// Bootstrap 4 style
-		$config['full_tag_open'] = '<nav><ul class="pagination justify-content-center">';
-		$config['full_tag_close'] = '</ul></nav>';
-		$config['num_tag_open'] = '<li class="page-item">';
-		$config['num_tag_close'] = '</li>';
-		$config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
-		$config['cur_tag_close'] = '</span></li>';
-		$config['next_tag_open'] = '<li class="page-item">';
-		$config['next_tag_close'] = '</li>';
-		$config['prev_tag_open'] = '<li class="page-item">';
-		$config['prev_tag_close'] = '</li>';
-		$config['first_tag_open'] = '<li class="page-item">';
-		$config['first_tag_close'] = '</li>';
-		$config['last_tag_open'] = '<li class="page-item">';
-		$config['last_tag_close'] = '</li>';
-		$config['attributes'] = array('class' => 'page-link');
-	
-		$this->pagination->initialize($config);
-	
-		$offset = ($this->input->get('per_page')) ? $this->input->get('per_page') : 0;
-	
-		// Lấy dữ liệu (có search)
-		if ($keyword) {
-			$this->db->like('ten_sp', $keyword);
-			$this->db->or_like('ma_sp', $keyword);
-		}
-		$data['list'] = $this->db->limit($config['per_page'], $offset)->get('sanpham')->result();
-		$data['pagination'] = $this->pagination->create_links();
-		$data['keyword'] = $keyword;
-	
-		$this->load->view('template/header');
-		$this->load->view('template/topnav');
-		$this->load->view('sanpham/index', $data);
-		$this->load->view('template/footer');
-	}
+    // Hàm render giao diện chuẩn AdminLTE
+    private function render(string $view, array $data = []) {
+        $data['title']  = $data['title']  ?? 'Sản phẩm';
+        $data['active'] = $data['active'] ?? 'sanpham';
+        $this->load->view('templates/header',  $data);
+        $this->load->view('templates/navbar',  $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view($view,               $data);
+        $this->load->view('templates/footer');
+    }
 
+    // Danh sách sản phẩm
+    public function index() {
+        $keyword = $this->input->get('keyword');
+    
+        // Đếm tổng dòng (có search)
+        if ($keyword) {
+            $this->db->group_start()
+                ->like('ten_sp', $keyword)
+                ->or_like('ma_sp', $keyword)
+            ->group_end();
+        }
+        $total = $this->db->count_all_results('sanpham');
+    
+        // Phân trang
+        $config = [
+            'base_url'             => site_url('sanpham/index'),
+            'total_rows'           => $total,
+            'per_page'             => 30,
+            'page_query_string'    => true,
+            'query_string_segment' => 'per_page',
+            'reuse_query_string'   => true,
+            'full_tag_open'  => '<nav><ul class="pagination justify-content-center">',
+            'full_tag_close' => '</ul></nav>',
+            'num_tag_open'   => '<li class="page-item">',
+            'num_tag_close'  => '</li>',
+            'cur_tag_open'   => '<li class="page-item active"><span class="page-link">',
+            'cur_tag_close'  => '</span></li>',
+            'next_tag_open'  => '<li class="page-item">',
+            'next_tag_close' => '</li>',
+            'prev_tag_open'  => '<li class="page-item">',
+            'prev_tag_close' => '</li>',
+            'first_tag_open' => '<li class="page-item">',
+            'first_tag_close'=> '</li>',
+            'last_tag_open'  => '<li class="page-item">',
+            'last_tag_close' => '</li>',
+            'attributes'     => ['class' => 'page-link'],
+        ];
+        $this->pagination->initialize($config);
+    
+        $offset = (int)$this->input->get('per_page');
+    
+        // Lấy dữ liệu (có search)
+        if ($keyword) {
+            $this->db->group_start()
+                ->like('ten_sp', $keyword)
+                ->or_like('ma_sp', $keyword)
+            ->group_end();
+        }
+        $list = $this->db->order_by('id', 'DESC')
+                         ->limit($config['per_page'], $offset)
+                         ->get('sanpham')->result();
+    
+        $data = [
+            'title'      => 'Danh sách sản phẩm',
+            'active'     => 'sanpham',
+            'list'       => $list,
+            'pagination' => $this->pagination->create_links(),
+            'keyword'    => $keyword,
+        ];
+    
+        $this->render('sanpham/index', $data);
+    }
 
+    /** Thêm sản phẩm (AJAX) */
+    public function ajax_add() {
+        if (!$this->input->is_ajax_request() || $this->input->method() !== 'post') show_404();
+        $this->output->set_content_type('application/json');
 
-	// Thêm sản phẩm
-	public function add() {
-		if($this->input->post()) {
-			$this->db->insert('sanpham', [
-				'ma_sp'  => $this->input->post('ma_sp'),
-				'ten_sp' => $this->input->post('ten_sp'),
-				'gia'    => $this->input->post('gia'),
-			]);
-			redirect('sanpham');
-		}
-		$this->load->view('template/header');
-		$this->load->view('template/topnav');
-		$this->load->view('sanpham/add');
-		$this->load->view('template/footer');
-	}
-	// Sửa sản phẩm
-	public function edit($id = 0) {
-		$sp = $this->db->get_where('sanpham', ['id'=>$id])->row();
-		if(!$sp) show_404();
-	
-		if($this->input->post()) {
-			$this->db->where('id', $id)->update('sanpham', [
-				'ma_sp'  => $this->input->post('ma_sp'),
-				'ten_sp' => $this->input->post('ten_sp'),
-				'gia'    => $this->input->post('gia'),
-			]);
-			redirect('sanpham');
-		}
-	
-		$data['sp'] = $sp;
-		$this->load->view('template/header');
-		$this->load->view('template/topnav');
-		$this->load->view('sanpham/edit', $data);
-		$this->load->view('template/footer');
-	}
-	
-	// Xoá sản phẩm
-	public function delete($id = 0) {
-		$this->db->where('id', $id)->delete('sanpham');
-		redirect('sanpham');
-	}
+        $ma_sp  = trim($this->input->post('ma_sp', true));
+        $ten_sp = trim($this->input->post('ten_sp', true));
+        $gia    = (int)$this->input->post('gia', true);
 
+        if ($ma_sp === '' || $ten_sp === '') {
+            echo json_encode(['success'=>false, 'msg'=>'Vui lòng nhập đầy đủ thông tin!']); return;
+        }
+
+        // Kiểm tra trùng mã sản phẩm
+        if ($this->db->where('ma_sp', $ma_sp)->count_all_results('sanpham') > 0) {
+            echo json_encode(['success'=>false, 'msg'=>'Mã sản phẩm đã tồn tại!']); return;
+        }
+
+        $this->db->insert('sanpham', [
+            'ma_sp'  => $ma_sp,
+            'ten_sp' => $ten_sp,
+            'gia'    => $gia,
+        ]);
+        echo json_encode(['success'=>true, 'msg'=>'Đã thêm sản phẩm!']);
+    }
+
+    /** Sửa sản phẩm (AJAX) */
+    public function ajax_edit() {
+        if (!$this->input->is_ajax_request() || $this->input->method() !== 'post') show_404();
+        $this->output->set_content_type('application/json');
+
+        $id     = (int)$this->input->post('id', true);
+        $ma_sp  = trim($this->input->post('ma_sp', true));
+        $ten_sp = trim($this->input->post('ten_sp', true));
+        $gia    = (int)$this->input->post('gia', true);
+
+        if ($id <= 0 || $ma_sp === '' || $ten_sp === '') {
+            echo json_encode(['success'=>false, 'msg'=>'Thiếu thông tin!']); return;
+        }
+
+        // Kiểm tra trùng mã sản phẩm (trừ chính nó)
+        if ($this->db->where('ma_sp', $ma_sp)->where('id !=', $id)->count_all_results('sanpham') > 0) {
+            echo json_encode(['success'=>false, 'msg'=>'Mã sản phẩm đã tồn tại!']); return;
+        }
+
+        $this->db->where('id', $id)->update('sanpham', [
+            'ma_sp'  => $ma_sp,
+            'ten_sp' => $ten_sp,
+            'gia'    => $gia,
+        ]);
+        echo json_encode(['success'=>true, 'msg'=>'Đã cập nhật sản phẩm!']);
+    }
+
+    /** Xoá sản phẩm (AJAX) */
+    public function ajax_delete() {
+        if (!$this->input->is_ajax_request() || $this->input->method() !== 'post') show_404();
+        $this->output->set_content_type('application/json');
+
+        $id = (int)$this->input->post('id', true);
+        if ($id <= 0) {
+            echo json_encode(['success'=>false, 'msg'=>'Thiếu ID sản phẩm!']); return;
+        }
+
+        $this->db->where('id', $id)->delete('sanpham');
+        echo json_encode(['success'=>true, 'msg'=>'Đã xoá sản phẩm!']);
+    }
+
+	 /** API kiểm tra trùng mã sản phẩm (AJAX) */
+    public function check_ma_sp() {
+        if (!$this->input->is_ajax_request()) show_404();
+        $this->output->set_content_type('application/json');
+
+        $ma_sp = trim($this->input->get_post('ma_sp', true));
+        $id    = (int)$this->input->get_post('id', true); // dùng cho edit
+
+        if ($ma_sp === '') {
+            echo json_encode(['exists'=>false]); return;
+        }
+
+        $this->db->where('ma_sp', $ma_sp);
+        if ($id > 0) $this->db->where('id !=', $id);
+        $exists = $this->db->count_all_results('sanpham') > 0;
+
+        echo json_encode(['exists'=>$exists]);
+    }
 }

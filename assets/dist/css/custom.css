@@ -7,3 +7,34 @@
 #phoneTags { cursor:text; }
 #phoneTags input { min-height: 28px; }
 #phoneTags .badge { font-size: 0.875rem; }
+
+/* Không để phần nội dung chi tiết phủ nền riêng */
+tr.collapse-detail .p-3 {
+  background-color: transparent !important;
+}
+
+/* Hover cho hàng chính */
+.table-hover tbody tr:not(.collapse-detail):hover {
+  background-color: #f5f5f5 !important;
+}
+.table-hover tbody tr.table-active:not(.collapse-detail):hover {
+  background-color: #d1d3d4 !important;
+}
+
+/* Hover cho hàng chi tiết: màu khác hẳn để không trùng */
+.table-hover tbody tr.collapse-detail:hover {
+  background-color: #e8f4ff !important; /* xanh rất nhạt */
+}
+.table-hover tbody tr.table-active.collapse-detail:hover {
+  background-color: #d6ecff !important; /* xanh nhạt hơn cho dòng tối */
+}
+.table-products.table-striped tbody tr:nth-of-type(odd):hover {
+  background-color: #e8f4ff !important; /* xanh rất nhạt cho dòng nền sáng */
+}
+.table-products.table-striped tbody tr:nth-of-type(even):hover {
+  background-color: #dff0ff !important; /* xanh nhạt khác biệt cho dòng nền tối */
+}
+/* Nếu không dùng table-striped, vẫn có hover */
+.table-products.table-hover tbody tr:hover {
+  background-color: #e8f4ff !important;
+}
