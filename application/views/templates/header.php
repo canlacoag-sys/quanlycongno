@@ -17,5 +17,5 @@
   <link rel="stylesheet" href="<?= base_url('assets/dist/css/custom.css'); ?>">
 </head>
 
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini sidebar-collapse sidebar-mini-hover">
 <div class="wrapper">
