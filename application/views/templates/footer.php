@@ -2,6 +2,14 @@
   <aside class="control-sidebar control-sidebar-dark">
 	<div class="p-3">Nội dung Control Sidebar</div>
   </aside>
+
+<footer class="main-footer">
+  <strong>Copyright &copy; 2025 <a href="https://angiangvn.com">AnGiangVN.com</a>.</strong>
+  All rights reserved.
+  <div class="float-right d-none d-sm-inline-block">
+    <b>Version</b> 3.2.0
+  </div>
+</footer>
 </div> <!-- ./wrapper -->
 
 
@@ -141,14 +149,15 @@
 
 <script>
   window.APP = window.APP || {};
-window.APP.routes = window.APP.routes || {};
-window.APP.routes.sanpham_get = "<?= site_url('sanpham/get') ?>";
+  window.APP.routes = window.APP.routes || {};
+  window.APP.routes.sanpham_get = "<?= site_url('sanpham/get') ?>";
   window.APP.routes.ajax_add_product    = "<?= site_url('sanpham/ajax_add') ?>";
   window.APP.routes.ajax_edit_product   = "<?= site_url('sanpham/ajax_edit') ?>";
   window.APP.routes.ajax_delete_product = "<?= site_url('sanpham/ajax_delete') ?>";
   window.APP.routes.check_ma_sp = "<?= site_url('sanpham/check_ma_sp') ?>";
 </script>
 <script src="<?= base_url('assets/dist/js/sanpham.js') ?>"></script>
+
 
 
 </body>
