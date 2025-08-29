@@ -1,21 +1,9 @@
-$('.btn-edit-product').on('click', function() {
-  let id = $(this).data('id');
-  $.get(APP.routes.sanpham_get + '/' + id, function(res) {
-    if (!res || !res.success) {
-      alert(res && res.msg ? res.msg : 'Không thể tải dữ liệu sản phẩm');
-      return;
-    }
-    let d = res.data;
-    $('#editIdSP').val(d.id);
-    $('#editMaSP').val(d.ma_sp);
-    $('#editTenSP').val(d.ten_sp);
-    $('#editGiaSP').val(d.gia);
-    $('#coChietKhau').prop('checked', d.co_chiet_khau == 1);
-    $('#editProductModal').modal('show');
-  }, 'json');
-});
-
 $(function() {
+  // Khi đổi radio chiết khấu, submit form (KHÔNG xoá keyword)
+  $('input[name="chietkhau"]').on('change', function() {
+    $('#formSearchProduct').submit();
+  });
+
   // Mở modal Thêm sản phẩm
   $('#btnAddProduct').on('click', function() {
     $('#addProductForm')[0].reset();
@@ -57,13 +45,20 @@ $(function() {
 
   // Mở modal Sửa sản phẩm
   $('.btn-edit-product').on('click', function() {
-    let row = $(this).closest('tr');
-    $('#editIdSP').val($(this).data('id'));
-    $('#editMaSP').val(row.find('.col-ma-sp').text().trim());
-    $('#editTenSP').val(row.find('.col-ten-sp').text().trim());
-    $('#editGiaSP').val(row.find('.col-gia-sp').data('gia'));
-    $('#coChietKhau').prop('checked', $(this).data('chietkhau') == 1);
-    $('#editProductModal').modal('show');
+    let id = $(this).data('id');
+    $.get(APP.routes.sanpham_get + '/' + id, function(res) {
+      if (!res || !res.success) {
+        alert(res && res.msg ? res.msg : 'Không thể tải dữ liệu sản phẩm');
+        return;
+      }
+      let d = res.data;
+      $('#editIdSP').val(d.id);
+      $('#editMaSP').val(d.ma_sp);
+      $('#editTenSP').val(d.ten_sp);
+      $('#editGiaSP').val(d.gia);
+      $('#coChietKhau').prop('checked', d.co_chiet_khau == 1);
+      $('#editProductModal').modal('show');
+    }, 'json');
   });
 
   // Submit Sửa sản phẩm

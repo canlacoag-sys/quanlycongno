@@ -25,22 +25,26 @@ class Sanpham extends CI_Controller {
 
     // Danh sách sản phẩm
     public function index() {
-        $keyword = $this->input->get('keyword');
-    
-        // Đếm tổng dòng (có search)
+        $keyword = $this->input->get('keyword', true);
+        $chietkhau = $this->input->get('chietkhau', true);
+
+        // Đếm tổng số kết quả (áp dụng filter)
+        if ($chietkhau !== '' && $chietkhau !== null) {
+            $this->db->where('co_chiet_khau', (int)$chietkhau);
+        }
         if ($keyword) {
             $this->db->group_start()
-                ->like('ten_sp', $keyword)
-                ->or_like('ma_sp', $keyword)
-            ->group_end();
+                ->like('ma_sp', $keyword)
+                ->or_like('ten_sp', $keyword)
+                ->group_end();
         }
         $total = $this->db->count_all_results('sanpham');
-    
+
         // Phân trang
         $config = [
             'base_url'             => site_url('sanpham/index'),
             'total_rows'           => $total,
-            'per_page'             => 30,
+            'per_page'             => 50,
             'page_query_string'    => true,
             'query_string_segment' => 'per_page',
             'reuse_query_string'   => true,
@@ -61,28 +65,32 @@ class Sanpham extends CI_Controller {
             'attributes'     => ['class' => 'page-link'],
         ];
         $this->pagination->initialize($config);
-    
+
         $offset = (int)$this->input->get('per_page');
-    
-        // Lấy dữ liệu (có search)
+
+        // Lấy dữ liệu (áp dụng filter)
+        if ($chietkhau !== '' && $chietkhau !== null) {
+            $this->db->where('co_chiet_khau', (int)$chietkhau);
+        }
         if ($keyword) {
             $this->db->group_start()
-                ->like('ten_sp', $keyword)
-                ->or_like('ma_sp', $keyword)
-            ->group_end();
+                ->like('ma_sp', $keyword)
+                ->or_like('ten_sp', $keyword)
+                ->group_end();
         }
         $list = $this->db->order_by('id', 'DESC')
                          ->limit($config['per_page'], $offset)
                          ->get('sanpham')->result();
-    
+
         $data = [
             'title'      => 'Danh sách sản phẩm',
             'active'     => 'sanpham',
             'list'       => $list,
             'pagination' => $this->pagination->create_links(),
             'keyword'    => $keyword,
+            'chietkhau'  => $chietkhau,
         ];
-    
+
         $this->render('sanpham/index', $data);
     }
 
@@ -157,7 +165,7 @@ class Sanpham extends CI_Controller {
         echo json_encode(['success'=>true, 'msg'=>'Đã xoá sản phẩm!']);
     }
 
-	 /** API kiểm tra trùng mã sản phẩm (AJAX) */
+    /** API kiểm tra trùng mã sản phẩm (AJAX) */
     public function check_ma_sp() {
         if (!$this->input->is_ajax_request()) show_404();
         $this->output->set_content_type('application/json');
@@ -175,25 +183,26 @@ class Sanpham extends CI_Controller {
 
         echo json_encode(['exists'=>$exists]);
     }
-    // Trong Sanpham.php
-public function get($id = 0)
-{
-    if (!$this->input->is_ajax_request()) show_404();
-    $id = (int)$id;
-    $row = $this->db->get_where('sanpham', ['id' => $id])->row();
-    if (!$row) {
-        echo json_encode(['success' => false, 'msg' => 'Không tìm thấy sản phẩm']);
-        return;
+
+    /** API lấy 1 sản phẩm (AJAX) */
+    public function get($id = 0)
+    {
+        if (!$this->input->is_ajax_request()) show_404();
+        $id = (int)$id;
+        $row = $this->db->get_where('sanpham', ['id' => $id])->row();
+        if (!$row) {
+            echo json_encode(['success' => false, 'msg' => 'Không tìm thấy sản phẩm']);
+            return;
+        }
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'id'             => (int)$row->id,
+                'ma_sp'          => $row->ma_sp,
+                'ten_sp'         => $row->ten_sp,
+                'gia'            => $row->gia,
+                'co_chiet_khau'  => (int)$row->co_chiet_khau,
+            ]
+        ]);
     }
-    echo json_encode([
-        'success' => true,
-        'data' => [
-            'id'             => (int)$row->id,
-            'ma_sp'          => $row->ma_sp,
-            'ten_sp'         => $row->ten_sp,
-            'gia'            => $row->gia,
-            'co_chiet_khau'  => (int)$row->co_chiet_khau,
-        ]
-    ]);
-}
 }

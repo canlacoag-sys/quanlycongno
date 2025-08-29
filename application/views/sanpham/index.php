@@ -5,14 +5,27 @@
       <!-- Tìm kiếm + Nút thêm -->
       <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
         <form method="get" action="<?= site_url('sanpham'); ?>" class="mb-0">
-          <div class="input-group" style="width:420px; max-width:100%;">
+          <div class="input-group" style="width:680px; max-width:100%;">
             <input type="text" name="keyword" value="<?= isset($keyword) ? html_escape($keyword) : '' ?>" class="form-control" placeholder="Tìm mã hoặc tên sản phẩm">
+            <div class="form-check form-check-inline ml-2">
+              <input class="form-check-input" type="radio" name="chietkhau" id="ckAll" value="" <?= !isset($_GET['chietkhau']) || $_GET['chietkhau'] === '' ? 'checked' : '' ?>>
+              <label class="form-check-label" for="ckAll">Tất cả</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="chietkhau" id="ckCo" value="1" <?= isset($_GET['chietkhau']) && $_GET['chietkhau']=='1' ? 'checked' : '' ?>>
+              <label class="form-check-label" for="ckCo">Có chiết khấu</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="chietkhau" id="ckKhong" value="0" <?= isset($_GET['chietkhau']) && $_GET['chietkhau']=='0' ? 'checked' : '' ?>>
+              <label class="form-check-label" for="ckKhong">Không chiết khấu</label>
+            </div>
             <button class="btn btn-primary ml-2" type="submit"><i class="fas fa-search"></i> Tìm kiếm</button>
             <?php if (!empty($keyword)): ?>
               <a href="<?= site_url('sanpham'); ?>" class="btn btn-secondary ml-2">Xóa tìm</a>
             <?php endif; ?>
-          </div>
+            </div>
         </form>
+       
         <button type="button" class="btn btn-success" id="btnAddProduct" data-toggle="modal" data-target="#addProductModal">
           <i class="fas fa-plus"></i> Thêm sản phẩm
         </button>
@@ -27,7 +40,7 @@
       <th class="text-center" style="width:120px;">Mã SP</th>
       <th>Tên sản phẩm</th>
       <th class="text-right" style="width:120px;">Giá bán</th>
-      <th>Chiết khấu</th>
+      <th class="text-center" style="width:120px;">Chiết khấu</th>
       <th class="text-center" style="width:120px;">Tác vụ</th>
     </tr>
   </thead>
@@ -37,7 +50,7 @@
       <td class="text-center col-ma-sp"><?= $sp->ma_sp ?></td>
       <td class="col-ten-sp"><?= $sp->ten_sp ?></td>
       <td class="text-right col-gia-sp" data-gia="<?= $sp->gia ?>"><?= number_format($sp->gia) ?></td>
-      <td><?= $sp->co_chiet_khau ? 'Có' : 'Không' ?></td>
+      <td class="text-center"><?= $sp->co_chiet_khau ? 'Có' : 'Không' ?></td>
       <td class="text-center align-middle">
         <a href="#" class="btn btn-info btn-sm btn-edit-product" data-id="<?= $sp->id ?>"><i class="fas fa-edit"></i></a>
         <a href="#" class="btn btn-danger btn-sm btn-delete-product" data-id="<?= $sp->id ?>"><i class="fas fa-trash-alt"></i></a>

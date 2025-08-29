@@ -55,7 +55,7 @@ class Khachhang extends CI_Controller
 	public function index(): void
 	{
 		$keyword = trim((string)$this->input->get('keyword', true));
-		$perPage = 30;
+		$perPage = 50;
 
 		if ($keyword !== '') {
 			$this->db->group_start()
