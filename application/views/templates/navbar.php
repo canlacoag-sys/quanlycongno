@@ -5,13 +5,13 @@
 	<li class="nav-item">
 	  <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
 	</li>
-	<li class="nav-item d-none d-sm-inline-block">
+	<li class="nav-item sm-inline-block">
 	  <span class="nav-link font-weight-bold">
 		<?php
 		  switch ($active ?? '') {
 			case 'dashboard': echo 'Bảng điều khiển'; break;
 			case 'khachhang': echo 'Khách hàng'; break;
-			case 'sanpham':   echo 'Sản phẩm'; break;
+			case 'sanpham':   echo 'Bánh trung thu'; break;
 			case 'donhang':   echo 'Đơn hàng'; break;
 			case 'congno':    echo 'Công nợ'; break;
 			default:          echo 'Trang chủ';

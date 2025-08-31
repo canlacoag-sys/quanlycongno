@@ -2,7 +2,11 @@
 // filepath: application/controllers/Donhang.php
 defined('BASEPATH') OR exit('No direct script access allowed');
 /**
- * @property Donhang_model $Donhang_model
+ * @property Khachhang_model $Khachhang_model
+ * @property CI_Session $session
+ * @property CI_Input $input
+ * @property CI_Pagination $pagination
+ * @property CI_Output $output
  */
 class Donhang extends CI_Controller {
     public function __construct() {

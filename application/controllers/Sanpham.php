@@ -33,7 +33,7 @@ class Sanpham extends CI_Controller
     public function index() {
         $keyword = $this->input->get('keyword', true);
         $chietkhau = $this->input->get('chietkhau', true);
-        $perPage = 50;
+        $perPage = 20;
         $offset = (int)$this->input->get('per_page');
 
         $total = $this->Sanpham_model->count_all($keyword, $chietkhau);

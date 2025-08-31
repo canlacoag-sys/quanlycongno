@@ -1,3 +1,7 @@
+<?php $this->load->view('khachhang/add'); ?>
+<?php $this->load->view('khachhang/edit'); ?>
+<?php $this->load->view('khachhang/del'); ?>
+
 <div class="content-wrapper">
   <section class="content">
     <div class="container-fluid">
@@ -21,7 +25,7 @@
             </div>
           </div>
         </form>
-        <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addCustomerModal" id="btnOpenAdd">
+        <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addCustomerModal">
           <i class="fas fa-plus"></i> Thêm khách hàng
         </a>
       </div>
@@ -61,8 +65,8 @@
                 <td class="align-middle"><?= html_escape(phones_pretty($row->dienthoai)) ?></td>
                 <td class="align-middle"><?= html_escape($row->diachi) ?></td>
                 <td class="text-right align-middle">
-                  <a href="#" class="btn btn-sm btn-info btn-edit" data-id="<?= $row->id ?>"><i class="fas fa-edit"></i></a>
-                  <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="<?= $row->id ?>"><i class="fas fa-trash-alt"></i></a>
+                  <a href="#" class="btn btn-sm btn-info btn-edit-customer" data-toggle="modal" data-target="#editCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-edit"></i></a>
+                  <a href="#" class="btn btn-sm btn-danger btn-delete-customer" data-toggle="modal" data-target="#confirmDeleteCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-trash-alt"></i></a>
                 </td>
               </tr>
               <!-- Hàng chi tiết (collapse) -->

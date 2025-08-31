@@ -1,4 +1,33 @@
 $(function() {
+
+  function fillProductForm(data, prefix) {
+  $('#' + prefix + 'IdSP').val(data.id || '');
+  $('#' + prefix + 'MaSP').val(data.ma_sp || '');
+  $('#' + prefix + 'TenSP').val(data.ten_sp || '');
+  $('#' + prefix + 'GiaSP').val(data.gia ? Number(data.gia).toLocaleString('en-US') : '');
+  if (prefix === 'edit') {
+    $('#coChietKhau').prop('checked', data.co_chiet_khau == 1);
+    $('#coChietKhau').bootstrapSwitch('state', data.co_chiet_khau == 1, true);
+  } else if (prefix === 'add') {
+    $('#addCoChietKhau').prop('checked', false);
+  }
+}
+
+function resetProductForm(prefix) {
+  $('#' + prefix + 'IdSP').val('');
+  $('#' + prefix + 'MaSP').val('');
+  $('#' + prefix + 'TenSP').val('');
+  $('#' + prefix + 'GiaSP').val('');
+  if (prefix === 'edit') {
+    $('#coChietKhau').prop('checked', false);
+    $('#coChietKhau').bootstrapSwitch('state', false, true);
+  } else if (prefix === 'add') {
+    $('#addCoChietKhau').prop('checked', false);
+  }
+  $('#' + (prefix === 'add' ? 'dupMaSPHelpAdd' : 'dupMaSPHelpEdit')).addClass('d-none');
+  $('#' + (prefix === 'add' ? 'btnSaveProductAdd' : 'btnSaveProductEdit')).prop('disabled', false);
+}
+
   // Khi đổi radio chiết khấu, submit form (KHÔNG xoá keyword)
   $('input[name="chietkhau"]').on('change', function() {
     $('#formSearchProduct').submit();
@@ -6,10 +35,7 @@ $(function() {
 
   // Mở modal Thêm sản phẩm
   $('#btnAddProduct').on('click', function() {
-    $('#addProductForm')[0].reset();
-    $('#addCoChietKhau').prop('checked', false);
-    $('#dupMaSPHelpAdd').addClass('d-none');
-    $('#btnSaveProductAdd').prop('disabled', false);
+    resetProductForm('add');
     $('#addProductModal').modal('show');
   });
 
@@ -51,12 +77,7 @@ $(function() {
         alert(res && res.msg ? res.msg : 'Không thể tải dữ liệu sản phẩm');
         return;
       }
-      let d = res.data;
-      $('#editIdSP').val(d.id);
-      $('#editMaSP').val(d.ma_sp);
-      $('#editTenSP').val(d.ten_sp);
-      $('#editGiaSP').val(d.gia);
-      $('#coChietKhau').prop('checked', d.co_chiet_khau == 1);
+      fillProductForm(res.data, 'edit');
       $('#editProductModal').modal('show');
     }, 'json');
   });
@@ -121,4 +142,43 @@ $(function() {
       }
     }, 'json');
   });
+});
+
+$(function() {
+  $("input[data-bootstrap-switch]").each(function(){
+    $(this).bootstrapSwitch('state', $(this).prop('checked'));
+  });
+});
+
+
+$('#addProductModal').on('shown.bs.modal', function () {
+  $("input[data-bootstrap-switch]").bootstrapSwitch('destroy'); // Xóa switch cũ nếu có
+  $("input[data-bootstrap-switch]").bootstrapSwitch();
+});
+
+$('#addGiaSP').on('input', function() {
+  let val = $(this).val().replace(/,/g, '');
+  if (!isNaN(val) && val !== '') {
+    $(this).val(Number(val).toLocaleString('en-US'));
+  }
+});
+$('#editGiaSP').on('input', function() {
+  let val = $(this).val().replace(/,/g, '');
+  if (!isNaN(val) && val !== '') {
+    $(this).val(Number(val).toLocaleString('en-US'));
+  }
+});
+
+// Khi submit, loại bỏ dấu phẩy
+$('#addProductForm').on('submit', function() {
+  let gia = $('#addGiaSP').val().replace(/,/g, '');
+  $('#addGiaSP').val(gia);
+  // Tiếp tục submit...
+});
+
+// Khi submit, loại bỏ dấu phẩy
+$('#editProductForm').on('submit', function() {
+  let gia = $('#editGiaSP').val().replace(/,/g, '');
+  $('#editGiaSP').val(gia);
+  // Tiếp tục submit...
 });

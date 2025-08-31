@@ -38,3 +38,14 @@ tr.collapse-detail .p-3 {
 .table-products.table-hover tbody tr:hover {
   background-color: #e8f4ff !important;
 }
+
+.text-danger { color: #dc3545 !important; }
+.font-weight-bold { font-weight: bold !important; }
+.font-italic { font-style: italic !important; }
+.d-block { display: block !important; }
+.mt-1 { margin-top: .25rem !important; }
+.d-none { display: none !important; }
+.badge-danger {
+  background: #dc3545 !important;
+  color: #fff !important;
+}
