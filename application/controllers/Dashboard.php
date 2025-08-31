@@ -17,7 +17,7 @@ class Dashboard extends CI_Controller {
 		}
 	}
 	public function index() {
-		$data['title']  = 'Bảng điều khiển';
+		$data['title']  = 'TỔNG QUAN';
 		$data['active'] = 'dashboard';
 		
 		$this->load->view('templates/header', $data);

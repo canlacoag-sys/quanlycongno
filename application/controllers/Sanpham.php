@@ -20,7 +20,7 @@ class Sanpham extends CI_Controller
     }
 
     private function render(string $view, array $data = []) {
-        $data['title']  = $data['title']  ?? 'Sản phẩm';
+        $data['title']  = $data['title']  ?? 'MENU BÁNH TRUNG THU';
         $data['active'] = $data['active'] ?? 'sanpham';
         $this->load->view('templates/header',  $data);
         $this->load->view('templates/navbar',  $data);

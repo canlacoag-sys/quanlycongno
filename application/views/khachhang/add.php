@@ -31,9 +31,6 @@
             <input id="phoneInputAdd" type="text" class="form-control" style="outline:none;min-width:140px;" placeholder="Nhập 10 số và nhấn Enter">
           </div>
           <input type="hidden" name="dienthoai" id="phonesHiddenAdd" value="">
-          <small class="form-text text-muted">
-            Gõ đủ 10 số sẽ tự tách thành 1 số; có thể dán nhiều số, cách nhau bằng dấu phẩy.
-          </small>
           <small id="dupHelpAdd" class="text-danger d-none">
             Có số điện thoại đã tồn tại. Hãy xoá hoặc thay đổi trước khi lưu.
           </small>

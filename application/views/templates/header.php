@@ -17,5 +17,10 @@
   <link rel="stylesheet" href="<?= base_url('assets/dist/css/custom.css'); ?>">
 </head>
 
-<body class="hold-transition sidebar-mini sidebar-collapse sidebar-mini-hover">
+<body class="hold-transition sidebar-mini sidebar-collapse sidebar-mini-hover layout-fixed">
 <div class="wrapper">
+
+<!-- Preloader -->
+		<div class="preloader flex-column justify-content-center align-items-center">
+			<img class="animation__shake" src="<?= base_url('assets/dist/img/logo.png'); ?>" alt="Logo Bánh Trung Thu Thanh Tâm" height="60" width="220">
+		</div>

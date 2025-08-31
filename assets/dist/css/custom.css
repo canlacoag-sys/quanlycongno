@@ -49,3 +49,61 @@ tr.collapse-detail .p-3 {
   background: #dc3545 !important;
   color: #fff !important;
 }
+
+/* Đảm bảo badge phone tag cùng chiều cao với input */
+#phoneTags .badge {
+  height: 38px;                /* hoặc 2.375rem nếu input lớn hơn */
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  padding: 0 0.75rem;
+  border-radius: 0.25rem;
+  margin-right: 0.25rem;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+/* Căn giữa nút xoá trong badge */
+#phoneTags .remove-phone {
+  margin-left: 0.5rem;
+  padding: 0 0.25rem;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Đảm bảo icon phone cùng chiều cao input */
+#phoneTags .input-group-prepend .input-group-text {
+  height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+#phoneTagsAdd .badge {
+  height: 38px;                /* hoặc 2.375rem nếu input lớn hơn */
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  padding: 0 0.75rem;
+  border-radius: 0.25rem;
+  margin-right: 0.25rem;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+/* Căn giữa nút xoá trong badge */
+#phoneTagsAdd .remove-phone {
+  margin-left: 0.5rem;
+  padding: 0 0.25rem;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Đảm bảo icon phone cùng chiều cao input */
+#phoneTagsAdd .input-group-prepend .input-group-text {
+  height: 38px;
+  display: flex;
+  align-items: center;

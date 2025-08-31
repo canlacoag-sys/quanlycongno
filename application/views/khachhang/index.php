@@ -35,11 +35,11 @@
           <table class="table table-bordered table-striped table-hover mb-0">
             <thead>
               <tr>
-                <th style="width:44px;"></th>
+                <th style="width:44px;">Click</th>
                 <th>Tên</th>
                 <th>Điện thoại</th>
                 <th>Địa chỉ</th>
-                <th class="text-right" style="width:120px;">Tác vụ</th>
+                <th class="text-center" style="width:120px;">Tác vụ</th>
               </tr>
             </thead>
             <tbody>

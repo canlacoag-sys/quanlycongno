@@ -37,7 +37,7 @@ class Khachhang extends CI_Controller
 
     private function render(string $view, array $data = []): void
     {
-        $data['title']  = $data['title']  ?? 'Khách hàng';
+        $data['title']  = $data['title']  ?? 'DANH SÁCH KHÁCH HÀNG';
         $data['active'] = $data['active'] ?? 'khachhang';
         $this->load->view('templates/header',  $data);
         $this->load->view('templates/navbar',  $data);

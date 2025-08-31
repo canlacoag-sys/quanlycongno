@@ -9,12 +9,12 @@
 	  <span class="nav-link font-weight-bold">
 		<?php
 		  switch ($active ?? '') {
-			case 'dashboard': echo 'Bảng điều khiển'; break;
-			case 'khachhang': echo 'Khách hàng'; break;
-			case 'sanpham':   echo 'Bánh trung thu'; break;
-			case 'donhang':   echo 'Đơn hàng'; break;
-			case 'congno':    echo 'Công nợ'; break;
-			default:          echo 'Trang chủ';
+			case 'dashboard': echo 'TỔNG QUAN'; break;
+			case 'khachhang': echo 'DANH SÁCH KHÁCH HÀNG'; break;
+			case 'sanpham':   echo 'MENU BÁNH TRUNG THU'; break;
+			case 'donhang':   echo 'CHI TIẾT ĐƠN HÀNG'; break;
+			case 'congno':    echo 'DANH SÁCH CÔNG NỢ'; break;
+			default:          echo 'BẢNG TRANG CHỦ';
 		  }
 		?>
 	  </span>
@@ -24,7 +24,7 @@
   <!-- Right navbar links -->
   <ul class="navbar-nav ml-auto">
 	<!-- Search -->
-	<li class="nav-item">
+	<!-- li class="nav-item">
 	  <a class="nav-link" data-widget="navbar-search" href="#" role="button">
 		<i class="fas fa-search"></i>
 	  </a>
@@ -39,10 +39,10 @@
 		  </div>
 		</form>
 	  </div>
-	</li>
+	</li -->
 
 	<!-- Notifications -->
-	<li class="nav-item dropdown">
+	<!-- li class="nav-item dropdown">
 	  <a class="nav-link" data-toggle="dropdown" href="#">
 		<i class="far fa-bell"></i>
 		<span class="badge badge-warning navbar-badge">15</span>
@@ -52,7 +52,7 @@
 		<div class="dropdown-divider"></div>
 		<a href="<?= site_url('notifications') ?>" class="dropdown-item dropdown-footer">Xem tất cả</a>
 	  </div>
-	</li>
+	</li -->
 
 	<!-- Fullscreen -->
 	<li class="nav-item">
@@ -62,10 +62,10 @@
 	</li>
 
 	<!-- Control Sidebar -->
-	<li class="nav-item">
+	<!-- li class="nav-item">
 	  <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
 		<i class="fas fa-th-large"></i>
 	  </a>
-	</li>
+	</li -->
   </ul>
 </nav>

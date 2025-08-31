@@ -19,7 +19,7 @@ class Donhang extends CI_Controller {
 
     // Hàm render dùng chung cho mọi view
     private function render(string $view, array $data = []) {
-        $data['title']  = $data['title']  ?? 'Đơn hàng';
+        $data['title']  = $data['title']  ?? 'CHI TIẾT ĐƠN HÀNG';
         $data['active'] = $data['active'] ?? 'donhang';
         $this->load->view('templates/header',  $data);
         $this->load->view('templates/navbar',  $data);
