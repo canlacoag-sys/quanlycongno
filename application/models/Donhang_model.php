@@ -26,4 +26,14 @@ class Donhang_model extends CI_Model
     public function insert_chitiet($data) {
         $this->db->insert('chitiet_donhang', $data);
     }
+
+    // Lấy đơn hàng theo id
+    public function get_by_id($id) {
+        return $this->db->get_where('donhang', ['id' => $id])->row();
+    }
+
+    // Lấy chi tiết đơn hàng
+    public function get_chitiet($donhang_id) {
+        return $this->db->get_where('chitiet_donhang', ['donhang_id' => $donhang_id])->result();
+    }
 }

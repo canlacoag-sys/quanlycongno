@@ -49,6 +49,5 @@
 <script src="<?= base_url('assets/dist/js/khachhang.js') ?>"></script>
 <script src="<?= base_url('assets/dist/js/sanpham.js') ?>"></script>
 
-
 </body>
 </html>

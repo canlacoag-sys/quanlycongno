@@ -24,7 +24,7 @@
 
         <div class="form-group">
           <label for="phoneInputAdd">Điện thoại (nhiều số)</label>
-          <div id="phoneTagsAdd" class="input-group">
+          <div id="phoneTagsAdd" class="input-group" style="flex-wrap:wrap;">
             <div class="input-group-prepend">
               <span class="input-group-text"><i class="fas fa-phone"></i></span>
             </div>
@@ -36,6 +36,7 @@
           </small>
         </div>
 
+        
         <div class="form-group">
           <label for="addAddress">Địa chỉ</label>
           <div class="input-group">
@@ -48,8 +49,11 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary ml-2" data-dismiss="modal"><i class="fas fa-chevron-left mr-1"></i>Quay lại</button>
-        <button type="submit" id="btnSaveCustomerAdd" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Lưu khách hàng</button>
+        <button type="submit" id="btnSaveCustomerAdd" class="btn btn-primary">
+          <i class="fas fa-save mr-1"></i>Lưu khách hàng
+        </button>
       </div>
     </form>
   </div>
 </div>
+

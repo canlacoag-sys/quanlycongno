@@ -8,7 +8,6 @@ $(function() {
     return raw;
   }
   function onlyDigits(s) { return (s || '').replace(/\D/g, ''); }
-
   function PhoneTagModule(cfg) {
     var $wrap   = $(cfg.wrap);
     var $input  = $(cfg.input);
@@ -16,11 +15,10 @@ $(function() {
     var $save   = $(cfg.save);
     var $dupMsg = $(cfg.dupMsg);
     var phones  = [];
+    var phoneStatus = {}; // {phone: 'ok'|'dup'}
 
     function updateSaveState() {
-      var hasDup = $wrap.find('.badge').filter(function () {
-        return $(this).data('status') === 'dup';
-      }).length > 0;
+      var hasDup = Object.values(phoneStatus).includes('dup');
       $save.prop('disabled', hasDup);
       if (hasDup) $dupMsg.removeClass('d-none'); else $dupMsg.addClass('d-none');
     }
@@ -30,100 +28,93 @@ $(function() {
       updateSaveState();
     }
 
-    function tagTemplate(number, status) {
-      var color = (status === 'dup') ? 'badge-danger' : 'badge-primary';
-      var title = (status === 'dup') ? 'Bị trùng trong hệ thống' : 'Hợp lệ';
-      return $('<span class="badge ' + color + ' d-inline-flex align-items-center px-2 py-1 mr-1 mb-1">' +
-               '<span class="mr-2">' + number + '</span>' +
-               '<button type="button" class="btn btn-sm btn-light ml-1 p-0 px-1 remove-phone" aria-label="Xoá" title="Xoá">' +
-                 '<i class="fas fa-times"></i>' +
-               '</button>' +
-             '</span>')
-        .attr('title', title)
-        .data('number', number)
-        .data('status', status);
-    }
-
-    function addPhoneTagSilent(number, status) {
-      if (!number) return;
-      if (phones.indexOf(number) !== -1) return;
-      phones.push(number);
-      tagTemplate(number, status || 'ok').insertBefore($input);
-      syncHidden();
-    }
-
-    function removePhone(number) {
-      var idx = phones.indexOf(number);
-      if (idx !== -1) phones.splice(idx, 1);
-      $wrap.find('.badge').filter(function () {
-        return $(this).data('number') === number;
-      }).remove();
-      syncHidden();
-    }
-
-    function checkDuplicate(number, excludeId) {
-      var url = window.APP.routes.check_phone;
-      var data = { phone: number };
-      if (excludeId) data.exclude_id = excludeId;
-      return $.getJSON(url, data);
-    }
-
-    function handleCandidate(candidate, excludeId) {
-      var n = normalizePhone(candidate);
-      if (!n) return;
-      var digits = onlyDigits(n);
-      if (digits.length !== 10 || n[0] !== '0') { $input.val(''); return; }
-      if (phones.indexOf(n) !== -1) { $input.val(''); return; }
-
-      checkDuplicate(n, excludeId).done(function (res) {
-        var status = (res && res.exists) ? 'dup' : 'ok';
-        addPhoneTagSilent(n, status);
-        $input.val('');
-      }).fail(function () {
-        addPhoneTagSilent(n, 'ok');
-        $input.val('');
+    function renderTags() {
+      $wrap.find('.badge').remove();
+      phones.forEach(function(phone) {
+        var status = phoneStatus[phone] || 'ok';
+        var badge = $('<span class="badge align-middle"></span>')
+          .addClass(status === 'dup' ? 'badge-danger' : 'badge-primary')
+          .css({'font-size':'1rem','display':'flex','align-items':'center','margin-right':'0.25rem','margin-bottom':'0'})
+          .text(phone);
+        var removeBtn = $('<button type="button" class="btn btn-sm btn-light ml-1 p-0 px-1 remove-phone" aria-label="Xoá" title="Xoá"><i class="fas fa-times"></i></button>');
+        removeBtn.click(function() {
+          var arr = phones.filter(function(p){return p!==phone;});
+          delete phoneStatus[phone];
+          phones = arr;
+          $hidden.val(arr.join(','));
+          renderTags();
+          updateSaveState();
+        });
+        badge.append(removeBtn);
+        $wrap.append(badge);
       });
     }
 
-    // Events
-    $input.on('input', function () {
-      var v = $input.val();
-      if (/[,\s;]/.test(v)) {
-        v.split(/[,\s;]+/).forEach(function (piece) {
-          var d = onlyDigits(piece);
-          if (d.length === 10) handleCandidate(piece, cfg.excludeId && $(cfg.excludeId).val());
-        });
-        $input.val('');
-        return;
+    function addPhoneTag(val, status) {
+      if (!val || phones.includes(val)) return;
+      phones.push(val);
+      phoneStatus[val] = status;
+      $hidden.val(phones.join(','));
+      renderTags();
+      updateSaveState();
+    }
+
+    // Check phone ngay khi nhập đủ 10 số
+    $input.on('input', function() {
+      var val = normalizePhone($(this).val());
+      if (val.length === 10 && /^0\d{9}$/.test(val) && !phones.includes(val)) {
+        $.get(window.APP.routes.check_phone, {phone: val}, function(resp){
+          addPhoneTag(val, resp.exists ? 'dup' : 'ok');
+        }, 'json');
+        $(this).val('');
+      } else if (val.length > 10) {
+        $(this).val('');
       }
-      var d = onlyDigits(v);
-      if (d.length === 10) handleCandidate(v, cfg.excludeId && $(cfg.excludeId).val());
     });
 
-    $input.on('keydown', function (e) {
-      if (e.key === 'Enter') {
+    // Xử lý khi nhấn Enter, Tab, dấu phẩy, dấu cách
+    $input.on('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ',' || e.key === ' ' || e.key === 'Tab') {
         e.preventDefault();
-        var d = onlyDigits($input.val());
-        if (d.length === 10) handleCandidate($input.val(), cfg.excludeId && $(cfg.excludeId).val());
-      }
-      if (e.key === 'Backspace' && !$input.val() && phones.length) {
-        removePhone(phones[phones.length - 1]);
+        var val = normalizePhone($(this).val());
+        if (val.length === 10 && /^0\d{9}$/.test(val) && !phones.includes(val)) {
+          $.get(window.APP.routes.check_phone, {phone: val}, function(resp){
+            addPhoneTag(val, resp.exists ? 'dup' : 'ok');
+          }, 'json');
+        } else {
+          if (val.length && !/^0\d{9}$/.test(val)) {
+            $dupMsg.removeClass('d-none').text('Số điện thoại phải đủ 10 số và bắt đầu bằng 0!');
+          }
+        }
+        $(this).val('');
       }
     });
 
-    $wrap.on('click', '.remove-phone', function () {
-      var number = $(this).closest('.badge').data('number');
-      if (number) removePhone(number);
+    // Xử lý khi blur (nếu người dùng paste số rồi click ra ngoài)
+    $input.on('blur', function() {
+      var val = normalizePhone($(this).val());
+      if (val.length === 10 && /^0\d{9}$/.test(val) && !phones.includes(val)) {
+        $.get(window.APP.routes.check_phone, {phone: val}, function(resp){
+          addPhoneTag(val, resp.exists ? 'dup' : 'ok');
+        }, 'json');
+        $(this).val('');
+      } else if (val.length) {
+        if (!/^0\d{9}$/.test(val)) {
+          $dupMsg.removeClass('d-none').text('Số điện thoại phải đủ 10 số và bắt đầu bằng 0!');
+        }
+        $(this).val('');
+      }
     });
 
     function resetFromCSV(csv) {
       phones = [];
+      phoneStatus = {};
       $wrap.find('.badge').remove();
       $input.val('');
       $hidden.val(csv || '');
       var raw = (csv || '').trim();
       if (!raw) { updateSaveState(); return; }
-      raw.split(',').map(normalizePhone).filter(Boolean).forEach(function (p) { addPhoneTagSilent(p, 'ok'); });
+      raw.split(',').map(normalizePhone).filter(Boolean).forEach(function (p) { addPhoneTag(p, 'ok'); });
       updateSaveState();
     }
 
@@ -158,7 +149,7 @@ $(function() {
     $('#' + prefix + 'Name').val(data.ten || '');
     $('#' + prefix + 'Address').val(data.diachi || '');
     if (prefix === 'edit' && window.phoneTagEdit) {
-    window.phoneTagEdit.resetFromCSV(data.dienthoai || '');
+      window.phoneTagEdit.resetFromCSV(data.dienthoai || '');
     }
   }
 
@@ -206,11 +197,10 @@ $(function() {
   // ================== Mở modal Sửa khách hàng ==================
   $('.btn-edit-customer').on('click', function() {
     var id = $(this).data('id');
-    console.log('ID khách hàng:', id); // kiểm tra giá trị id
-  if (!id || isNaN(id) || id <= 0) {
-    alert('ID khách hàng không hợp lệ!');
-    return;
-  }
+    if (!id || isNaN(id) || id <= 0) {
+      alert('ID khách hàng không hợp lệ!');
+      return;
+    }
     $.get(window.APP.routes.khachhang_get, {id: id}, function(res) {
       if (!res || !res.success) {
         alert(res && res.msg ? res.msg : 'Không thể tải dữ liệu khách hàng');
@@ -248,7 +238,6 @@ $(function() {
   // ================== Mở modal Xoá khách hàng ==================
   $('.btn-delete-customer').on('click', function() {
     var id = $(this).data('id');
-    // Gọi AJAX lấy thông tin khách hàng
     $.get(window.APP.routes.khachhang_get, {id: id}, function(res) {
       if (res && res.success) {
         $('#delCustomerName').text(res.data.ten || '');
@@ -274,7 +263,4 @@ $(function() {
       }
     }, 'json');
   });
-
-  // ================== Kiểm tra trùng số điện thoại realtime khi nhập tag ==================
-  // Đã tích hợp trong PhoneTagModule (status 'dup' sẽ disable nút lưu và hiện cảnh báo)
 });

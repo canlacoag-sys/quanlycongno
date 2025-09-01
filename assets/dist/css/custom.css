@@ -4,9 +4,6 @@
   display: none;   /* ẩn luôn cả hàng chi tiết khi chưa expand */
 }
 
-#phoneTags { cursor:text; }
-#phoneTags input { min-height: 28px; }
-#phoneTags .badge { font-size: 0.875rem; }
 
 /* Không để phần nội dung chi tiết phủ nền riêng */
 tr.collapse-detail .p-3 {
@@ -52,7 +49,7 @@ tr.collapse-detail .p-3 {
 
 /* Đảm bảo badge phone tag cùng chiều cao với input */
 #phoneTags .badge {
-  height: 38px;                /* hoặc 2.375rem nếu input lớn hơn */
+  height: 38px;
   display: flex;
   align-items: center;
   font-size: 1rem;
@@ -61,6 +58,45 @@ tr.collapse-detail .p-3 {
   margin-right: 0.25rem;
   margin-bottom: 0;
   box-sizing: border-box;
+}
+#phoneTagsAdd .badge {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  padding: 0 0.75rem;
+  border-radius: 0.25rem;
+  margin-right: 0.25rem;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+/* Đảm bảo đồng nhất layout badge phone tag cho cả #phoneTagsAdd (khachhang/add) và #orderPhoneTagsAdd (donhang/add) */
+#phoneTagsAdd .badge,
+#orderPhoneTagsAdd .badge {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  padding: 0 0.75rem;
+  border-radius: 0.25rem;
+  margin-right: 0.25rem;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+#phoneTagsAdd .badge-danger,
+#orderPhoneTagsAdd .badge-danger {
+  background: #dc3545 !important;
+  color: #fff !important;
+}
+
+#phoneTagsAdd .badge-primary,
+#orderPhoneTagsAdd .badge-primary {
+  background: #007bff !important;
+  color: #fff !important;
 }
 
 /* Căn giữa nút xoá trong badge */
@@ -72,28 +108,8 @@ tr.collapse-detail .p-3 {
   align-items: center;
   justify-content: center;
 }
-
-/* Đảm bảo icon phone cùng chiều cao input */
-#phoneTags .input-group-prepend .input-group-text {
-  height: 38px;
-  display: flex;
-  align-items: center;
-}
-
-#phoneTagsAdd .badge {
-  height: 38px;                /* hoặc 2.375rem nếu input lớn hơn */
-  display: flex;
-  align-items: center;
-  font-size: 1rem;
-  padding: 0 0.75rem;
-  border-radius: 0.25rem;
-  margin-right: 0.25rem;
-  margin-bottom: 0;
-  box-sizing: border-box;
-}
-
-/* Căn giữa nút xoá trong badge */
-#phoneTagsAdd .remove-phone {
+#phoneTagsAdd .remove-phone,
+#orderPhoneTagsAdd .remove-phone {
   margin-left: 0.5rem;
   padding: 0 0.25rem;
   height: 28px;
@@ -103,7 +119,38 @@ tr.collapse-detail .p-3 {
 }
 
 /* Đảm bảo icon phone cùng chiều cao input */
+#phoneTags .input-group-prepend .input-group-text,
 #phoneTagsAdd .input-group-prepend .input-group-text {
   height: 38px;
   display: flex;
   align-items: center;
+}
+#phoneTagsAdd .input-group-prepend .input-group-text,
+#orderPhoneTagsAdd .input-group-prepend .input-group-text {
+  height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+#phoneTags { cursor:text; }
+#phoneTags input { min-height: 28px; }
+#phoneTags .badge { font-size: 0.875rem; }
+
+/* Đồng nhất chiều rộng input ẩn phone tag cho modal đơn hàng và khách hàng */
+#orderPhonesHiddenAdd,
+#phonesHiddenAdd {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  display: block !important;
+  /* Nếu muốn ẩn hoàn toàn, giữ lại cho form submit */
+  height: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  position: absolute !important;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  opacity: 0;
+}

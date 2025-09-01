@@ -142,6 +142,36 @@ function resetProductForm(prefix) {
       }
     }, 'json');
   });
+
+  // Hiển thị label động cho checkbox chiết khấu khi bật/tắt (hỗ trợ Bootstrap Switch)
+  function updateChietKhauLabel($checkbox, $label) {
+    if ($checkbox.is(':checked')) {
+      $label.text('Bánh có chiết khấu');
+    } else {
+      $label.text('Bánh không có chiết khấu');
+    }
+  }
+
+  // Khởi tạo lại label khi mở modal Thêm sản phẩm
+  $('#addProductModal').on('shown.bs.modal', function() {
+    var $ckAdd = $('#addCoChietKhau');
+    var $lbAdd = $('label[for="addCoChietKhau"]');
+    updateChietKhauLabel($ckAdd, $lbAdd);
+    // Đảm bảo sự kiện không bị gán nhiều lần
+    $ckAdd.off('switchChange.bootstrapSwitch._label').on('switchChange.bootstrapSwitch._label', function() {
+      updateChietKhauLabel($ckAdd, $lbAdd);
+    });
+  });
+
+  // Khởi tạo lại label khi mở modal Sửa sản phẩm
+  $('#editProductModal').on('shown.bs.modal', function() {
+    var $ckEdit = $('#coChietKhau');
+    var $lbEdit = $('label[for="coChietKhau"]');
+    updateChietKhauLabel($ckEdit, $lbEdit);
+    $ckEdit.off('switchChange.bootstrapSwitch._label').on('switchChange.bootstrapSwitch._label', function() {
+      updateChietKhauLabel($ckEdit, $lbEdit);
+    });
+  });
 });
 
 $(function() {

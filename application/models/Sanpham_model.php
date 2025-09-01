@@ -64,4 +64,18 @@ class Sanpham_model extends CI_Model
         if ($ignore_id > 0) $this->db->where('id !=', $ignore_id);
         return $this->db->count_all_results('sanpham') > 0;
     }
+
+    // Autocomplete sản phẩm theo mã, tên, filter chiết khấu
+    public function autocomplete($term, $chietkhau = '') {
+        if ($chietkhau !== '' && $chietkhau !== null) {
+            $this->db->where('co_chiet_khau', (int)$chietkhau);
+        }
+        if ($term) {
+            $this->db->group_start()
+                ->like('ma_sp', $term)
+                ->or_like('ten_sp', $term)
+                ->group_end();
+        }
+        return $this->db->limit(20)->get('sanpham')->result();
+    }
 }

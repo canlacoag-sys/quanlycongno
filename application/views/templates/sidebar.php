@@ -32,11 +32,28 @@
 			<p>Sản phẩm</p>
 		  </a>
 		</li>
-		<li class="nav-item">
-		  <a href="<?= site_url('donhang') ?>" class="nav-link <?= ($active=='donhang'?'active':'') ?>">
-			<i class="nav-icon fas fa-receipt"></i>
-			<p>Đơn hàng</p>
+		<li class="nav-item <?= ($active ?? '') == 'donhang' ? 'menu-open' : '' ?>">
+		  <a href="#" class="nav-link <?= ($active ?? '') == 'donhang' ? 'active' : '' ?>">
+			<i class="nav-icon fas fa-shopping-cart"></i>
+			<p>
+			  Đơn hàng
+			  <i class="right fas fa-angle-left"></i>
+			</p>
 		  </a>
+		  <ul class="nav nav-treeview">
+			<li class="nav-item">
+			  <a href="<?= site_url('donhang'); ?>" class="nav-link <?= ($title ?? '') == 'CHI TIẾT ĐƠN HÀNG' ? 'active' : '' ?>">
+				<i class="far fa-circle nav-icon"></i>
+				<p>Danh sách đơn hàng</p>
+			  </a>
+			</li>
+			<li class="nav-item">
+			  <a href="<?= site_url('donhang/add'); ?>" class="nav-link <?= ($title ?? '') == 'Thêm đơn hàng' ? 'active' : '' ?>">
+				<i class="far fa-circle nav-icon"></i>
+				<p>Thêm đơn hàng</p>
+			  </a>
+			</li>
+		  </ul>
 		</li>
 		<li class="nav-item">
 		  <a href="<?= site_url('congno') ?>" class="nav-link <?= ($active=='congno'?'active':'') ?>">

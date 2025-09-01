@@ -202,7 +202,7 @@ class Khachhang extends CI_Controller
 
     public function autocomplete(): void
     {
-        $term = trim((string)$this->input->get('q', true));
+        $term = trim((string)($this->input->get('term', true) ?? $this->input->get('q', true)));
         $rs = $this->Khachhang_model->autocomplete($term);
         $out = [];
         foreach ($rs as $row) $out[] = ['id'=>(int)$row->id,'ten'=>$row->ten,'dienthoai'=>$row->dienthoai];

@@ -57,4 +57,12 @@ $route['sanpham/delete/(:num)'] = 'sanpham/delete/$1';
 $route['khachhang/edit/(:num)'] = 'khachhang/edit/$1';
 $route['khachhang/delete/(:num)'] = 'khachhang/delete/$1';
 $route['khachhang/ajax_add'] = 'khachhang/ajax_add';
+$route['donhang/add'] = 'donhang/add';
+$route['donhang/autocomplete_khachhang'] = 'donhang/autocomplete_khachhang';
+$route['donhang/autocomplete_sanpham'] = 'donhang/autocomplete_sanpham';
+$route['donhang/add_khachhang_ajax'] = 'donhang/add_khachhang_ajax';
+$route['donhang/danhsachdonhang'] = 'donhang/danhsachdonhang';
+$route['donhang/themdonhang'] = 'donhang/themdonhang';
+$route['donhang/suadonhang/(:num)'] = 'donhang/suadonhang/$1';
+$route['donhang/edit/(:num)'] = 'donhang/edit/$1';
 
