@@ -28,6 +28,7 @@ class Khachle_model extends CI_Model
 
     // Thêm chi tiết đơn hàng vào bảng khachle_donhang
     public function insert_chitiet($data) {
+        // Đảm bảo các trường giảm giá được insert vào DB
         $this->db->insert('khachle_donhang', $data);
     }
 

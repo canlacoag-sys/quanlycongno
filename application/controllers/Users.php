@@ -1,6 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+/**
+ * @property Users_model $Users_model
+ * @property Khachhang_model $Khachhang_model
+ * @property CI_Session $session
+ * @property CI_Input $input
+ * @property CI_Pagination $pagination
+ * @property CI_Output $output
+ */
 class Users extends CI_Controller {
     public function __construct() {
         parent::__construct();

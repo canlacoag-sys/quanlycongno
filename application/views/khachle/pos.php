@@ -1,6 +1,5 @@
 <?php
-// ...existing code...
-// Thêm đoạn lấy dữ liệu đơn khách lẻ, chi tiết, sản phẩm
+// Chuẩn bị dữ liệu đúng biến
 $donhang = isset($row) ? $row : null;
 $chitiet = isset($chitiet) ? $chitiet : [];
 $sanpham = isset($sanpham) ? $sanpham : [];
@@ -216,7 +215,7 @@ function get_loai_banh_tooltip($ma_sp_str, $sanpham_map) {
       </div>
       <div class="right-info">
         <div class="date">Ngày <?= isset($donhang->ngaylap) ? date('d/m/Y H:i', strtotime($donhang->ngaylap)) : '' ?></div>
-        <div>Mã Đơn: <?= htmlspecialchars($donhang->madon_id ?? $donhang->id) ?></div>
+        <div>Mã Đơn: <?= htmlspecialchars($donhang->madon_id ?? $donhang->id ?? '') ?></div>
         <div>Liên 1: Giao khách hàng</div>
       </div>
     </div>
@@ -233,10 +232,10 @@ function get_loai_banh_tooltip($ma_sp_str, $sanpham_map) {
       <thead>
         <tr>
           <th>STT</th>
-          <th>Mã SP</th>
-          <th>Loại bánh</th>
+          <th>Mã bánh</th>
           <th>SL</th>
           <th class="text-right">Đơn giá</th>
+          <th class="text-right">Giảm giá</th>
           <th class="text-right">Thành tiền</th>
         </tr>
       </thead>
@@ -245,9 +244,20 @@ function get_loai_banh_tooltip($ma_sp_str, $sanpham_map) {
         <tr>
           <td><?= $i++ ?></td>
           <td><?= htmlspecialchars($ct->ma_sp) ?></td>
-          <td><?= get_loai_banh_tooltip($ct->ma_sp, $sanpham_map) ?></td>
           <td><?= $ct->so_luong ?></td>
           <td class="text-right"><?= number_format($ct->don_gia) ?></td>
+          <td class="text-right">
+            <?php
+              // Hiển thị giảm giá cho từng dòng nếu có
+              if (isset($ct->giamgiadg_loai) && $ct->giamgiadg_loai === 'phantram' && $ct->giamgiadg_giatri > 0) {
+                echo '-' . intval($ct->giamgiadg_giatri) . '%';
+              } elseif (isset($ct->giamgiadg_loai) && $ct->giamgiadg_loai === 'tienmat' && $ct->giamgiadg_giatri > 0) {
+                echo '-' . number_format($ct->giamgiadg_giatri) . 'đ';
+              } else {
+                echo '—';
+              }
+            ?>
+          </td>
           <td class="text-right"><?= number_format($ct->thanh_tien) ?></td>
         </tr>
         <?php endforeach; ?>
@@ -277,4 +287,5 @@ function get_loai_banh_tooltip($ma_sp_str, $sanpham_map) {
   <div class="thank">Xin cảm ơn Quý khách!</div>
 </div>
 </body>
+</html>
 </html>

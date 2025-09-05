@@ -85,6 +85,7 @@
                         <span class="giamgia-detail text-muted small"></span>
                         <input type="hidden" name="giamgiadg_loai[]" class="giamgiadg_loai" value="none">
                         <input type="hidden" name="giamgiadg_giatri[]" class="giamgiadg_giatri" value="0">
+                        <input type="hidden" name="giamgiadg_thanhtien[]" class="giamgiadg_thanhtien" value="0">
                       </div>
                     </td>
                     <td>

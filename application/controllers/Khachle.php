@@ -1,5 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+/**
+ * @property Sanpham_model $Sanpham_model
+ * @property Khachle_model $Khachle_model
+ * @property CI_Session $session
+ * @property CI_Input $input
+ * @property CI_Pagination $pagination
+ * @property CI_Output $output
+ */
 
 class Khachle extends CI_Controller {
     public function __construct() {
@@ -86,6 +94,9 @@ class Khachle extends CI_Controller {
             $so_luong = $this->input->post('so_luong');
             $don_gia = $this->input->post('don_gia');
             $thanh_tien = $this->input->post('thanh_tien');
+            $giamgiadg_loai = $this->input->post('giamgiadg_loai');
+            $giamgiadg_giatri = $this->input->post('giamgiadg_giatri');
+            $giamgiadg_thanhtien = $this->input->post('giamgiadg_thanhtien');
             if (is_array($ma_sp)) {
                 for($i=0;$i<count($ma_sp);$i++) {
                     if(!empty($ma_sp[$i]) && $so_luong[$i] > 0) {
@@ -94,7 +105,10 @@ class Khachle extends CI_Controller {
                             'ma_sp' => $ma_sp[$i],
                             'so_luong' => $so_luong[$i],
                             'don_gia' => $don_gia[$i],
-                            'thanh_tien' => $thanh_tien[$i]
+                            'thanh_tien' => $thanh_tien[$i],
+                            'giamgiadg_loai' => isset($giamgiadg_loai[$i]) ? $giamgiadg_loai[$i] : 'none',
+                            'giamgiadg_giatri' => isset($giamgiadg_giatri[$i]) ? $giamgiadg_giatri[$i] : 0,
+                            'giamgiadg_thanhtien' => isset($giamgiadg_thanhtien[$i]) ? $giamgiadg_thanhtien[$i] : $don_gia[$i]
                         ]);
                     }
                 }

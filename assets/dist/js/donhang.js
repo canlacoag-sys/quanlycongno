@@ -184,9 +184,13 @@ $(function() {
     defaultDate: moment()
   });
 
-  // Nút in POS
+  // Nút in POS: lấy id từ input ẩn hoặc thuộc tính data-id
   $("#btnInPOS").click(function() {
-    var id = /* lấy id đơn hàng vừa lưu */;
-    window.open('/donhang/pos/' + id, '_blank');
+    var id = $("#donhang_id").val() || $(this).data('id');
+    if (id) {
+      window.open('/donhang/pos/' + id, '_blank');
+    } else {
+      alert('Không tìm thấy ID đơn hàng để in POS!');
+    }
   });
 });

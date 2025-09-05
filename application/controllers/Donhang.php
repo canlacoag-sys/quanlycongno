@@ -3,6 +3,8 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * @property Khachhang_model $Khachhang_model
+ * @property Donhang_model $Donhang_model
+ * @property Sanpham_model $Sanpham_model
  * @property CI_Session $session
  * @property CI_Input $input
  * @property CI_Pagination $pagination
