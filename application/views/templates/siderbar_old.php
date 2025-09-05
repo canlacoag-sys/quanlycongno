@@ -59,7 +59,7 @@ $khachle_active = ($active ?? '') === 'khachle' || ($active ?? '') === 'khachle/
 		  <a href="javascript:void(0);" class="nav-link<?= $khachle_active ? ' active' : '' ?> toggle-khachle-menu">
 			<i class="nav-icon fas fa-user-tag"></i>
 			<p>
-			  Bán lẻ (khách lẻ)
+			  Bán sỉ (khách sỉ)
 			  <i class="right fas fa-angle-<?= $khachle_active ? 'down' : 'left' ?>" id="khachleMenuArrow"></i>
 			</p>
 		  </a>

@@ -1,0 +1,14 @@
+CREATE TABLE `users` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(64) NOT NULL UNIQUE,
+  `password` VARCHAR(128) NOT NULL,
+  `role` ENUM('admin','super') NOT NULL DEFAULT 'super',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `users`
+  ADD COLUMN `username` VARCHAR(64) NOT NULL UNIQUE AFTER `id`,
+  ADD COLUMN `password` VARCHAR(128) NOT NULL AFTER `username`,
+  ADD COLUMN `role` ENUM('admin','super') NOT NULL DEFAULT 'super' AFTER `password`,
+  ADD COLUMN `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP AFTER `role`;

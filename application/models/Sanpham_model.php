@@ -18,6 +18,7 @@ class Sanpham_model extends CI_Model
                 ->or_like('ten_sp', $keyword)
                 ->group_end();
         }
+        // Nếu muốn filter combo, thêm điều kiện tại đây (tuỳ nhu cầu)
         $this->db->order_by('id', 'DESC');
         if ($limit) $this->db->limit($limit, $offset);
         return $this->db->get('sanpham')->result();
@@ -42,14 +43,16 @@ class Sanpham_model extends CI_Model
         return $this->db->get_where('sanpham', ['id' => $id])->row();
     }
 
-    // Thêm sản phẩm
+    // Thêm sản phẩm (có trường combo)
     public function insert($data) {
+        // $data phải có key 'combo' (0 hoặc 1)
         $this->db->insert('sanpham', $data);
         return $this->db->insert_id();
     }
 
-    // Sửa sản phẩm
+    // Sửa sản phẩm (có trường combo)
     public function update($id, $data) {
+        // $data phải có key 'combo' (0 hoặc 1) nếu muốn cập nhật
         $this->db->where('id', $id)->update('sanpham', $data);
     }
 

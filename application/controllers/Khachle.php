@@ -1,0 +1,185 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Khachle extends CI_Controller {
+    public function __construct() {
+        parent::__construct();
+        $this->load->model('Khachle_model');
+        $this->load->helper(['url', 'form']);
+        $this->load->library('session');
+        if(!$this->session->userdata('user_id')) redirect('auth/login');
+    }
+
+    private function render(string $view, array $data = []) {
+        $data['title']  = $data['title']  ?? 'CHI TIẾT KHÁCH LẺ';
+        $data['active'] = $data['active'] ?? 'khachle';
+        $this->load->view('templates/header',  $data);
+        $this->load->view('templates/navbar',  $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view($view,               $data);
+        $this->load->view('templates/footer');
+    }
+
+    // Danh sách đơn khách lẻ
+    public function index() {
+        $keyword = $this->input->get('keyword', true);
+        $list = $this->Khachle_model->get_all($keyword);
+        $data = [
+            'list' => $list,
+            'keyword' => $keyword,
+        ];
+        $this->render('khachle/index', $data);
+    }
+
+    // Thêm đơn khách lẻ
+    public function add() {
+        if ($this->input->method() === 'post') {
+            // Tạo mã đơn khách lẻ tự động nếu chưa có
+            $madon_id = $this->input->post('madon_id', true);
+            if (!$madon_id) {
+                $madon_id = 'KL' . date('YmdHis');
+            }
+            $data = [
+                'madon_id' => $madon_id,
+                'ten' => $this->input->post('ten', true),
+                'dienthoai' => $this->input->post('dienthoai', true),
+                'diachi' => $this->input->post('diachi', true),
+                'ngaylap' => $this->input->post('ngaylap', true) ?: date('Y-m-d H:i:s'),
+                'tongtien' => $this->input->post('tongtien', true),
+                'giamgiatt_loai' => $this->input->post('giamgiatt_loai', true) ?: 'none',
+                'giamgiatt_giatri' => $this->input->post('giamgiatt_giatri', true) ?: 0,
+                'giamgiatt_thanhtien' => $this->input->post('giamgiatt_thanhtien', true) ?: 0,
+                'giao_hang' => $this->input->post('giao_hang', true),
+                'nguoi_nhan' => $this->input->post('nguoi_nhan', true),
+                'ship' => $this->input->post('ship', true),
+                'tongcong_tien' => $this->input->post('tongcong_tien', true),
+                'ghi_chu' => $this->input->post('ghi_chu', true),
+            ];
+
+            $ship = $this->input->post('ship', true);
+            $tongcong_tien = $this->input->post('tongcong_tien', true);
+
+            // Chuyển về số nguyên
+            $ship = $ship ? preg_replace('/[^0-9]/', '', $ship) : '0';
+            $tongcong_tien = $tongcong_tien ? preg_replace('/[^0-9]/', '', $tongcong_tien) : '0';
+
+            $data = [
+                'madon_id' => $madon_id,
+                'ten' => $this->input->post('ten', true),
+                'dienthoai' => $this->input->post('dienthoai', true),
+                'diachi' => $this->input->post('diachi', true),
+                'ngaylap' => $this->input->post('ngaylap', true) ?: date('Y-m-d H:i:s'),
+                'tongtien' => $this->input->post('tongtien', true),
+                'giamgiatt_loai' => $this->input->post('giamgiatt_loai', true) ?: 'none',
+                'giamgiatt_giatri' => $this->input->post('giamgiatt_giatri', true) ?: 0,
+                'giamgiatt_thanhtien' => $this->input->post('giamgiatt_thanhtien', true) ?: 0,
+                'giao_hang' => $this->input->post('giao_hang', true),
+                'nguoi_nhan' => $this->input->post('nguoi_nhan', true),
+                'ship' => $ship,
+                'tongcong_tien' => $tongcong_tien,
+                'ghi_chu' => $this->input->post('ghi_chu', true),
+            ];
+            $khachle_id = $this->Khachle_model->insert($data);
+
+            // Thêm chi tiết đơn hàng
+            $ma_sp = $this->input->post('ma_sp');
+            $so_luong = $this->input->post('so_luong');
+            $don_gia = $this->input->post('don_gia');
+            $thanh_tien = $this->input->post('thanh_tien');
+            if (is_array($ma_sp)) {
+                for($i=0;$i<count($ma_sp);$i++) {
+                    if(!empty($ma_sp[$i]) && $so_luong[$i] > 0) {
+                        $this->Khachle_model->insert_chitiet([
+                            'khachle_id' => $khachle_id,
+                            'ma_sp' => $ma_sp[$i],
+                            'so_luong' => $so_luong[$i],
+                            'don_gia' => $don_gia[$i],
+                            'thanh_tien' => $thanh_tien[$i]
+                        ]);
+                    }
+                }
+            }
+            // Chuyển hướng sang trang in POS sau khi lưu thành công
+            redirect('khachle/pos/' . $khachle_id);
+        }
+        // Lấy danh sách sản phẩm để chọn
+        $data = [
+            'sanpham' => $this->db->get('sanpham')->result(),
+        ];
+        $this->render('khachle/add', $data);
+    }
+
+    // Sửa đơn khách lẻ
+    public function edit($id) {
+        $row = $this->Khachle_model->get_by_id($id);
+        $chitiet = $this->Khachle_model->get_chitiet($id);
+        if (!$row) show_404();
+
+        if ($this->input->method() === 'post') {
+            $data = [
+                'madon_id' => $this->input->post('madon_id', true),
+                'ten' => $this->input->post('ten', true),
+                'dienthoai' => $this->input->post('dienthoai', true),
+                'diachi' => $this->input->post('diachi', true),
+                'ngaylap' => $this->input->post('ngaylap', true) ?: date('Y-m-d H:i:s'),
+                'tongtien' => $this->input->post('tongtien', true),
+                'giamgiatt_loai' => $this->input->post('giamgiatt_loai', true) ?: 'none',
+                'giamgiatt_giatri' => $this->input->post('giamgiatt_giatri', true) ?: 0,
+                'giamgiatt_thanhtien' => $this->input->post('giamgiatt_thanhtien', true) ?: 0,
+                'giao_hang' => $this->input->post('giao_hang', true),
+                'nguoi_nhan' => $this->input->post('nguoi_nhan', true),
+                'ship' => $this->input->post('ship', true),
+                'tongcong_tien' => $this->input->post('tongcong_tien', true),
+                'ghi_chu' => $this->input->post('ghi_chu', true),
+            ];
+            $this->Khachle_model->update($id, $data);
+
+            // Xoá chi tiết cũ và thêm lại
+            $this->db->where('khachle_id', $id)->delete('khachle_donhang');
+            $ma_sp = $this->input->post('ma_sp');
+            $so_luong = $this->input->post('so_luong');
+            $don_gia = $this->input->post('don_gia');
+            $thanh_tien = $this->input->post('thanh_tien');
+            if (is_array($ma_sp)) {
+                for($i=0;$i<count($ma_sp);$i++) {
+                    if(!empty($ma_sp[$i]) && $so_luong[$i] > 0) {
+                        $this->Khachle_model->insert_chitiet([
+                            'khachle_id' => $id,
+                            'ma_sp' => $ma_sp[$i],
+                            'so_luong' => $so_luong[$i],
+                            'don_gia' => $don_gia[$i],
+                            'thanh_tien' => $thanh_tien[$i]
+                        ]);
+                    }
+                }
+            }
+            redirect('khachle');
+        }
+        $data = [
+            'row' => $row,
+            'chitiet' => $chitiet,
+            'sanpham' => $this->db->get('sanpham')->result(),
+        ];
+        $this->render('khachle/edit', $data);
+    }
+
+    // Xoá đơn khách lẻ
+    public function delete($id) {
+        $this->db->where('id', $id)->delete('khachle');
+        $this->db->where('khachle_id', $id)->delete('khachle_donhang');
+        redirect('khachle');
+    }
+
+    // In đơn khách lẻ (POS)
+    public function pos($id) {
+        // Hiển thị biên nhận POS cho đơn khách lẻ
+        $row = $this->Khachle_model->get_by_id($id);
+        $chitiet = $this->Khachle_model->get_chitiet($id);
+        $sanpham = $this->db->get('sanpham')->result();
+        $this->load->view('khachle/pos', [
+            'row' => $row,
+            'chitiet' => $chitiet,
+            'sanpham' => $sanpham
+        ]);
+    }
+}

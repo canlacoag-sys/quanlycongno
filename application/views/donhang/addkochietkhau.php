@@ -1,27 +1,15 @@
 <?php $this->load->view('khachhang/add'); ?>
 <?php $this->load->helper('money'); ?>
 <div class="content-wrapper">
-  <section class="content-header">
+
+<section class="content">
     <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1><i class="fas fa-plus"></i> Thêm đơn hàng</h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="<?= site_url('donhang') ?>">Đơn hàng</a></li>
-            <li class="breadcrumb-item active">Thêm đơn hàng</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="content">
-    <div class="container-fluid">
+        <br />
       <div class="card shadow-sm">
         <div class="card-body">
-          <form method="post" action="<?= site_url('donhang/add'); ?>" id="formDonHang">
-            <input type="hidden" name="co_chiet_khau" value="">
+          <form method="post" action="<?= site_url('donhang/addkochietkhau'); ?>" id="formDonHang">
+            <input type="hidden" name="co_chiet_khau" value="0">
+            <input type="hidden" name="tongtien" id="tongtien" value="0">
             <!-- Khách hàng -->
             <div class="form-group row align-items-center mb-4">
               <label class="col-sm-2 col-form-label font-weight-bold" for="khachhang_autocomplete">Khách hàng</label>
@@ -36,32 +24,13 @@
               </div>
             </div>
             <hr>
-            <!-- Chọn loại bánh -->
-            <div class="form-group row align-items-center mb-2">
-              <label class="col-sm-2 col-form-label font-weight-bold" for="chietkhau">Loại bánh</label>
-              <div class="col-sm-10">
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="chietkhau" id="ckAllSP" value="" checked>
-                  <label class="form-check-label" for="ckAllSP">Tất cả</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="chietkhau" id="ckCoSP" value="1">
-                  <label class="form-check-label" for="ckCoSP">Có chiết khấu</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="chietkhau" id="ckKhongSP" value="0">
-                  <label class="form-check-label" for="ckKhongSP">Không chiết khấu</label>
-                </div>
-              </div>
-            </div>
-            <hr>
             <!-- Chi tiết sản phẩm -->
             <div class="mb-2 font-weight-bold">Chi tiết sản phẩm</div>
             <div class="table-responsive">
               <table class="table table-bordered mb-0" id="tableSanPham">
                 <thead>
                   <tr>
-                    <th style="width:220px;">Mã SP</th>
+                    <th style="width:280px;">Mã bánh</th>
                     <th style="max-width:300px;">Tên sản phẩm</th>
                     <th style="width:120px;" class="text-right">Đơn giá</th>
                     <th style="width:70px;">Số lượng</th>
@@ -73,22 +42,22 @@
                   <tr>
                     <td>
                       <div class="d-flex align-items-center">
-                        <input type="text" name="ma_sp[]" class="form-control ma_sp_combo" style="min-width:120px;width:170px;" autocomplete="off" placeholder="VD: 5,7,24">
+                        <input type="text" name="ma_sp[]" class="form-control ma_sp_combo" style="min-width:120px;width:250px;" autocomplete="off" placeholder="VD: 5,7,24">
                         <span class="badge badge-info d-none tooltip-combo ml-2" style="cursor:pointer;min-width:30px;"></span>
                       </div>
                     </td>
                     <td>
-                      <div class="ten_sp_combo small text-dark" style="max-width:260px;white-space:pre-line;overflow-x:auto;"></div>
+                      <div class="ten_sp_combo small text-dark" style="max-width:300px;white-space:pre-line;overflow-x:auto;"></div>
                     </td>
                     <td>
                       <div class="font-weight-bold text-right don_gia_show" style="font-size:1.15em"><?= money_vnd(0) ?></div>
                       <input type="hidden" name="don_gia[]" class="don_gia" readonly>
                     </td>
                     <td>
-                      <input type="number" name="so_luong[]" class="form-control so_luong" min="1" value="1" required style="width:70px;">
+                      <input type="number" name="so_luong[]" class="form-control text-center so_luong" min="1" value="1" required style="width:70px;">
                     </td>
                     <td>
-                      <div class="font-weight-bold text-danger text-right thanh_tien_show" style="font-size:1.25em"><?= money_vnd(0) ?></div>
+                      <div class="font-weight-bold text-right thanh_tien_show" style="font-size:1.25em"><?= money_vnd(0) ?></div>
                       <input type="hidden" name="thanh_tien[]" class="thanh_tien" readonly>
                     </td>
                     <td>
@@ -104,9 +73,9 @@
             <div class="row align-items-center">
               <div class="col-md-8">
                 <div class="form-group row">
-                  <label class="col-sm-3 col-form-label font-weight-bold" for="giaoHangInput">Giao hàng</label>
+                  <label class="col-sm-3 col-form-label font-weight-bold" for="giaoHangInput">Người giao hàng</label>
                   <div class="col-sm-9">
-                    <input type="text" class="form-control" id="giaoHangInput" name="giao_hang" placeholder="Thông tin giao hàng">
+                    <input type="text" class="form-control" id="giaoHangInput" name="giao_hang" placeholder="Thông tin người giao hàng">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -432,13 +401,15 @@ $(function() {
   function numberFormat(x) {
     return Number(x).toLocaleString('vi-VN');
   }
+  // Lọc chỉ lấy sản phẩm không chiết khấu
   function getSanPhamByMa(ma) {
     ma = ma.trim();
     for (let i = 0; i < dsSanPham.length; i++) {
-      if (dsSanPham[i].ma_sp == ma) return dsSanPham[i];
+      if (dsSanPham[i].ma_sp == ma && dsSanPham[i].co_chiet_khau == 0) return dsSanPham[i];
     }
     return null;
   }
+
   function updateCombo(tr) {
     var ma = tr.find('.ma_sp_combo').val();
     var soLuong = parseInt(tr.find('.so_luong').val()) || 1;
@@ -446,13 +417,33 @@ $(function() {
     var tooltipList = [], nameList = [];
     var tongGia = 0, hasError = false;
 
+    // Kiểm tra nếu là sản phẩm combo (combo=1) thì chỉ cho phép 1 mã
+    let comboFound = false, comboError = false;
+    arrMa.forEach(function(m) {
+      var sp = dsSanPham.find(x => x.ma_sp == m && x.co_chiet_khau == 0);
+      if (sp && sp.combo == 1) comboFound = true;
+      if (sp && sp.combo == 1 && arrMa.length > 1) comboError = true;
+    });
+    if (comboError) {
+      tr.find('.ten_sp_combo').html('<span class="text-danger">Chỉ được nhập 1 mã cho sản phẩm combo!</span>');
+      tr.find('.don_gia_show').html('0 <span class="donvi">đ</span>');
+      tr.find('.don_gia').val(0);
+      tr.find('.thanh_tien_show').html('0 <span class="donvi">đ</span>');
+      tr.find('.thanh_tien').val(0);
+      tr.find('.tooltip-combo').html('Lỗi mã!').removeClass('d-none badge-info').addClass('badge-danger');
+      // Disable submit
+      $('#formDonHang button[type=submit]').prop('disabled', true);
+      capNhatTong();
+      return;
+    }
+
     arrMa.forEach(function(m) {
       var sp = getSanPhamByMa(m);
       if (sp) {
         var line = sp.ten_sp + ' (' + numberFormat(sp.gia) + ')';
         tooltipList.push(line); nameList.push(line); tongGia += Number(sp.gia);
       } else {
-        var err = '<span class="text-danger">Mã ['+m+'] không có!</span>';
+        var err = '<span class="text-danger">Mã ['+m+'] không có hoặc không phải bánh có chiết khấu!</span>';
         tooltipList.push(err); nameList.push(err); hasError = true;
       }
     });
@@ -460,48 +451,64 @@ $(function() {
     var tooltip = tr.find('.tooltip-combo');
     if (arrMa.length > 0 && hasError) {
       tooltip.html('Lỗi mã!').removeClass('d-none badge-info').addClass('badge-danger');
-    } else if (arrMa.length > 1) {
-      tooltip.html(arrMa.length + ' mã').removeClass('d-none badge-danger').addClass('badge-info');
+      // Disable submit nếu có lỗi mã
+      $('#formDonHang button[type=submit]').prop('disabled', true);
+      // Nếu có lỗi, không tính tổng tiền cho dòng này
+      tongGia = 0;
+    } else if (comboFound && arrMa.length === 1) {
+      tooltip.html('Combo').removeClass('d-none badge-danger').addClass('badge-info');
+      $('#formDonHang button[type=submit]').prop('disabled', false);
+    } else if (arrMa.length === 1 && !comboFound && !hasError) {
+      tooltip.html('Cái').removeClass('d-none badge-danger').addClass('badge-info');
+      $('#formDonHang button[type=submit]').prop('disabled', false);
+    } else if (arrMa.length > 1 && !hasError) {
+      tooltip.html('Hộp ' + arrMa.length + ' bánh').removeClass('d-none badge-danger').addClass('badge-info');
+      $('#formDonHang button[type=submit]').prop('disabled', false);
     } else {
       tooltip.addClass('d-none');
+      $('#formDonHang button[type=submit]').prop('disabled', false);
     }
 
     tr.find('.ten_sp_combo').html(nameList.join('<br>'));
-    tr.find('.don_gia_show').html(moneyVndJS(tongGia));
+    tr.find('.don_gia_show').html(numberFormat(tongGia) + ' <span class="donvi">đ</span>');
     tr.find('.don_gia').val(tongGia);
 
-    var thanhTien = tongGia * soLuong;
-    tr.find('.thanh_tien_show').html(moneyVndJS(thanhTien));
+    // Nếu có lỗi mã thì thành tiền = 0
+    var thanhTien = hasError ? 0 : tongGia * soLuong;
+    tr.find('.thanh_tien_show').html(numberFormat(thanhTien) + ' <span class="donvi">đ</span>');
     tr.find('.thanh_tien').val(thanhTien);
 
+    // Luôn cập nhật tổng tiền sau mỗi lần update dòng
     capNhatTong();
   }
-  function moneyVndJS(amount) {
-    return numberFormat(amount) + ' <span class="donvi">đ</span>';
-  }
+
   function capNhatTong() {
     var tong = 0;
     $('#tableSanPham tbody tr').each(function() {
-      tong += Number($(this).find('.thanh_tien').val() || 0);
+      var val = Number($(this).find('.thanh_tien').val() || 0);
+      tong += val;
     });
-    $('#tongTienView').html('<span>' + moneyVndJS(tong) + '</span>');
+    $('#tongTienView').html('<span>' + numberFormat(tong) + ' <span class="donvi">đ</span></span>');
     $('#tongtien').val(tong);
-    // Bỏ cập nhật con nợ
-    // var datra = Number($('#traTruocInput').val() || 0);
-    // var conno = tong - datra;
-    // if (conno < 0) conno = 0;
-    // $('#conNoView').text(numberFormat(conno));
-    // $('#conno').val(conno);
   }
-  // Nhập mã combo
-  $('#tableSanPham').on('input', '.ma_sp_combo', function(){
+
+  // Đảm bảo khi có lỗi ở bất kỳ dòng nào thì không cho submit
+  function checkAllRowsForError() {
+    var hasError = false;
+    $('#tableSanPham tbody tr').each(function() {
+      var tooltip = $(this).find('.tooltip-combo');
+      if (tooltip.hasClass('badge-danger') && !tooltip.hasClass('d-none')) {
+        hasError = true;
+      }
+    });
+    $('#formDonHang button[type=submit]').prop('disabled', hasError);
+  }
+
+  // Gọi lại checkAllRowsForError mỗi khi thay đổi dòng
+  $('#tableSanPham').on('input', '.ma_sp_combo, .so_luong', function(){
     updateCombo($(this).closest('tr'));
+    checkAllRowsForError();
   });
-  // Thay đổi số lượng
-  $('#tableSanPham').on('input', '.so_luong', function(){
-    updateCombo($(this).closest('tr'));
-  });
-  // Thêm dòng mới
   $('#btnThemDong').off('click').on('click', function(){
     var dong = $('#tableSanPham tbody tr:first').clone();
     dong.find('input').val('');
@@ -509,20 +516,28 @@ $(function() {
     dong.find('.tooltip-combo').html('').addClass('d-none badge-info').removeClass('badge-danger');
     dong.find('.ten_sp_combo,.don_gia_show,.thanh_tien_show').html('');
     $('#tableSanPham tbody').append(dong);
+    checkAllRowsForError();
   });
-  // Xoá dòng
   $('#tableSanPham').on('click', '.btnXoaDong', function(){
     if($('#tableSanPham tbody tr').length > 1) {
       $(this).closest('tr').remove();
       capNhatTong();
+      checkAllRowsForError();
     }
   });
   // Nhập trả trước
   $('#traTruocInput').on('input', function(){
     capNhatTong();
   });
+  // Nhập mã combo
+  $('#tableSanPham').on('input', '.ma_sp_combo', function(){
+    // Tự động chuyển thành chữ hoa khi nhập
+    var val = $(this).val();
+    var upper = val.toUpperCase();
+    if (val !== upper) {
+      $(this).val(upper);
+    }
+    updateCombo($(this).closest('tr'));
+  });
 });
 </script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4@5.39.0/build/css/tempusdominus-bootstrap-4.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4@5.39.0/build/js/tempusdominus-bootstrap-4.min.js"></script>

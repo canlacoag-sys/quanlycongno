@@ -94,10 +94,19 @@ class Donhang extends CI_Controller {
         $dh = $this->Donhang_model->get_by_id($id);
         $ct = $this->Donhang_model->get_chitiet($id);
         $kh = $this->Khachhang_model->get_by_id($dh->khachhang_id);
+
+        // Lấy danh sách sản phẩm dạng mảng ma_sp => object (để tra cứu nhanh trong pos.php)
+        $sanpham_arr = [];
+        $sanpham_db = $this->Sanpham_model->get_all();
+        foreach ($sanpham_db as $sp) {
+            $sanpham_arr[$sp->ma_sp] = $sp;
+        }
+
         $this->load->view('donhang/pos', [
             'donhang' => $dh,
             'chitiet' => $ct,
-            'khachhang' => $kh
+            'khachhang' => $kh,
+            'sanpham' => $sanpham_arr // truyền vào dạng mảng ma_sp => object
         ]);
     }
 
@@ -105,17 +114,25 @@ class Donhang extends CI_Controller {
         if($this->input->method() === 'post') {
             $khachhang_id = $this->input->post('khachhang_id');
             $tongtien = $this->input->post('tongtien');
-            $datra = $this->input->post('datra');
-            $conno = $this->input->post('conno');
             $ngaylap = $this->input->post('ngaylap');
+            $giao_hang = $this->input->post('giao_hang');
+            $nguoi_nhan = $this->input->post('nguoi_nhan');
+            $ghi_chu = $this->input->post('ghi_chu');
+            $co_chiet_khau = $this->input->post('co_chiet_khau') ?? null;
             if(!$ngaylap) $ngaylap = date('Y-m-d H:i:s');
 
+            // Tạo mã đơn hàng: DH + chuỗi số từ ngày lập (YYYYMMDDHHIISS)
+            $madon_id = 'DH' . date('YmdHis', strtotime($ngaylap));
+
             $donhang_id = $this->Donhang_model->insert([
+                'madon_id' => $madon_id,
                 'khachhang_id' => $khachhang_id,
                 'tongtien' => $tongtien,
-                'datra' => $datra,
-                'conno' => $conno,
-                'ngaylap' => $ngaylap
+                'ngaylap' => $ngaylap,
+                'giao_hang' => $giao_hang,
+                'nguoi_nhan' => $nguoi_nhan,
+                'ghi_chu' => $ghi_chu,
+                'co_chiet_khau' => $co_chiet_khau
             ]);
 
             $ma_sp = $this->input->post('ma_sp');
@@ -134,10 +151,8 @@ class Donhang extends CI_Controller {
                     ]);
                 }
             }
-            // Sau khi thêm xong, chuyển sang trang in POS hoặc danh sách
             redirect('donhang/pos/'.$donhang_id);
         }
-        // Nếu là GET, render form thêm đơn hàng
         $data = [
             'sanpham' => $this->db->get('sanpham')->result(),
         ];
@@ -167,24 +182,30 @@ class Donhang extends CI_Controller {
         $donhang = $this->Donhang_model->get_by_id($id);
         $chitiet = $this->Donhang_model->get_chitiet($id);
 
+        // Lấy đúng thông tin khách hàng cho autocomplete khi sửa
+        $khachhang = null;
+        if ($donhang && $donhang->khachhang_id) {
+            $khachhang = $this->Khachhang_model->get_by_id($donhang->khachhang_id);
+        }
+
         if ($this->input->method() === 'post') {
             $khachhang_id = $this->input->post('khachhang_id');
             $tongtien = $this->input->post('tongtien');
-            $datra = $this->input->post('datra');
-            $conno = $this->input->post('conno');
             $ngaylap = $this->input->post('ngaylap');
+            $giao_hang = $this->input->post('giao_hang');
+            $nguoi_nhan = $this->input->post('nguoi_nhan');
+            $ghi_chu = $this->input->post('ghi_chu');
             if(!$ngaylap) $ngaylap = date('Y-m-d H:i:s');
 
-            // Cập nhật đơn hàng
             $this->Donhang_model->update($id, [
                 'khachhang_id' => $khachhang_id,
                 'tongtien' => $tongtien,
-                'datra' => $datra,
-                'conno' => $conno,
-                'ngaylap' => $ngaylap
+                'ngaylap' => $ngaylap,
+                'giao_hang' => $giao_hang,
+                'nguoi_nhan' => $nguoi_nhan,
+                'ghi_chu' => $ghi_chu
             ]);
 
-            // Xoá chi tiết cũ, thêm lại chi tiết mới
             $this->db->where('donhang_id', $id)->delete('chitiet_donhang');
             $ma_sp = $this->input->post('ma_sp');
             $so_luong = $this->input->post('so_luong');
@@ -208,8 +229,114 @@ class Donhang extends CI_Controller {
             'donhang' => $donhang,
             'chitiet' => $chitiet,
             'sanpham' => $this->db->get('sanpham')->result(),
-            'khachhang' => $this->db->get('khachhang')->result(),
+            'khachhang' => $khachhang, // truyền đúng object khách hàng cho view
         ];
         $this->render('donhang/edit', $data);
+    }
+
+    public function addcochietkhau() {
+        $this->load->helper('money');
+        if($this->input->method() === 'post') {
+            $khachhang_id = $this->input->post('khachhang_id');
+            $tongtien = $this->input->post('tongtien');
+            $ngaylap = $this->input->post('ngaylap');
+            $giao_hang = $this->input->post('giao_hang');
+            $nguoi_nhan = $this->input->post('nguoi_nhan');
+            $ghi_chu = $this->input->post('ghi_chu');
+            $co_chiet_khau = 1;
+            if(!$ngaylap) $ngaylap = date('Y-m-d H:i:s');
+
+            if ($tongtien === null || $tongtien === '' || !is_numeric($tongtien)) {
+                $tongtien = 0;
+            }
+
+            // Tạo mã đơn hàng: DH + chuỗi số từ ngày lập (YYYYMMDDHHIISS)
+            $madon_id = 'DH' . date('YmdHis', strtotime($ngaylap));
+
+            $donhang_id = $this->Donhang_model->insert([
+                'madon_id' => $madon_id,
+                'khachhang_id' => $khachhang_id,
+                'tongtien' => $tongtien,
+                'ngaylap' => $ngaylap,
+                'giao_hang' => $giao_hang,
+                'nguoi_nhan' => $nguoi_nhan,
+                'ghi_chu' => $ghi_chu,
+                'co_chiet_khau' => $co_chiet_khau
+            ]);
+
+            $ma_sp = $this->input->post('ma_sp');
+            $so_luong = $this->input->post('so_luong');
+            $don_gia = $this->input->post('don_gia');
+            $thanh_tien = $this->input->post('thanh_tien');
+
+            for($i=0;$i<count($ma_sp);$i++) {
+                if(!empty($ma_sp[$i]) && $so_luong[$i] > 0) {
+                    $this->Donhang_model->insert_chitiet([
+                        'donhang_id' => $donhang_id,
+                        'ma_sp' => $ma_sp[$i],
+                        'so_luong' => $so_luong[$i],
+                        'don_gia' => $don_gia[$i],
+                        'thanh_tien' => $thanh_tien[$i]
+                    ]);
+                }
+            }
+            redirect('donhang/pos/'.$donhang_id);
+        }
+        $data = [
+            'sanpham' => $this->db->get('sanpham')->result(),
+            'active' => 'donhang/addcochietkhau',
+        ];
+        $this->render('donhang/addcochietkhau', $data);
+    }
+
+    public function addkochietkhau() {
+        $this->load->helper('money');
+        if($this->input->method() === 'post') {
+            $khachhang_id = $this->input->post('khachhang_id');
+            $tongtien = $this->input->post('tongtien');
+            $ngaylap = $this->input->post('ngaylap');
+            $giao_hang = $this->input->post('giao_hang');
+            $nguoi_nhan = $this->input->post('nguoi_nhan');
+            $ghi_chu = $this->input->post('ghi_chu');
+            $co_chiet_khau = 0;
+            if(!$ngaylap) $ngaylap = date('Y-m-d H:i:s');
+
+            // Tạo mã đơn hàng: DH + chuỗi số từ ngày lập (YYYYMMDDHHIISS)
+            $madon_id = 'DH' . date('YmdHis', strtotime($ngaylap));
+
+            $donhang_id = $this->Donhang_model->insert([
+                'madon_id' => $madon_id,
+                'khachhang_id' => $khachhang_id,
+                'tongtien' => $tongtien,
+                'ngaylap' => $ngaylap,
+                'giao_hang' => $giao_hang,
+                'nguoi_nhan' => $nguoi_nhan,
+                'ghi_chu' => $ghi_chu,
+                'co_chiet_khau' => $co_chiet_khau
+            ]);
+
+            $ma_sp = $this->input->post('ma_sp');
+            $so_luong = $this->input->post('so_luong');
+            $don_gia = $this->input->post('don_gia');
+            $thanh_tien = $this->input->post('thanh_tien');
+
+            for($i=0;$i<count($ma_sp);$i++) {
+                if(!empty($ma_sp[$i]) && $so_luong[$i] > 0) {
+                    $this->Donhang_model->insert_chitiet([
+                        'donhang_id' => $donhang_id,
+                        'ma_sp' => $ma_sp[$i],
+                        'so_luong' => $so_luong[$i],
+                        'don_gia' => $don_gia[$i],
+                        'thanh_tien' => $thanh_tien[$i]
+                    ]);
+                }
+            }
+            redirect('donhang/pos/'.$donhang_id);
+        }
+        $data = [
+            'sanpham' => $this->db->get('sanpham')->result(),
+            'active' => 'donhang/addkochietkhau', // Thêm dòng này
+        ];
+        $this->render('donhang/addkochietkhau', $data);
     }
 }

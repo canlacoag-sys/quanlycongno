@@ -37,6 +37,10 @@
           </div>
         </div>
         <div class="form-group">
+          <input type="checkbox" id="ComBo" name="combo" value="1" data-bootstrap-switch data-off-color="secondary" data-on-color="success" data-off-text="OFF" data-on-text="ON">
+          <label for="ComBo" class="font-weight-bold ml-2">Combo</label>
+        </div>
+        <div class="form-group">
           <input type="checkbox" id="coChietKhau" name="co_chiet_khau" value="1" data-bootstrap-switch data-off-color="secondary" data-on-color="success" data-off-text="OFF" data-on-text="ON">
           <label for="coChietKhau" class="font-weight-bold ml-2">Bánh có chiết khấu</label>
         </div>

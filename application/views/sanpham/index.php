@@ -44,6 +44,7 @@
                   <th class="text-center" style="width:120px;">Mã bánh</th>
                   <th>Tên sản phẩm</th>
                   <th class="text-center" style="width:120px;">Giá bán</th>
+                  <th class="text-center" style="width:120px;">Loại bánh</th>
                   <th class="text-center" style="width:120px;">Chiết khấu</th>
                   <th class="text-center" style="width:120px;">Tác vụ</th>
                 </tr>
@@ -54,6 +55,7 @@
                   <td class="text-center col-ma-sp"><?= $sp->ma_sp ?></td>
                   <td class="col-ten-sp"><?= $sp->ten_sp ?></td>
                   <td class="text-right col-gia-sp" data-gia="<?= $sp->gia ?>"><?= number_format($sp->gia) ?></td>
+                  <td class="text-center"><?= $sp->combo ? 'Combo' : 'Cái' ?></td>
                   <td class="text-center"><?= $sp->co_chiet_khau ? 'Có' : 'Không' ?></td>
                   <td class="text-center align-middle">
                     <a href="#" class="btn btn-info btn-sm btn-edit-product" data-id="<?= $sp->id ?>" data-toggle="modal" data-target="#editProductModal"><i class="fas fa-edit"></i></a>

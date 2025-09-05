@@ -1,8 +1,48 @@
+<?php
+// ...existing code...
+// Thêm đoạn lấy dữ liệu đơn khách lẻ, chi tiết, sản phẩm
+$donhang = isset($row) ? $row : null;
+$chitiet = isset($chitiet) ? $chitiet : [];
+$sanpham = isset($sanpham) ? $sanpham : [];
+// Chuẩn bị mảng sản phẩm dạng ma_sp => object để tra cứu nhanh
+$sanpham_map = [];
+if (is_array($sanpham)) {
+  foreach ($sanpham as $sp) {
+    $sanpham_map[$sp->ma_sp] = $sp;
+  }
+}
+// Hàm xác định loại bánh: 1 mã -> tra db, combo=1 thì Combo, combo=0 thì Cái; nhiều mã -> Hộp N bánh
+function get_loai_banh_tooltip($ma_sp_str, $sanpham_map) {
+  $arrMa = array_filter(array_map('trim', explode(',', $ma_sp_str)), function($x){ return $x !== ''; });
+  $count = count($arrMa);
+  if ($count === 1) {
+    $m = $arrMa[0];
+    if (isset($sanpham_map[$m])) {
+      $sp = $sanpham_map[$m];
+      if (isset($sp->combo)) {
+        if ((string)$sp->combo === '1' || (int)$sp->combo === 1) {
+          return 'Combo';
+        } else if ((string)$sp->combo === '0' || (int)$sp->combo === 0) {
+          return 'Cái';
+        } else {
+          return 'Không xác định';
+        }
+      }
+      return 'Cái';
+    }
+    return 'Không xác định';
+  }
+  if ($count > 1) {
+    return 'Hộp ' . $count . ' bánh';
+  }
+  return '';
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>BIÊN NHẬN KHÁCH SỈ</title>
+  <title>BIÊN NHẬN KHÁCH LẺ</title>
   <style>
     @media print {
       @page { size: A5 portrait; margin: 5mm 5mm 5mm 5mm; }
@@ -163,41 +203,6 @@
   </style>
 </head>
 <body onload="window.print()">
-<?php
-  // Chuẩn bị mảng sản phẩm dạng ma_sp => object để tra cứu nhanh
-  $sanpham_map = [];
-  if (isset($sanpham) && is_array($sanpham)) {
-    foreach ($sanpham as $sp) {
-      $sanpham_map[$sp->ma_sp] = $sp;
-    }
-  }
-  // Hàm xác định loại bánh: 1 mã -> tra db, combo=1 thì Combo, combo=0 thì Cái; nhiều mã -> Hộp N bánh
-  function get_loai_banh_tooltip($ma_sp_str, $sanpham_map) {
-    $arrMa = array_filter(array_map('trim', explode(',', $ma_sp_str)), function($x){ return $x !== ''; });
-    $count = count($arrMa);
-    if ($count === 1) {
-      $m = $arrMa[0];
-      if (isset($sanpham_map[$m])) {
-        $sp = $sanpham_map[$m];
-        if (isset($sp->combo)) {
-          if ((string)$sp->combo === '1' || (int)$sp->combo === 1) {
-            return 'Combo';
-          } else if ((string)$sp->combo === '0' || (int)$sp->combo === 0) {
-            return 'Cái';
-          } else {
-            return 'Không xác định';
-          }
-        }
-        return 'Cái';
-      }
-      return 'Không xác định';
-    }
-    if ($count > 1) {
-      return 'Hộp ' . $count . ' bánh';
-    }
-    return '';
-  }
-?>
 <div class="receipt-container">
   <div>
     <div class="header-row">
@@ -210,19 +215,18 @@
         <img src="<?= base_url('assets/dist/img/logo.png') ?>" alt="Logo Thanh Tâm">
       </div>
       <div class="right-info">
-        <div class="date">Ngày <?= date('d/m/Y H:i', strtotime($donhang->ngaylap)) ?></div>
+        <div class="date">Ngày <?= isset($donhang->ngaylap) ? date('d/m/Y H:i', strtotime($donhang->ngaylap)) : '' ?></div>
         <div>Mã Đơn: <?= htmlspecialchars($donhang->madon_id ?? $donhang->id) ?></div>
-        <div>Loại bánh: <?= isset($donhang->co_chiet_khau) && $donhang->co_chiet_khau ? 'Có chiết khấu' : 'Không chiết khấu' ?></div>
         <div>Liên 1: Giao khách hàng</div>
       </div>
     </div>
-    <div class="receipt-title">BIÊN NHẬN</div>
+    <div class="receipt-title">BIÊN NHẬN KHÁCH LẺ</div>
     <div class="customer-row">
-      <strong>Khách sĩ :</strong> <?= htmlspecialchars($khachhang->ten) ?>
-      <span style="margin-left:30px;"><strong>Điện thoại :</strong> <?= htmlspecialchars($khachhang->dienthoai) ?></span>
+      <strong>Khách lẻ :</strong> <?= htmlspecialchars($donhang->ten ?? '') ?>
+      <span style="margin-left:30px;"><strong>Điện thoại :</strong> <?= htmlspecialchars($donhang->dienthoai ?? '') ?></span>
     </div>
     <div class="customer-row">
-      <strong>Địa chỉ :</strong> <?= htmlspecialchars($khachhang->diachi) ?>
+      <strong>Địa chỉ :</strong> <?= htmlspecialchars($donhang->diachi ?? '') ?>
     </div>
     <div class="border"></div>
     <table class="chitiet">
@@ -253,7 +257,7 @@
       <tr>
         <td class="totals-row" colspan="6">
           <span class="total-label">Tổng tiền:</span>
-          <span class="total-value"><?= number_format($donhang->tongtien) ?> đ</span>
+          <span class="total-value"><?= number_format($donhang->tongtien ?? 0) ?> đ</span>
         </td>
       </tr>
     </table>

@@ -27,10 +27,6 @@ function dhUpdateTong() {
     tong += Number($(this).find('.thanh_tien').val() || 0);
   });
   $('#tongtien').val(tong);
-  var datra = Number($('#datra').val() || 0);
-  var conno = tong - datra;
-  if (conno < 0) conno = 0;
-  $('#conno').val(conno);
 }
 
 $(document).ready(function(){

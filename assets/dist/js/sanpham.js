@@ -8,8 +8,11 @@ $(function() {
   if (prefix === 'edit') {
     $('#coChietKhau').prop('checked', data.co_chiet_khau == 1);
     $('#coChietKhau').bootstrapSwitch('state', data.co_chiet_khau == 1, true);
+    $('#ComBo').prop('checked', data.combo == 1);
+    $('#ComBo').bootstrapSwitch('state', data.combo == 1, true);
   } else if (prefix === 'add') {
     $('#addCoChietKhau').prop('checked', false);
+    $('#addComBo').prop('checked', false);
   }
 }
 
@@ -21,8 +24,11 @@ function resetProductForm(prefix) {
   if (prefix === 'edit') {
     $('#coChietKhau').prop('checked', false);
     $('#coChietKhau').bootstrapSwitch('state', false, true);
+    $('#Combo').prop('checked', false);
+    $('#Combo').bootstrapSwitch('state', false, true);
   } else if (prefix === 'add') {
     $('#addCoChietKhau').prop('checked', false);
+    $('#addComBo').prop('checked', false);
   }
   $('#' + (prefix === 'add' ? 'dupMaSPHelpAdd' : 'dupMaSPHelpEdit')).addClass('d-none');
   $('#' + (prefix === 'add' ? 'btnSaveProductAdd' : 'btnSaveProductEdit')).prop('disabled', false);
@@ -32,6 +38,8 @@ function resetProductForm(prefix) {
   $('input[name="chietkhau"]').on('change', function() {
     $('#formSearchProduct').submit();
   });
+
+  
 
   // Mở modal Thêm sản phẩm
   $('#btnAddProduct').on('click', function() {
@@ -45,6 +53,7 @@ function resetProductForm(prefix) {
     let ma_sp = $('#addMaSP').val().trim();
     let ten_sp = $('#addTenSP').val().trim();
     let gia = $('#addGiaSP').val().trim();
+    let combo = $('#addComBo').is(':checked') ? 1 : 0;
     let co_chiet_khau = $('#addCoChietKhau').is(':checked') ? 1 : 0;
     let $btnSave = $('#btnSaveProductAdd');
     let $dupHelp = $('#dupMaSPHelpAdd');
@@ -58,7 +67,7 @@ function resetProductForm(prefix) {
         $dupHelp.addClass('d-none');
         $btnSave.prop('disabled', false);
         // Gửi AJAX thêm sản phẩm
-        $.post(APP.routes.ajax_add_product, {ma_sp, ten_sp, gia, co_chiet_khau}, function(res) {
+        $.post(APP.routes.ajax_add_product, {ma_sp, ten_sp, gia, combo, co_chiet_khau}, function(res) {
           if(res.success) {
             location.reload();
           } else {
@@ -89,8 +98,9 @@ function resetProductForm(prefix) {
     let ma_sp = $('#editMaSP').val().trim();
     let ten_sp = $('#editTenSP').val().trim();
     let gia = $('#editGiaSP').val().trim();
+    let combo = $('#ComBo').is(':checked') ? 1 : 0;
     let co_chiet_khau = $('#coChietKhau').is(':checked') ? 1 : 0;
-    $.post(APP.routes.ajax_edit_product, {id, ma_sp, ten_sp, gia, co_chiet_khau}, function(res) {
+    $.post(APP.routes.ajax_edit_product, {id, ma_sp, ten_sp, gia, combo, co_chiet_khau}, function(res) {
       if(res.success) {
         location.reload();
       } else {
@@ -152,11 +162,21 @@ function resetProductForm(prefix) {
     }
   }
 
+  // Hiển thị label động cho checkbox combo khi bật/tắt (hỗ trợ Bootstrap Switch)
+  function updateComboLabel($checkbox, $label) {
+    if ($checkbox.is(':checked')) {
+      $label.text('Combo');
+    } else {
+      $label.text('Cái');
+    }
+  }
+
   // Khởi tạo lại label khi mở modal Thêm sản phẩm
   $('#addProductModal').on('shown.bs.modal', function() {
     var $ckAdd = $('#addCoChietKhau');
     var $lbAdd = $('label[for="addCoChietKhau"]');
     updateChietKhauLabel($ckAdd, $lbAdd);
+
     // Đảm bảo sự kiện không bị gán nhiều lần
     $ckAdd.off('switchChange.bootstrapSwitch._label').on('switchChange.bootstrapSwitch._label', function() {
       updateChietKhauLabel($ckAdd, $lbAdd);
@@ -170,6 +190,28 @@ function resetProductForm(prefix) {
     updateChietKhauLabel($ckEdit, $lbEdit);
     $ckEdit.off('switchChange.bootstrapSwitch._label').on('switchChange.bootstrapSwitch._label', function() {
       updateChietKhauLabel($ckEdit, $lbEdit);
+    });
+  });
+
+  // Khởi tạo lại label khi mở modal Thêm sản phẩm
+  $('#addProductModal').on('shown.bs.modal', function() {
+    var $cbAdd = $('#addComBo');
+    var $lbcbAdd = $('label[for="addComBo"]');
+    updateComboLabel($cbAdd, $lbcbAdd);
+
+    // Đảm bảo sự kiện không bị gán nhiều lần
+    $cbAdd.off('switchChange.bootstrapSwitch._label').on('switchChange.bootstrapSwitch._label', function() {
+      updateComboLabel($cbAdd, $lbcbAdd);
+    });
+  });
+
+  // Khởi tạo lại label khi mở modal Sửa sản phẩm
+  $('#editProductModal').on('shown.bs.modal', function() {
+    var $cbEdit = $('#ComBo');
+    var $lbcbEdit = $('label[for="ComBo"]');
+    updateComboLabel($cbEdit, $lbcbEdit);
+    $cbEdit.off('switchChange.bootstrapSwitch._label').on('switchChange.bootstrapSwitch._label', function() {
+      updateComboLabel($cbEdit, $lbcbEdit);
     });
   });
 });
