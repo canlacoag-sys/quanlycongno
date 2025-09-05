@@ -33,7 +33,7 @@
                 <th>Khách hàng</th>
                 <th>Tổng tiền</th>
                 <th>Loại bánh</th>
-                <th>Thao tác</th>
+                <th class="text-center" style="width:235px;">Thao tác</th>
               </tr>
             </thead>
             <tbody>

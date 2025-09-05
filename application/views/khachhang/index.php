@@ -39,7 +39,7 @@
                 <th>Tên</th>
                 <th>Điện thoại</th>
                 <th>Địa chỉ</th>
-                <th class="text-center" style="width:120px;">Tác vụ</th>
+                <th class="text-center" style="width:155px;">Tác vụ</th>
               </tr>
             </thead>
             <tbody>
@@ -64,9 +64,9 @@
                 <?php $this->load->helper('phone'); ?>
                 <td class="align-middle"><?= html_escape(phones_pretty($row->dienthoai)) ?></td>
                 <td class="align-middle"><?= html_escape($row->diachi) ?></td>
-                <td class="text-right align-middle">
-                  <a href="#" class="btn btn-sm btn-info btn-edit-customer" data-toggle="modal" data-target="#editCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-edit"></i></a>
-                  <a href="#" class="btn btn-sm btn-danger btn-delete-customer" data-toggle="modal" data-target="#confirmDeleteCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-trash-alt"></i></a>
+                <td class="text-center align-middle">
+                  <a href="#" class="btn btn-sm btn-info btn-edit-customer" data-toggle="modal" data-target="#editCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-edit"></i> Sửa</a>
+                  <a href="#" class="btn btn-sm btn-danger btn-delete-customer" data-toggle="modal" data-target="#confirmDeleteCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-trash-alt"></i> Xóa</a>
                 </td>
               </tr>
               <!-- Hàng chi tiết (collapse) -->

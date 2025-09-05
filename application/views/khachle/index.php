@@ -36,7 +36,7 @@
                 <th>Địa chỉ</th>
                 <th>Tổng tiền</th>
                 <th>Ghi chú</th>
-                <th style="width:120px;">Thao tác</th>
+                <th class="text-center" style="width:235px;">Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -54,10 +54,11 @@
                 <td class="text-right"><?= number_format($row->tongtien) ?></td>
                 <td><?= htmlspecialchars($row->ghi_chu) ?></td>
                 <td>
-                  <a href="<?= site_url('khachle/edit/'.$row->id); ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
-                  <button type="button" class="btn btn-danger btn-sm btn-delete-khachle" data-id="<?= $row->id ?>" data-toggle="modal" data-target="#delKhachLeModal"><i class="fas fa-trash-alt"></i></button>
+                  <a href="<?= site_url('khachle/edit/'.$row->id); ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Sửa</a>
+                  <button type="button" class="btn btn-danger btn-sm btn-delete-khachle" data-id="<?= $row->id ?>" data-toggle="modal" data-target="#delKhachLeModal"><i class="fas fa-trash-alt"></i> Xoá</button>
+                  <a href="<?= site_url('khachle/pos/'.$row->id); ?>" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print"></i> In POS</a>
                 </td>
-              </tr>
+              </tr> 
               <?php endforeach; else: ?>
                 <tr><td colspan="9" class="text-center">Chưa có đơn khách lẻ nào.</td></tr>
               <?php endif; ?>
