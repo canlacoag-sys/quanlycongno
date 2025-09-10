@@ -1,5 +1,4 @@
-<?php $this->load->view('khachhang/add'); ?>
-<?php $this->load->helper('money'); ?>
+<?php $this->load->view('khachhang/add'); ?><?php $this->load->helper('money'); ?>
 <div class="content-wrapper">
   <section class="content-header">
     <div class="container-fluid">
@@ -66,8 +65,8 @@
                   <tr>
                     <td>
                       <div class="d-flex align-items-center">
-                        <input type="text" name="ma_sp[]" class="form-control ma_sp_combo" style="min-width:100px;width:120px;" autocomplete="off" placeholder="VD: 5,7,2B5">
-                        <span class="badge badge-info tooltip-combo ml-2 align-self-start d-none" style="cursor:pointer;min-width:60px;"></span>
+                        <input type="text" name="ma_sp[]" class="form-control ma_sp_combo" style="min-width:120px;width:250px;" autocomplete="off" placeholder="VD: 5,7,2B5">
+                        <span class="badge badge-info tooltip-combo ml-2 d-none" style="cursor:pointer;min-width:30px;"></span>
                       </div>
                     </td>
                     <td>
@@ -85,7 +84,6 @@
                         <span class="giamgia-detail text-muted small"></span>
                         <input type="hidden" name="giamgiadg_loai[]" class="giamgiadg_loai" value="none">
                         <input type="hidden" name="giamgiadg_giatri[]" class="giamgiadg_giatri" value="0">
-                        <input type="hidden" name="giamgiadg_thanhtien[]" class="giamgiadg_thanhtien" value="0">
                       </div>
                     </td>
                     <td>
@@ -121,8 +119,8 @@
               <div class="col-md-4">
                 <table class="table table-borderless mb-0">
                   <tr>
-                    <td class="font-weight-bold text-right tong-tien-label">Thành tiền:</td>
-                    <td class="text-right tong-tien-value" style="width:100px;" id="tongTienView">
+                    <td class="font-weight-bold text-right">Thành tiền:</td>
+                    <td class="text-right" style="width:100px;" id="tongTienView">
                       <span><?= money_vnd(0) ?></span>
                     </td>
                   </tr>
@@ -146,19 +144,20 @@
                     <td>
                       <div class="d-flex align-items-center">
                         <input type="text" name="ship" id="ship" class="form-control form-control-sm text-right" min="0" value="0" style="width:80px;display:inline-block;">
-                        <span id="ship_view" class="font-weight-bold text-danger ml-2"></span>
+                        <span id="ship_view" class="font-weight-bold text-danger text-right ml-2"></span>
                       </div>
                     </td>
                   </tr>
                   <tr>
-                    <td class="font-weight-bold text-right">Tổng tiền:</td>
-                    <td class="text-right font-weight-bold" id="tongcongTienView">
-                      <span>0 đ</span>
-                      <input type="hidden" name="tongcong_tien" id="tongcong_tien" value="0">
+                    <td class="font-weight-bold text-right tongcong-tien-label">Tổng cộng tiền:</td>
+                    <td class="text-right font-weight-bold tongcong-tien-value" id="tongcongTienView">
+                      <span><?= money_vnd(0) ?></span>
                     </td>
                   </tr>
                 </table>
+                <!-- Đảm bảo input hidden tổng tiền và tổng cộng tiền nằm trong form -->
                 <input type="hidden" name="tongtien" id="tongtien" value="0">
+                <input type="hidden" name="tongcong_tien" id="tongcong_tien" value="0">
               </div>
             </div>
             <div class="d-flex justify-content-end mt-3">
@@ -266,7 +265,7 @@ function capNhatTong() {
   var tongcong = tong - tt_thanhtien + ship;
   if (tongcong < 0) tongcong = 0;
   $('#tongcongTienView').html('<span>' + numberFormat(tongcong) + ' <span class="donvi">đ</span></span>');
-  $('#tongcong_tien').val(tongcong);
+  $('#tongcong_tien').val(tongcong); // Đảm bảo luôn cập nhật input hidden tổng cộng tiền
 }
 function getLoaiBanhTooltip(ma_sp_str) {
   var arrMa = ma_sp_str.split(',').map(x => x.trim()).filter(x => x);
@@ -458,14 +457,25 @@ $(document).ready(function(){
     capNhatTong();
   });
   $('#formKhachLe').on('submit', function(e){
-  // Xử lý ship và tongcong_tien về số nguyên
-  var shipVal = $('#ship').val();
-  shipVal = shipVal ? shipVal.replace(/[^0-9]/g, '') : '0';
-  $('#ship').val(shipVal);
+    e.preventDefault();
+    // Đảm bảo giá trị tổng tiền và tổng cộng tiền là số nguyên
+    var tongVal = $('#tongtien').val();
+    tongVal = tongVal ? tongVal.replace(/[^0-9]/g, '') : '0';
+    $('#tongtien').val(tongVal);
+    var tongcongVal = $('#tongcong_tien').val();
+    tongcongVal = tongcongVal ? tongcongVal.replace(/[^0-9]/g, '') : '0';
+    $('#tongcong_tien').val(tongcongVal);
 
-  var tongcongVal = $('#tongcong_tien').val();
-  tongcongVal = tongcongVal ? tongcongVal.replace(/[^0-9]/g, '') : '0';
-  $('#tongcong_tien').val(tongcongVal);
-});
+    var $form = $(this);
+    $.post($form.attr('action'), $form.serialize(), function(resp){
+      if (resp && resp.id) {
+        window.open('/khachle/pos/' + resp.id, '_blank');
+        window.location.href = '/khachle/add';
+      } else {
+        alert('Lưu đơn thất bại!');
+      }
+    }, 'json');
+  });
 });
 </script>
+

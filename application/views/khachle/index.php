@@ -21,14 +21,14 @@
             </div>
           </div>
         </form>
-        <a href="<?= site_url('khachle/add'); ?>" class="btn btn-success"><i class="fas fa-plus"></i> Thêm đơn lẻ</a>
+        
       </div>
       <div class="card">
         <div class="card-body p-0">
           <table class="table table-bordered table-hover mb-0">
             <thead>
               <tr>
-                <th style="width:44px;">STT</th>
+                <th class="text-center" style="width:44px;">STT</th>
                 <th>Mã đơn</th>
                 <th>Ngày lập</th>
                 <th>Tên khách</th>
@@ -45,7 +45,7 @@
                 foreach ($list as $row):
               ?>
               <tr>
-                <td><?= $i++ ?></td>
+                <td class="text-center"><?= $i++ ?></td>
                 <td><?= htmlspecialchars($row->madon_id) ?></td>
                 <td><?= date('d/m/Y H:i', strtotime($row->ngaylap)) ?></td>
                 <td><?= htmlspecialchars($row->ten) ?></td>
@@ -53,7 +53,7 @@
                 <td><?= htmlspecialchars($row->diachi) ?></td>
                 <td class="text-right"><?= number_format($row->tongtien) ?></td>
                 <td><?= htmlspecialchars($row->ghi_chu) ?></td>
-                <td>
+                <td class="text-center">
                   <a href="<?= site_url('khachle/edit/'.$row->id); ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Sửa</a>
                   <button type="button" class="btn btn-danger btn-sm btn-delete-khachle" data-id="<?= $row->id ?>" data-toggle="modal" data-target="#delKhachLeModal"><i class="fas fa-trash-alt"></i> Xoá</button>
                   <a href="<?= site_url('khachle/pos/'.$row->id); ?>" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print"></i> In POS</a>

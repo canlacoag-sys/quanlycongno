@@ -44,4 +44,10 @@ class Donhang_model extends CI_Model
     public function update($id, $data) {
         $this->db->where('id', $id)->update('donhang', $data);
     }
+
+    public function get_by_khachhang($khachhang_id)
+{
+    $this->db->where('khachhang_id', $khachhang_id);
+    return $this->db->get('donhang')->result();
+}
 }

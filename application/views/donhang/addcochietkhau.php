@@ -165,6 +165,20 @@
   </div>
 </div>
 <script>
+$(function(){
+  $('#formDonHang').on('submit', function(e){
+    e.preventDefault();
+    var $form = $(this);
+    $.post($form.attr('action'), $form.serialize(), function(resp){
+      if (resp && resp.id) {
+        window.open('/donhang/pos/' + resp.id, '_blank');
+        window.location.href = '/donhang/addcochietkhau';
+      } else {
+        alert('Lưu đơn thất bại!');
+      }
+    }, 'json');
+  });
+});
 var dsSanPham = <?= json_encode($sanpham); ?>;
 $(function() {
   // Autocomplete khách hàng
@@ -328,11 +342,11 @@ $(function() {
       e.preventDefault();
       return false;
     }
-    if (dhGetPhones().length === 0) {
-      $("#orderDupHelpAdd").removeClass('d-none').text('Vui lòng nhập ít nhất 1 số điện thoại!');
-      e.preventDefault();
-      return false;
-    }
+    // if (dhGetPhones().length === 0) {
+    //  $("#orderDupHelpAdd").removeClass('d-none').text('Vui lòng nhập ít nhất 1 số điện thoại!');
+    //  e.preventDefault();
+    //  return false;
+    //}
     $("#orderDupHelpAdd").addClass('d-none').text('');
     $("#btnSaveCustomerOrderAdd").prop('disabled', false);
     var $form = $(this);

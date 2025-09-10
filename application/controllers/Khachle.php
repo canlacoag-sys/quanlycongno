@@ -66,6 +66,8 @@ class Khachle extends CI_Controller {
 
             $ship = $this->input->post('ship', true);
             $tongcong_tien = $this->input->post('tongcong_tien', true);
+            $tongtien = $this->input->post('tongtien', true);
+            $tongtien = $tongtien ? preg_replace('/[^0-9]/', '', $tongtien) : '0';
 
             // Chuyển về số nguyên
             $ship = $ship ? preg_replace('/[^0-9]/', '', $ship) : '0';
@@ -77,7 +79,7 @@ class Khachle extends CI_Controller {
                 'dienthoai' => $this->input->post('dienthoai', true),
                 'diachi' => $this->input->post('diachi', true),
                 'ngaylap' => $this->input->post('ngaylap', true) ?: date('Y-m-d H:i:s'),
-                'tongtien' => $this->input->post('tongtien', true),
+                'tongtien' => $tongtien,
                 'giamgiatt_loai' => $this->input->post('giamgiatt_loai', true) ?: 'none',
                 'giamgiatt_giatri' => $this->input->post('giamgiatt_giatri', true) ?: 0,
                 'giamgiatt_thanhtien' => $this->input->post('giamgiatt_thanhtien', true) ?: 0,
@@ -89,7 +91,7 @@ class Khachle extends CI_Controller {
             ];
             $khachle_id = $this->Khachle_model->insert($data);
 
-            // Thêm chi tiết đơn hàng
+            // Thêm chi tiết đơn hàng, lấy cả giảm giá từng dòng
             $ma_sp = $this->input->post('ma_sp');
             $so_luong = $this->input->post('so_luong');
             $don_gia = $this->input->post('don_gia');
@@ -106,21 +108,28 @@ class Khachle extends CI_Controller {
                             'so_luong' => $so_luong[$i],
                             'don_gia' => $don_gia[$i],
                             'thanh_tien' => $thanh_tien[$i],
-                            'giamgiadg_loai' => isset($giamgiadg_loai[$i]) ? $giamgiadg_loai[$i] : 'none',
-                            'giamgiadg_giatri' => isset($giamgiadg_giatri[$i]) ? $giamgiadg_giatri[$i] : 0,
-                            'giamgiadg_thanhtien' => isset($giamgiadg_thanhtien[$i]) ? $giamgiadg_thanhtien[$i] : $don_gia[$i]
+                            'giamgiadg_loai' => isset($giamgiadg_loai[$i]) ? $giamgiadg_loai[$i] : null,
+                            'giamgiadg_giatri' => isset($giamgiadg_giatri[$i]) ? $giamgiadg_giatri[$i] : null,
+                            'giamgiadg_thanhtien' => isset($giamgiadg_thanhtien[$i]) ? $giamgiadg_thanhtien[$i] : null,
                         ]);
                     }
                 }
             }
-            // Chuyển hướng sang trang in POS sau khi lưu thành công
-            redirect('khachle/pos/' . $khachle_id);
+            // Nếu là AJAX thì trả về JSON, nếu không thì redirect như cũ
+            if ($this->input->is_ajax_request()) {
+                echo json_encode(['id' => $khachle_id]);
+                exit;
+            } else {
+                redirect('khachle/pos/' . $khachle_id);
+            }
         }
         // Lấy danh sách sản phẩm để chọn
         $data = [
             'sanpham' => $this->db->get('sanpham')->result(),
+            'active' => 'khachle/add',
         ];
         $this->render('khachle/add', $data);
+        
     }
 
     // Sửa đơn khách lẻ

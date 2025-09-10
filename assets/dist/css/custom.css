@@ -156,13 +156,13 @@ tr.collapse-detail .p-3 {
 }
 
 /* Tổng tiền: chữ lớn hơn số, đơn vị đ luôn cùng dòng */
-.tong-tien-label {
+.tongcong-tien-label {
   font-size: 1.5rem;
   font-weight: bold;
   color: #222;
   line-height: 1.1;
 }
-.tong-tien-value {
+.tongcong-tien-value {
   font-size: 1.5rem;
   font-weight: bold;
   color: #ff0000 !important;
@@ -170,7 +170,7 @@ tr.collapse-detail .p-3 {
   letter-spacing: 1px;
   white-space: nowrap;
 }
-.tong-tien-value .donvi {
+.tongcong-tien-value .donvi {
   font-size: 1.1rem;
   font-weight: bold;
   color: #ff0000;
@@ -179,4 +179,27 @@ tr.collapse-detail .p-3 {
   display: inline;
 }
 
+.card-body.p-0 .table thead > tr > th:first-of-type,
+.card-body.p-0 .table thead > tr > td:first-of-type,
+.card-body.p-0 .table tfoot > tr > th:first-of-type,
+.card-body.p-0 .table tfoot > tr > td:first-of-type,
+.card-body.p-0 .table tbody > tr > th:first-of-type,
+.card-body.p-0 .table tbody > tr > td:first-of-type {
+  padding-right: 1.0rem !important;
+}
+
+.card-body.p-0 .table thead > tr > th:last-of-type,
+.card-body.p-0 .table thead > tr > td:last-of-type,
+.card-body.p-0 .table tfoot > tr > th:last-of-type,
+.card-body.p-0 .table tfoot > tr > td:last-of-type,
+.card-body.p-0 .table tbody > tr > th:last-of-type,
+.card-body.p-0 .table tbody > tr > td:last-of-type {
+  padding-right: 1.0rem !important;
+}
+
+.table td {
+  padding: 0.75rem;
+  vertical-align: middle !important;
+  border-top: 1px solid #dee2e6;
+}
 /* Mặc định AdminLTE sidebar có width là 250px */

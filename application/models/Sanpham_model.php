@@ -2,6 +2,10 @@
 // filepath: application/models/Sanpham_model.php
 class Sanpham_model extends CI_Model
 {
+    // Lấy 1 sản phẩm theo mã sản phẩm
+    public function get_by_ma_sp($ma_sp) {
+        return $this->db->get_where('sanpham', ['ma_sp' => $ma_sp])->row();
+    }
     public function __construct() {
         parent::__construct();
         $this->load->database();

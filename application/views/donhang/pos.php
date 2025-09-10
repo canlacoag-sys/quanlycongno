@@ -35,7 +35,7 @@
       margin-bottom: 0;
     }
     .shop-info, .right-info {
-      font-size: 11px;
+      font-size: 12px;
       line-height: 1.5;
       width: 38%;
       max-width: 38%;
@@ -55,7 +55,7 @@
       min-width: 120px;
     }
     .logo-center-header img {
-      height: 48px;
+      height: 62px;
       margin-bottom: 2px;
       display: block;
     }
@@ -132,7 +132,7 @@
       text-align: center;
       letter-spacing: 1px;
       color: #222;
-      padding-bottom: 10mm;
+      padding-bottom: 5mm;
     }
     .badge {
       display: inline-block;
@@ -163,6 +163,7 @@
   </style>
 </head>
 <body onload="window.print()">
+
 <?php
   // Chuẩn bị mảng sản phẩm dạng ma_sp => object để tra cứu nhanh
   $sanpham_map = [];
@@ -198,13 +199,16 @@
     return '';
   }
 ?>
-<div class="receipt-container">
+<?php for ($lien = 1; $lien <= 3; $lien++): ?>
+<div class="receipt-container" style="<?= ($lien === 2 || $lien === 3) ? 'page-break-before:always;' : '' ?>">
   <div>
     <div class="header-row">
       <div class="shop-info">
-        <div class="shop-title"><strong>Hiệu Bánh Thanh Tâm</strong></div>
-        <div class="shop-address">Địa chỉ: <i>3N/15 Đốc Binh Kiều, phường 2,<br> Thành phố Mỹ Tho, tỉnh Tiền Giang</i></div>
-        <div class="shop-phone">Điện thoại: <strong>0903.333.265</strong></div>
+        <div class="shop-address">Địa chỉ: <i>3N/15 Đốc Binh Kiều, phường 2<br> Thành phố Mỹ Tho, tỉnh Tiền Giang</i></div>
+        <div class="shop-phone">
+          Hotline/Zalo: <strong>0903.333.265 (Nga)</strong><br>
+          Điện thoại: <strong>0939.993.265 - 0908.424.777</strong>
+       </div>
       </div>
       <div class="logo-center-header">
         <img src="<?= base_url('assets/dist/img/logo.png') ?>" alt="Logo Thanh Tâm">
@@ -213,24 +217,23 @@
         <div class="date">Ngày <?= date('d/m/Y H:i', strtotime($donhang->ngaylap)) ?></div>
         <div>Mã Đơn: <?= htmlspecialchars($donhang->madon_id ?? $donhang->id) ?></div>
         <div>Loại bánh: <?= isset($donhang->co_chiet_khau) && $donhang->co_chiet_khau ? 'Có chiết khấu' : 'Không chiết khấu' ?></div>
-        <div>Liên 1: Giao khách hàng</div>
+        <div>Liên <?= $lien ?>: <?= $lien === 1 ? 'Giao khách hàng' : ($lien === 2 ? 'Giao nhận' : 'Lưu nội bộ') ?></div>
       </div>
     </div>
     <div class="receipt-title">BIÊN NHẬN</div>
     <div class="customer-row">
-      <strong>Khách sĩ :</strong> <?= htmlspecialchars($khachhang->ten) ?>
+      <strong>Khách hàng :</strong> <?= htmlspecialchars($khachhang->ten) ?>
       <span style="margin-left:30px;"><strong>Điện thoại :</strong> <?= htmlspecialchars($khachhang->dienthoai) ?></span>
     </div>
     <div class="customer-row">
       <strong>Địa chỉ :</strong> <?= htmlspecialchars($khachhang->diachi) ?>
     </div>
-    <div class="border"></div>
+    
     <table class="chitiet">
       <thead>
         <tr>
           <th>STT</th>
-          <th>Mã SP</th>
-          <th>Loại bánh</th>
+          <th>Mã bánh</th>
           <th>SL</th>
           <th class="text-right">Đơn giá</th>
           <th class="text-right">Thành tiền</th>
@@ -241,7 +244,6 @@
         <tr>
           <td><?= $i++ ?></td>
           <td><?= htmlspecialchars($ct->ma_sp) ?></td>
-          <td><?= get_loai_banh_tooltip($ct->ma_sp, $sanpham_map) ?></td>
           <td><?= $ct->so_luong ?></td>
           <td class="text-right"><?= number_format($ct->don_gia) ?></td>
           <td class="text-right"><?= number_format($ct->thanh_tien) ?></td>
@@ -256,21 +258,42 @@
           <span class="total-value"><?= number_format($donhang->tongtien) ?> đ</span>
         </td>
       </tr>
+        <?php if (!empty($donhang->ghi_chu)): ?>
+        <tr>
+          <td colspan="6" style="padding:8px 0;color:#444;font-size:1em;">
+            <strong>Ghi chú:</strong> <?= nl2br(htmlspecialchars($donhang->ghi_chu)) ?>
+          </td>
+        </tr>
+        <?php endif; ?>
     </table>
     <div class="sign-area" style="margin-top:10px;">
+      <?php if ($lien === 2): ?>
       <div class="sign-col">
-        <div class="sign-label">Người lập hóa đơn</div>
+        <div class="sign-label">Người giao hàng</div>
         <div style="height:60px;"></div>
         <div>(Ký, ghi rõ họ tên)</div>
       </div>
       <div class="sign-col">
-        <div class="sign-label">Khách hàng</div>
+        <div class="sign-label">Người nhận</div>
         <div style="height:60px;"></div>
         <div>(Ký, ghi rõ họ tên)</div>
       </div>
+      <?php elseif ($lien === 3): ?>
+      <div class="sign-col">
+        <div class="sign-label">Người giao hàng</div>
+        <div style="height:60px;"></div>
+        <div>(Ký, ghi rõ họ tên)</div>
+      </div>
+      <div class="sign-col">
+        <div class="sign-label"></div>
+        <div style="height:60px;"></div>
+        <div></div>
+      </div>
+      <?php endif; ?>
     </div>
   </div>
   <div class="thank">Xin cảm ơn Quý khách!</div>
 </div>
+<?php endfor; ?>
 </body>
 </html>

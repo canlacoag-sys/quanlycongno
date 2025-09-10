@@ -12,11 +12,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Donhang extends CI_Controller {
     public function __construct() {
-        parent::__construct();
-        $this->load->model('Donhang_model');
-        $this->load->helper(['url', 'form']);
-        $this->load->library('session');
-        if(!$this->session->userdata('user_id')) redirect('auth/login');
+    parent::__construct();
+    $this->load->model('Donhang_model');
+    $this->load->helper(['url', 'form']);
+    $this->load->library('session');
+    $this->load->database();
+    if(!$this->session->userdata('user_id')) redirect('auth/login');
     }
 
     // Hàm render dùng chung cho mọi view
@@ -282,7 +283,12 @@ class Donhang extends CI_Controller {
                     ]);
                 }
             }
-            redirect('donhang/pos/'.$donhang_id);
+            if ($this->input->is_ajax_request()) {
+                echo json_encode(['id' => $donhang_id]);
+                return;
+            } else {
+                redirect('donhang/pos/'.$donhang_id);
+            }
         }
         $data = [
             'sanpham' => $this->db->get('sanpham')->result(),
@@ -333,7 +339,12 @@ class Donhang extends CI_Controller {
                     ]);
                 }
             }
-            redirect('donhang/pos/'.$donhang_id);
+            if ($this->input->is_ajax_request()) {
+                echo json_encode(['id' => $donhang_id]);
+                return;
+            } else {
+                redirect('donhang/pos/'.$donhang_id);
+            }
         }
         $data = [
             'sanpham' => $this->db->get('sanpham')->result(),

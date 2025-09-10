@@ -58,8 +58,17 @@
                 <td><?= date('d/m/Y H:i', strtotime($dh->ngaylap)) ?></td>
                 <td><?= htmlspecialchars($dh->ten_khachhang ?? '') ?></td>
                 <td class="text-right tong-tien-value"><?= money_vnd($dh->tongtien) ?></td>
-                <td><?= htmlspecialchars($dh->co_chiet_khau ? 'Có chiết khấu' : 'Không chiết khấu') ?></td>
                 <td>
+                  <?php
+                    // Hiển thị loại sản phẩm: Có chiết khấu hoặc Không chiết khấu
+                    if (isset($dh->co_chiet_khau) && $dh->co_chiet_khau) {
+                      echo '<span class="badge badge-success">Có chiết khấu</span>';
+                    } else {
+                      echo '<span class="badge badge-secondary">Không chiết khấu</span>';
+                    }
+                  ?>
+                </td>
+                <td class="text-center"> 
                   <a href="<?= site_url('donhang/edit/'.$dh->id); ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Sửa</a>
                   <button type="button" class="btn btn-danger btn-sm btn-delete-donhang" data-id="<?= $dh->id ?>" data-toggle="modal" data-target="#delDonHangModal"><i class="fas fa-trash-alt"></i> Xoá</button>
                   <a href="<?= site_url('donhang/pos/'.$dh->id); ?>" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print"></i> In POS</a>

@@ -56,7 +56,16 @@
                   <td class="col-ten-sp"><?= $sp->ten_sp ?></td>
                   <td class="text-right col-gia-sp" data-gia="<?= $sp->gia ?>"><?= number_format($sp->gia) ?></td>
                   <td class="text-center"><?= $sp->combo ? 'Combo' : 'Cái' ?></td>
-                  <td class="text-center"><?= $sp->co_chiet_khau ? 'Có' : 'Không' ?></td>
+                  <td class="text-center">
+                    <?php
+                      // Hiển thị loại sản phẩm: Có chiết khấu hoặc Không chiết khấu
+                      if (isset($sp->co_chiet_khau) && $sp->co_chiet_khau) {
+                        echo '<span class="badge badge-success">Có chiết khấu</span>';
+                      } else {
+                        echo '<span class="badge badge-secondary">Không chiết khấu</span>';
+                      }
+                      ?>
+                    </td>
                   <td class="text-center align-middle">
                     <a href="#" class="btn btn-info btn-sm btn-edit-product" data-id="<?= $sp->id ?>" data-toggle="modal" data-target="#editProductModal"><i class="fas fa-edit"></i> Sửa</a>
                     <a href="#" class="btn btn-danger btn-sm btn-delete-product" data-id="<?= $sp->id ?>" data-toggle="modal" data-target="#confirmDeleteProductModal"><i class="fas fa-trash-alt"></i> Xóa</a>

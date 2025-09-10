@@ -15,9 +15,9 @@ if ($user_id) {
 }
 
 // Xác định active cho menu đa cấp đơn hàng (chỉ active khi controller là donhang)
-$donhang_active = ($active ?? '') === 'donhang' || ($active ?? '') === 'donhang/addcochietkhau' || ($active ?? '') === 'donhang/addkochietkhau';
+$donhang_active = ($active ?? '') === 'donhang/addcochietkhau' || ($active ?? '') === 'donhang/addkochietkhau' || ($active ?? '') === 'donhang';
 // Thêm active cho khách lẻ
-$khachle_active = ($active ?? '') === 'khachle' || ($active ?? '') === 'khachle/add' ;
+$khachle_active = in_array(($active ?? ''), ['khachle/add', 'khachle']);
 ?>
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -42,60 +42,43 @@ $khachle_active = ($active ?? '') === 'khachle' || ($active ?? '') === 'khachle/
 		  </a>
 		</li>
 		
-		<li class="nav-item">
-		  <a href="<?= site_url('khachhang') ?>" class="nav-link<?= is_active('khachhang', $active ?? '') ?>">
-			<i class="nav-icon fas fa-users"></i>
-			<p>Khách hàng</p>
-		  </a>
-		</li>
-		<li class="nav-item">
-		  <a href="<?= site_url('sanpham') ?>" class="nav-link<?= is_active('sanpham', $active ?? '') ?>">
-			<i class="nav-icon fas fa-box"></i>
-			<p>Sản phẩm</p>
-		  </a>
-		</li>
+		
 		<!-- Thêm menu khách lẻ -->
-		<li class="nav-item<?= $khachle_active ? ' menu-open' : '' ?>">
-		  <a href="javascript:void(0);" class="nav-link<?= $khachle_active ? ' active' : '' ?> toggle-khachle-menu">
-			<i class="nav-icon fas fa-user-tag"></i>
-			<p>
-			  Bán lẻ (khách lẻ)
-			  <i class="right fas fa-angle-<?= $khachle_active ? 'down' : 'left' ?>" id="khachleMenuArrow"></i>
-			</p>
-		  </a>
-		  <ul class="nav nav-treeview" id="khachleMenuTree"<?= $khachle_active ? ' style="display:block;"' : ' style="display:none;"' ?>>
+				
+		<li class="nav-item<?= ($active ?? '') === 'khachle/add' ? ' menu-open' : ($khachle_active ? ' menu-open' : '') ?>">
+			<a href="javascript:void(0);" class="nav-link<?= ($active ?? '') === 'khachle/add' ? ' active' : ($khachle_active ? ' active' : '') ?> toggle-khachle-menu">
+				<i class="nav-icon fas fa-user-tag"></i>
+				<p>
+				Bán tại quầy
+				<i class="fas fa-angle-left right" id="khachleMenuArrow"></i>
+				</p>
+			</a>
+			<ul class="nav nav-treeview" id="khachleMenuTree"<?= ($active ?? '') === 'khachle/add' ? ' style="display:block;"' : ($khachle_active ? ' style="display:block;"' : ' style="display:none;"') ?>>
 			<li class="nav-item">
-			  <a href="<?= site_url('khachle'); ?>" class="nav-link<?= ($active ?? '') === 'khachle' ? ' active' : '' ?>">
+			<a href="<?= site_url('khachle/add'); ?>" class="nav-link<?= ($active ?? '') === 'khachle/add' ? ' active' : '' ?>">
 				<i class="far fa-circle nav-icon"></i>
-				<p>Đơn hàng khách lẻ</p>
-			  </a>
+				<p>Tạo phiếu bán hàng</p>
+			</a>
 			</li>
 			<li class="nav-item">
-			  <a href="<?= site_url('khachle/add'); ?>" class="nav-link<?= ($active ?? '') === 'khachle/add' ? ' active' : '' ?>">
+			<a href="<?= site_url('khachle'); ?>" class="nav-link<?= ($active ?? '') === 'khachle' ? ' active' : '' ?>">
 				<i class="far fa-circle nav-icon"></i>
-				<p>Toa khách lẻ</p>
-			  </a>
+				<p>Danh sách phiếu</p>
+			</a>
 			</li>
-		  </ul>
+		</ul>
 		</li>
-
 
 
 		<li class="nav-item<?= $donhang_active ? ' menu-open' : '' ?>">
 		  <a href="javascript:void(0);" class="nav-link<?= $donhang_active ? ' active' : '' ?> toggle-donhang-menu">
 			<i class="nav-icon fas fa-shopping-cart"></i>
 			<p>
-			  Bán sỉ (khách sỉ)
-			  <i class="right fas fa-angle-<?= $donhang_active ? 'down' : 'left' ?>" id="donhangMenuArrow"></i>
+			  Bán sỉ/Đại lý
+			  <i class="right fas fa-angle-<?= $donhang_active ? 'left' : 'left' ?>" id="donhangMenuArrow"></i>
 			</p>
 		  </a>
 		  <ul class="nav nav-treeview" id="donhangMenuTree"<?= $donhang_active ? ' style="display:block;"' : ' style="display:none;"' ?>>
-			<li class="nav-item">
-			  <a href="<?= site_url('donhang'); ?>" class="nav-link<?= ($active ?? '') === 'donhang' ? ' active' : '' ?>">
-				<i class="far fa-circle nav-icon"></i>
-				<p>Danh sách đơn hàng</p>
-			  </a>
-			</li>
 			<li class="nav-item">
 			  <a href="<?= site_url('donhang/addcochietkhau'); ?>" class="nav-link<?= ($active ?? '') === 'donhang/addcochietkhau' ? ' active' : '' ?>">
 				<i class="far fa-circle nav-icon"></i>
@@ -108,20 +91,36 @@ $khachle_active = ($active ?? '') === 'khachle' || ($active ?? '') === 'khachle/
 				<p>Bánh không chiết khấu</p>
 			  </a>
 			</li>
+			<li class="nav-item">
+			  <a href="<?= site_url('donhang'); ?>" class="nav-link<?= ($active ?? '') === 'donhang' ? ' active' : '' ?>">
+				<i class="far fa-circle nav-icon"></i>
+				<p>Danh sách hóa đơn</p>
+			  </a>
+			</li>
 		  </ul>
 		</li>
+
+
 		<li class="nav-item">
 		  <a href="<?= site_url('congno') ?>" class="nav-link<?= is_active('congno', $active ?? '') ?>">
 			<i class="nav-icon fas fa-money-bill-wave"></i>
 			<p>Công nợ</p>
 		  </a>
 		</li>
+
 		<li class="nav-item">
-		  <a href="<?= site_url('auth/logout') ?>" class="nav-link">
-			<i class="nav-icon fas fa-sign-out-alt"></i>
-			<p>Đăng xuất</p>
+		  <a href="<?= site_url('khachhang') ?>" class="nav-link<?= is_active('khachhang', $active ?? '') ?>">
+			<i class="nav-icon fas fa-users"></i>
+			<p>Khách hàng</p>
 		  </a>
 		</li>
+		<li class="nav-item">
+		  <a href="<?= site_url('sanpham') ?>" class="nav-link<?= is_active('sanpham', $active ?? '') ?>">
+			<i class="nav-icon fas fa-box"></i>
+			<p>Sản phẩm</p>
+		  </a>
+		</li>
+
 		<?php if ($user_role === 'admin'): ?>
 		<li class="nav-item">
 		  <a href="<?= site_url('users'); ?>" class="nav-link<?= is_active('users', $active ?? '') ?>">
@@ -130,6 +129,13 @@ $khachle_active = ($active ?? '') === 'khachle' || ($active ?? '') === 'khachle/
 		  </a>
 		</li>
 		<?php endif; ?>
+		<li class="nav-item">
+		  <a href="<?= site_url('auth/logout') ?>" class="nav-link text-danger">
+			<i class="nav-icon fas fa-sign-out-alt"></i>
+			<p>Đăng xuất</p>
+		  </a>
+		</li>
+		
 	  </ul>
     </nav>
   </div>
@@ -143,12 +149,12 @@ $(function() {
     var $arrow = $('#donhangMenuArrow');
     if ($tree.is(':visible')) {
       $tree.slideUp(150);
-      $arrow.removeClass('fa-angle-down').addClass('fa-angle-left');
+      $arrow.removeClass('fa-angle-left').addClass('fa-angle-left');
       $(this).parent().removeClass('menu-open');
       $(this).removeClass('active');
     } else {
       $tree.slideDown(150);
-      $arrow.removeClass('fa-angle-left').addClass('fa-angle-down');
+      $arrow.removeClass('fa-angle-left').addClass('fa-angle-left');
       $(this).parent().addClass('menu-open');
       $(this).addClass('active');
     }
@@ -168,7 +174,7 @@ $(function() {
       $(this).removeClass('active');
     } else {
       $tree.slideDown(150);
-      $arrow.removeClass('fa-angle-left').addClass('fa-angle-down');
+      $arrow.removeClass('fa-angle-left').addClass('fa-angle-left');
       $(this).parent().addClass('menu-open');
       $(this).addClass('active');
     }

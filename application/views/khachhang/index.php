@@ -39,7 +39,7 @@
                 <th>Tên</th>
                 <th>Điện thoại</th>
                 <th>Địa chỉ</th>
-                <th class="text-center" style="width:155px;">Tác vụ</th>
+                <th class="text-center" style="width:250px;">Tác vụ</th>
               </tr>
             </thead>
             <tbody>
@@ -67,6 +67,7 @@
                 <td class="text-center align-middle">
                   <a href="#" class="btn btn-sm btn-info btn-edit-customer" data-toggle="modal" data-target="#editCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-edit"></i> Sửa</a>
                   <a href="#" class="btn btn-sm btn-danger btn-delete-customer" data-toggle="modal" data-target="#confirmDeleteCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-trash-alt"></i> Xóa</a>
+                  <a href="<?= site_url('congno/detail/'.$row->id) ?>" class="btn btn-info btn-sm">Xem công nợ</a>
                 </td>
               </tr>
               <!-- Hàng chi tiết (collapse) -->
