@@ -30,13 +30,21 @@ class Khachle extends CI_Controller {
 
     // Danh sách đơn khách lẻ
     public function index() {
-        $keyword = $this->input->get('keyword', true);
-        $list = $this->Khachle_model->get_all($keyword);
-        $data = [
-            'list' => $list,
-            'keyword' => $keyword,
-        ];
-        $this->render('khachle/index', $data);
+            $keyword = $this->input->get('keyword', true);
+            $list = $this->Khachle_model->get_all($keyword);
+            $this->load->database();
+            $user_id = $this->session->userdata('user_id');
+            $user_role = null;
+            if ($user_id) {
+                $user = $this->db->get_where('users', ['id' => $user_id])->row();
+                $user_role = $user ? $user->role : null;
+            }
+            $data = [
+                'list' => $list,
+                'keyword' => $keyword,
+                'user_role' => $user_role,
+            ];
+            $this->render('khachle/index', $data);
     }
 
     // Thêm đơn khách lẻ

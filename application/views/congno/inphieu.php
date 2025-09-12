@@ -29,39 +29,91 @@
         <strong>Ngày lập phiếu:</strong> <?= date('d/m/Y H:i', strtotime($congno->ngaylap)) ?><br>
         <strong>Ghi chú:</strong> <?= htmlspecialchars($congno->ghichu) ?><br>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th class="text-center">Mã sản phẩm</th>
-                <th class="text-center">Loại sản phẩm</th>
-                <th class="text-right">Đơn giá</th>
-                <th class="text-center">Số lượng</th>
-                <th class="text-right">Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($items as $item): ?>
-                        <tr>
-                                <td class="text-center"><?= htmlspecialchars($item['ma_sp']) ?></td>
-                                <td class="text-center">
-                                    <?php if (isset($item['co_chiet_khau']) && $item['co_chiet_khau']): ?>
-                                        <span class="badge badge-success">Có chiết khấu</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-secondary">Không chiết khấu</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="text-right"><?= number_format($item['don_gia']) ?> đ</td>
-                                <td class="text-center"><?= $item['so_luong'] ?></td>
-                                <td class="text-right"><?= number_format($item['thanh_tien']) ?> đ</td>
-                        </tr>
-        <?php endforeach; ?>
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4" class="text-right">Tổng tiền</th>
-                <th class="text-right total"><?= number_format($congno->tong_tien) ?> đ</th>
-            </tr>
-        </tfoot>
+
+        <h4>Có chiết khấu</h4>
+        <table>
+                <thead>
+                    <tr>
+                        <th class="text-center">Mã sản phẩm</th>
+                        <th class="text-right">Đơn giá</th>
+                        <th class="text-center">Số lượng</th>
+                        <th class="text-right">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                    $subtotal_chiet = 0;
+                    foreach ($items as $item) {
+                        if (isset($item['co_chiet_khau']) && $item['co_chiet_khau']) {
+                            echo '<tr>';
+                            echo '<td class="text-center">' . htmlspecialchars($item['ma_sp']) . '</td>';
+                            echo '<td class="text-right">' . number_format($item['don_gia']) . ' đ</td>';
+                            echo '<td class="text-center">' . $item['so_luong'] . '</td>';
+                            echo '<td class="text-right">' . number_format($item['thanh_tien']) . ' đ</td>';
+                            echo '</tr>';
+                            $subtotal_chiet += intval($item['thanh_tien']);
+                        }
+                    }
+                ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-right">Tổng (trước chiết khấu)</th>
+                        <th class="text-right total"><?= number_format($congno->tong_chietkhau_truoc ?? $subtotal_chiet) ?> đ</th>
+                    </tr>
+                    <tr>
+                        <th colspan="3" class="text-right">Chiết khấu (<?= htmlspecialchars($congno->chietkhau_percent ?? 0) ?>%)</th>
+                        <th class="text-right total"><?= number_format($congno->chietkhau_amount ?? round(($subtotal_chiet * ($congno->chietkhau_percent ?? 0)/100))) ?> đ</th>
+                    </tr>
+                    <tr>
+                        <th colspan="3" class="text-right">Tổng sau chiết khấu</th>
+                        <th class="text-right total"><?= number_format($congno->tong_chietkhau_sau ?? (($congno->tong_chietkhau_truoc ?? $subtotal_chiet) - ($congno->chietkhau_amount ?? round($subtotal_chiet * (($congno->chietkhau_percent ?? 0)/100))))) ?> đ</th>
+                    </tr>
+                </tfoot>
+        </table>
+
+        <h4>Không chiết khấu</h4>
+        <table>
+                <thead>
+                    <tr>
+                        <th class="text-center">Mã sản phẩm</th>
+                        <th class="text-right">Đơn giá</th>
+                        <th class="text-center">Số lượng</th>
+                        <th class="text-right">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                    $subtotal_non = 0;
+                    foreach ($items as $item) {
+                        if (!isset($item['co_chiet_khau']) || !$item['co_chiet_khau']) {
+                            echo '<tr>';
+                            echo '<td class="text-center">' . htmlspecialchars($item['ma_sp']) . '</td>';
+                            echo '<td class="text-right">' . number_format($item['don_gia']) . ' đ</td>';
+                            echo '<td class="text-center">' . $item['so_luong'] . '</td>';
+                            echo '<td class="text-right">' . number_format($item['thanh_tien']) . ' đ</td>';
+                            echo '</tr>';
+                            $subtotal_non += intval($item['thanh_tien']);
+                        }
+                    }
+                ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-right">Tổng không chiết khấu</th>
+                        <th class="text-right total"><?= number_format($congno->tong_khong_chiet ?? $subtotal_non) ?> đ</th>
+                    </tr>
+                </tfoot>
+        </table>
+
+        <table>
+            <tfoot>
+                <tr>
+                    <th colspan="3" class="text-right">Tổng cộng</th>
+                    <th class="text-right total"><?= number_format($congno->tong_cong ?? (($congno->tong_chietkhau_sau ?? (($congno->tong_chietkhau_truoc ?? $subtotal_chiet) - ($congno->chietkhau_amount ?? round($subtotal_chiet * (($congno->chietkhau_percent ?? 0)/100))))) + ($congno->tong_khong_chiet ?? $subtotal_non))) ?> đ</th>
+                </tr>
+            </tfoot>
+        </table>
     </table>
     <div style="margin-top:40px;">
         <div style="float:left; width:40%; text-align:center;">Người lập phiếu<br><br><br>__________________</div>

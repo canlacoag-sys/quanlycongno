@@ -66,7 +66,9 @@
                 <td class="align-middle"><?= html_escape($row->diachi) ?></td>
                 <td class="text-center align-middle">
                   <a href="#" class="btn btn-sm btn-info btn-edit-customer" data-toggle="modal" data-target="#editCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-edit"></i> Sửa</a>
+                  <?php if (isset($user_role) && $user_role === 'admin'): ?>
                   <a href="#" class="btn btn-sm btn-danger btn-delete-customer" data-toggle="modal" data-target="#confirmDeleteCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-trash-alt"></i> Xóa</a>
+                  <?php endif; ?>
                   <a href="<?= site_url('congno/detail/'.$row->id) ?>" class="btn btn-info btn-sm">Xem công nợ</a>
                 </td>
               </tr>

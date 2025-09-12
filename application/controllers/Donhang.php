@@ -32,14 +32,22 @@ class Donhang extends CI_Controller {
     }
 
     public function index() {
-        $this->load->model('Khachhang_model');
-        $list = $this->Donhang_model->get_all();
-        $data = [
-            'list' => $list,
-            'sanpham' => $this->db->get('sanpham')->result(),
-            'khachhang' => $this->db->get('khachhang')->result(),
-        ];
-        $this->render('donhang/index', $data);
+            $this->load->model('Khachhang_model');
+            $list = $this->Donhang_model->get_all();
+            // Lấy user role từ session/database
+            $user_id = $this->session->userdata('user_id');
+            $user_role = null;
+            if ($user_id) {
+                $user = $this->db->get_where('users', ['id' => $user_id])->row();
+                $user_role = $user ? $user->role : null;
+            }
+            $data = [
+                'list' => $list,
+                'sanpham' => $this->db->get('sanpham')->result(),
+                'khachhang' => $this->db->get('khachhang')->result(),
+                'user_role' => $user_role,
+            ];
+            $this->render('donhang/index', $data);
     }
 
     public function autocomplete_khachhang() {
@@ -235,6 +243,32 @@ class Donhang extends CI_Controller {
             'khachhang' => $khachhang, // truyền đúng object khách hàng cho view
         ];
         $this->render('donhang/edit', $data);
+    }
+
+    // Xoá đơn hàng (và chi tiết) an toàn
+    public function delete($id) {
+        // allow only numeric id
+        $id = (int) $id;
+        if (!$id) {
+            show_404();
+            return;
+        }
+
+        $this->load->model('Donhang_model');
+        $ok = $this->Donhang_model->delete_with_chitiet($id);
+
+        if ($this->input->is_ajax_request()) {
+            $this->output->set_content_type('application/json')->set_output(json_encode(['success' => (bool)$ok]));
+            return;
+        }
+
+        // Redirect back to list with simple flash
+        if ($ok) {
+            $this->session->set_flashdata('message', 'Đã xóa đơn hàng');
+        } else {
+            $this->session->set_flashdata('error', 'Xóa không thành công');
+        }
+        redirect('donhang');
     }
 
     public function addcochietkhau() {

@@ -45,6 +45,16 @@ class Donhang_model extends CI_Model
         $this->db->where('id', $id)->update('donhang', $data);
     }
 
+    // Delete order and its detail rows inside a DB transaction
+    public function delete_with_chitiet($id) {
+        if (empty($id)) return FALSE;
+        $this->db->trans_start();
+        $this->db->where('donhang_id', $id)->delete('chitiet_donhang');
+        $this->db->where('id', $id)->delete('donhang');
+        $this->db->trans_complete();
+        return $this->db->trans_status();
+    }
+
     public function get_by_khachhang($khachhang_id)
 {
     $this->db->where('khachhang_id', $khachhang_id);

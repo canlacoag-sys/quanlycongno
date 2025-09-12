@@ -11,3 +11,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |	https://codeigniter.com/userguide3/general/hooks.html
 |
 */
+
+$hook['post_controller_constructor'][] = [
+	'class'    => '',
+	'function' => 'set_db_timezone',
+	'filename' => 'set_db_timezone.php',
+	'filepath' => 'hooks',
+	'params'   => []
+];
+

@@ -51,11 +51,13 @@
                 <td><?= htmlspecialchars($row->ten) ?></td>
                 <td><?= htmlspecialchars($row->dienthoai) ?></td>
                 <td><?= htmlspecialchars($row->diachi) ?></td>
-                <td class="text-right"><?= number_format($row->tongtien) ?></td>
+                <td class="text-right"><?= number_format($row->tongcong_tien) ?></td>
                 <td><?= htmlspecialchars($row->ghi_chu) ?></td>
                 <td class="text-center">
+                  <?php if (isset($user_role) && $user_role === 'admin'): ?>
                   <a href="<?= site_url('khachle/edit/'.$row->id); ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Sửa</a>
                   <button type="button" class="btn btn-danger btn-sm btn-delete-khachle" data-id="<?= $row->id ?>" data-toggle="modal" data-target="#delKhachLeModal"><i class="fas fa-trash-alt"></i> Xoá</button>
+                  <?php endif; ?>
                   <a href="<?= site_url('khachle/pos/'.$row->id); ?>" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print"></i> In POS</a>
                 </td>
               </tr> 

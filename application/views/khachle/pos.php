@@ -266,6 +266,24 @@ function get_loai_banh_tooltip($ma_sp_str, $sanpham_map) {
       </tr>
       <tr>
         <td class="totals-row" colspan="7">
+          <span class="total-label">Giảm giá toàn đơn:</span>
+          <span class="total-value">
+            <?php
+              if (!empty($donhang->giamgiatt_loai) && $donhang->giamgiatt_loai === 'phantram' && ($donhang->giamgiatt_giatri ?? 0) > 0) {
+                // show percent and amount if calculated
+                $amt = isset($donhang->giamgiatt_thanhtien) ? number_format($donhang->giamgiatt_thanhtien) . ' đ' : '0 đ';
+                echo '-' . intval($donhang->giamgiatt_giatri) . '% (' . $amt . ')';
+              } elseif (!empty($donhang->giamgiatt_loai) && $donhang->giamgiatt_loai === 'tienmat' && ($donhang->giamgiatt_thanhtien ?? 0) > 0) {
+                echo '-' . number_format($donhang->giamgiatt_thanhtien) . ' đ';
+              } else {
+                echo '—';
+              }
+            ?>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td class="totals-row" colspan="7">
           <span class="total-label">Phí ship:</span>
           <span class="total-value"><?= number_format($donhang->ship ?? 0) ?> đ</span>
         </td>

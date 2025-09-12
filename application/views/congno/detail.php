@@ -92,71 +92,161 @@
                       </button>
                     </div>
                     <div class="modal-body">
-                      <table class="table table-bordered" id="tableKetSo">
-                        <thead>
-                          <tr>
-                            <th class="text-center">Mã sản phẩm</th>
-                            <th class="text-center">Loại sản phẩm</th>
-                            <th class="text-right">Đơn giá</th>
-                            <th class="text-center">Số lượng</th>
-                            <th class="text-right">Thành tiền</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <?php foreach ($sanpham_tonghop as $idx => $sp): ?>
-                          <tr>
-                            <td class="text-center"><?= $sp['ma_sp'] ?><input type="hidden" name="items[<?= $idx ?>][ma_sp]" value="<?= $sp['ma_sp'] ?>"></td>
-                            <td class="text-center"><?php
-                              // Hiển thị loại sản phẩm: Có chiết khấu hoặc Không chiết khấu
-                              if (isset($sp['co_chiet_khau']) && $sp['co_chiet_khau']) {
-                                echo '<span class="badge badge-success">Có chiết khấu</span>';
-                              } else {
-                                echo '<span class="badge badge-secondary">Không chiết khấu</span>';
-                              }
-                            ?></td>
-                            <td class="text-right">
-                              <?php if (isset($sp['co_chiet_khau']) && $sp['co_chiet_khau']): ?>
-                                <input type="number" class="form-control text-right don-gia" name="items[<?= $idx ?>][don_gia]" value="<?= $sp['don_gia'] ?>" min="0" step="1000">
-                              <?php else: ?>
-                                <input type="number" class="form-control text-right don-gia" name="items[<?= $idx ?>][don_gia]" value="<?= $sp['don_gia'] ?>" readonly>
-                              <?php endif; ?>
-                            </td>
-                            <td class="text-center">
-                             
-                              <span><?= $sp['so_luong'] ?></span>
-                               <input type="hidden" class="form-control so-luong text-center" name="items[<?= $idx ?>][so_luong]" value="<?= $sp['so_luong'] ?>" min="1" step="1" readonly>
-                            </td>
-                            <td class="text-right text-danger font-weight-bold">
-                              <span class="thanh-tien-label"><?= number_format($sp['thanh_tien']) ?> đ</span>
-                              <input type="hidden" class="thanh-tien" name="items[<?= $idx ?>][thanh_tien]" value="<?= $sp['thanh_tien'] ?>">
-                            </td>
-                          </tr>
-                          <?php endforeach; ?>
-                        </tbody>
-                        <tfoot>
-                          <tr>
-                            <th colspan="4" class="text-right">Tổng tiền</th>
-                            <th class="text-right text-danger font-weight-bold"><span id="tongTienKetSoLabel"></span></th>
-                          </tr>
-                        </tfoot>
-                      </table>
+                      <div class="row">
+                        <div class="col-12">
+                          <h5>Bảng: Có chiết khấu</h5>
+                          <div class="form-group">
+                            <label>Áp dụng chiết khấu (%)</label>
+                            <input type="number" id="discountPercent" class="form-control" value="0" min="0" max="100" step="0.1">
+                            <!-- Hidden field copied into on submit so server reliably receives chietkhau_percent -->
+                            <input type="hidden" id="chietkhau_percent_hidden" name="chietkhau_percent" value="0">
+                          </div>
+                          <table class="table table-bordered" id="tableChietKhau">
+                            <thead>
+                              <tr>
+                                <th class="text-center">Mã sản phẩm</th>
+                                <th class="text-right">Đơn giá</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-right">Thành tiền</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <?php foreach ($sanpham_tonghop as $idx => $sp): ?>
+                                <?php if (isset($sp['co_chiet_khau']) && $sp['co_chiet_khau']): ?>
+                                <tr data-idx="<?= $idx ?>">
+                                  <td class="text-center"><?= $sp['ma_sp'] ?><input type="hidden" name="items[<?= $idx ?>][ma_sp]" value="<?= $sp['ma_sp'] ?>"></td>
+                                  <td class="text-right">
+                                    <!-- Don gia for discounted products should NOT be editable -->
+                                    <input type="number" class="form-control text-right don-gia-chiet" name="items[<?= $idx ?>][don_gia]" value="<?= $sp['don_gia'] ?>" min="0" step="1000" readonly>
+                                  </td>
+                                  <td class="text-center">
+                                    <span><?= $sp['so_luong'] ?></span>
+                                    <input type="hidden" class="form-control so-luong-chiet text-center" name="items[<?= $idx ?>][so_luong]" value="<?= $sp['so_luong'] ?>" readonly>
+                                  </td>
+                                  <td class="text-right text-danger font-weight-bold">
+                                    <span class="thanh-tien-chiet-label"><?= number_format($sp['thanh_tien']) ?> đ</span>
+                                    <input type="hidden" class="thanh-tien-chiet" name="items[<?= $idx ?>][thanh_tien]" value="<?= $sp['thanh_tien'] ?>">
+                                  </td>
+                                </tr>
+                                <?php endif; ?>
+                              <?php endforeach; ?>
+                            </tbody>
+                            <tfoot>
+                              <tr>
+                                <th class="text-right" colspan="3">Tổng (trước chiết khấu)</th>
+                                <th class="text-right text-danger font-weight-bold"><span id="tongChietKhauBefore">0 đ</span></th>
+                              </tr>
+                              <tr>
+                                <th class="text-right" colspan="3">Chiết khấu (<span id="discountPercentLabel">0</span>%)</th>
+                                <th class="text-right text-danger font-weight-bold"><span id="discountAmount">0 đ</span></th>
+                              </tr>
+                              <tr>
+                                <th class="text-right" colspan="3">Tổng sau chiết khấu</th>
+                                <th class="text-right text-danger font-weight-bold"><span id="tongChietKhauAfter">0 đ</span></th>
+                              </tr>
+                            </tfoot>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="row mt-3">
+                        <div class="col-12">
+                          <h5>Bảng: Không chiết khấu</h5>
+                          <table class="table table-bordered" id="tableKhongChiet">
+                            <thead>
+                              <tr>
+                                <th class="text-center">Mã sản phẩm</th>
+                                <th class="text-right">Đơn giá</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-right">Thành tiền</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <?php foreach ($sanpham_tonghop as $idx => $sp): ?>
+                                <?php if (!isset($sp['co_chiet_khau']) || !$sp['co_chiet_khau']): ?>
+                                <tr data-idx="<?= $idx ?>">
+                                  <td class="text-center"><?= $sp['ma_sp'] ?><input type="hidden" name="items[<?= $idx ?>][ma_sp]" value="<?= $sp['ma_sp'] ?>"></td>
+                                  <td class="text-right">
+                                    <!-- Don gia for non-discounted products should be editable -->
+                                    <input type="number" class="form-control text-right don-gia-non" name="items[<?= $idx ?>][don_gia]" value="<?= $sp['don_gia'] ?>" min="0" step="1000">
+                                  </td>
+                                  <td class="text-center">
+                                    <span><?= $sp['so_luong'] ?></span>
+                                    <input type="hidden" class="form-control so-luong-non text-center" name="items[<?= $idx ?>][so_luong]" value="<?= $sp['so_luong'] ?>" readonly>
+                                  </td>
+                                  <td class="text-right text-danger font-weight-bold">
+                                    <span class="thanh-tien-non-label"><?= number_format($sp['thanh_tien']) ?> đ</span>
+                                    <input type="hidden" class="thanh-tien-non" name="items[<?= $idx ?>][thanh_tien]" value="<?= $sp['thanh_tien'] ?>">
+                                  </td>
+                                </tr>
+                                <?php endif; ?>
+                              <?php endforeach; ?>
+                            </tbody>
+                            <tfoot>
+                              <tr>
+                                <th class="text-right" colspan="3">Tổng không chiết khấu</th>
+                                <th class="text-right text-danger font-weight-bold"><span id="tongKhongChiet">0 đ</span></th>
+                              </tr>
+                            </tfoot>
+                          </table>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-12 text-right">
+                          <h5>Tổng cộng: <span id="tongCongLabel">0 đ</span></h5>
+                        </div>
+                      </div>
+
                       <script>
-                      function updateThanhTienAndTongTien() {
-                        var tong = 0;
-                        $('#tableKetSo tbody tr').each(function() {
-                          var don_gia = parseInt($(this).find('.don-gia').val()) || 0;
-                          var so_luong = parseInt($(this).find('.so-luong').val()) || 0;
-                          var thanh_tien = don_gia * so_luong;
-                          $(this).find('.thanh-tien').val(thanh_tien);
-                          $(this).find('.thanh-tien-label').text(thanh_tien.toLocaleString() + ' đ');
-                          tong += thanh_tien;
-                          $(this).find('.so-luong').addClass('text-center');
+                      function parseIntSafe(v){ return parseInt(String(v).replace(/[^0-9\-]/g,'')) || 0; }
+
+                      function updateTables() {
+                        // Chiet khau table
+                        var subtotalChiet = 0;
+                        $('#tableChietKhau tbody tr').each(function(){
+                          var idx = $(this).data('idx');
+                          var don_gia = parseFloat($(this).find('.don-gia-chiet').val()) || 0;
+                          var so_luong = parseInt($(this).find('.so-luong-chiet').val()) || 0;
+                          var thanh = Math.round(don_gia * so_luong);
+                          $(this).find('.thanh-tien-chiet').val(thanh);
+                          $(this).find('.thanh-tien-chiet-label').text(thanh.toLocaleString() + ' đ');
+                          subtotalChiet += thanh;
                         });
-                        $('#tongTienKetSoLabel').text(tong.toLocaleString() + ' đ');
+                        $('#tongChietKhauBefore').text(subtotalChiet.toLocaleString() + ' đ');
+
+                        var pct = parseFloat($('#discountPercent').val()) || 0;
+                        $('#discountPercentLabel').text(pct);
+                        var discountAmount = Math.round(subtotalChiet * (pct/100));
+                        $('#discountAmount').text(discountAmount.toLocaleString() + ' đ');
+                        var afterChiet = subtotalChiet - discountAmount;
+                        $('#tongChietKhauAfter').text(afterChiet.toLocaleString() + ' đ');
+
+                        // Khong chiet khau
+                        var subtotalNon = 0;
+                        $('#tableKhongChiet tbody tr').each(function(){
+                          var don_gia = parseFloat($(this).find('.don-gia-non').val()) || 0;
+                          var so_luong = parseInt($(this).find('.so-luong-non').val()) || 0;
+                          var thanh = Math.round(don_gia * so_luong);
+                          $(this).find('.thanh-tien-non').val(thanh);
+                          $(this).find('.thanh-tien-non-label').text(thanh.toLocaleString() + ' đ');
+                          subtotalNon += thanh;
+                        });
+                        $('#tongKhongChiet').text(subtotalNon.toLocaleString() + ' đ');
+
+                        var tongCong = afterChiet + subtotalNon;
+                        $('#tongCongLabel').text(tongCong.toLocaleString() + ' đ');
                       }
-                      $(document).on('input', '.don-gia, .so-luong', updateThanhTienAndTongTien);
-                      $(document).ready(function(){
-                        updateThanhTienAndTongTien();
+
+                      // Recalculate when discount percent or non-discount prices change
+                      $(document).on('input', '#discountPercent, .don-gia-non', updateTables);
+                      $(document).ready(function(){ updateTables(); });
+
+                      // Ensure the discount percent is included in POST payload
+                      $('#formKetSo').on('submit', function(){
+                        // copy visible percent into hidden input (server reads chietkhau_percent)
+                        $('#chietkhau_percent_hidden').val($('#discountPercent').val());
+                        // recalc to make sure hidden item totals are up-to-date
+                        updateTables();
                       });
                       </script>
                     </div>

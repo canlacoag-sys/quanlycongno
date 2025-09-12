@@ -39,13 +39,17 @@
                     </ul>
                 </td>
                 <td>
+                  <?php if (isset($user_role) && $user_role === 'admin'): ?>
                   <a href="<?= site_url('congno/del/'.$row['khachhang']->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xóa công nợ này?');">Xóa</a>
+                  <?php endif; ?>
                 </td>
               </tr>
               <?php endforeach; ?>
             </tbody>
           </table>
+          <?php if (isset($user_role) && $user_role === 'admin'): ?>
           <a href="<?= site_url('congno/add') ?>" class="btn btn-primary mt-3">Thêm công nợ</a>
+          <?php endif; ?>
         </div>
       </div>
     </div>

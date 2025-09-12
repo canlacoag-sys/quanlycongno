@@ -1,3 +1,5 @@
+php_value date.timezone "Asia/Ho_Chi_Minh"
+
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteBase /
@@ -8,5 +10,6 @@
 
 	# Nếu không, chuyển hướng về index.php
 	RewriteRule ^(.*)$ index.php/$1 [L]
+	
 </IfModule>
 
