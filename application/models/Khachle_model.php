@@ -45,6 +45,31 @@ class Khachle_model extends CI_Model
     public function update($id, $data) {
         $this->db->where('id', $id)->update('khachle', $data);
     }
+
+    public function count_all($keyword = '')
+    {
+        if ($keyword) {
+            $this->db->group_start()
+                ->like('madon_id', $keyword)
+                ->or_like('ten', $keyword)
+                ->or_like('dienthoai', $keyword)
+                ->group_end();
+        }
+        return $this->db->count_all_results('khachle');
+    }
+
+    public function get_page($limit, $offset, $keyword = '')
+    {
+        if ($keyword) {
+            $this->db->group_start()
+                ->like('madon_id', $keyword)
+                ->or_like('ten', $keyword)
+                ->or_like('dienthoai', $keyword)
+                ->group_end();
+        }
+        $this->db->order_by('id', 'DESC');
+        return $this->db->get('khachle', $limit, $offset)->result();
+    }
 }
 
 // Không cần sửa gì ở đây nếu controller đã truyền đúng kiểu số

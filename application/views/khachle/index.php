@@ -41,7 +41,7 @@
             </thead>
             <tbody>
               <?php if (!empty($list)):
-                $i = 1;
+                $i = 1 + ($offset ?? 0);
                 foreach ($list as $row):
               ?>
               <tr>
@@ -55,6 +55,7 @@
                 <td><?= htmlspecialchars($row->ghi_chu) ?></td>
                 <td class="text-center">
                   <?php if (isset($user_role) && $user_role === 'admin'): ?>
+                  <a href="<?= site_url('khachle/detail/'.$row->id) ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Xem</a>
                   <a href="<?= site_url('khachle/edit/'.$row->id); ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Sửa</a>
                   <button type="button" class="btn btn-danger btn-sm btn-delete-khachle" data-id="<?= $row->id ?>" data-toggle="modal" data-target="#delKhachLeModal"><i class="fas fa-trash-alt"></i> Xoá</button>
                   <?php endif; ?>
@@ -62,7 +63,7 @@
                 </td>
               </tr> 
               <?php endforeach; else: ?>
-                <tr><td colspan="9" class="text-center">Chưa có đơn khách lẻ nào.</td></tr>
+                <tr><td colspan="9" class="text-center text-muted">Chưa có đơn khách lẻ nào.</td></tr>
               <?php endif; ?>
             </tbody>
           </table>

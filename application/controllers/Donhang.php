@@ -32,24 +32,73 @@ class Donhang extends CI_Controller {
         $this->load->view('templates/footer');
     }
 
+
+    
     public function index() {
         $this->load->model('Khachhang_model');
-        $keyword = $this->input->get('keyword');
+        $this->load->library('pagination');
+        $perPage = 20;
+        $segment = 3;
+        $keyword = $this->input->get('keyword', true);
+
+        // Đếm tổng số đơn hàng (có thể lọc theo từ khóa)
+        $this->db->from('donhang');
+        $this->db->join('khachhang', 'donhang.khachhang_id = khachhang.id', 'left');
         if (!empty($keyword)) {
-            // Tìm kiếm theo mã đơn hàng (madon_id), khách hàng, ngày lập
-            $this->db->select('donhang.*, khachhang.ten as ten_khachhang');
-            $this->db->from('donhang');
-            $this->db->join('khachhang', 'donhang.khachhang_id = khachhang.id', 'left');
+            $this->db->group_start();
+            $this->db->like('donhang.madon_id', $keyword); // Đúng tên trường
+            $this->db->or_like('khachhang.ten', $keyword);
+            $this->db->or_like('donhang.ngaylap', $keyword);
+            $this->db->group_end();
+        }
+        $total = $this->db->count_all_results();
+
+        // Cấu hình phân trang
+        $config['base_url'] = site_url('donhang/index');
+        $config['total_rows'] = $total;
+        $config['per_page'] = $perPage;
+        $config['uri_segment'] = $segment;
+        $config['reuse_query_string'] = true;
+        // Bootstrap style
+        $config['full_tag_open']   = '<nav><ul class="pagination justify-content-center mb-0">';
+        $config['full_tag_close']  = '</ul></nav>';
+        $config['first_link']      = 'Đầu';
+        $config['last_link']       = 'Cuối';
+        $config['first_tag_open']  = '<li class="page-item">';
+        $config['first_tag_close'] = '</li>';
+        $config['prev_link']       = '&laquo;';
+        $config['prev_tag_open']   = '<li class="page-item">';
+        $config['prev_tag_close']  = '</li>';
+        $config['next_link']       = '&raquo;';
+        $config['next_tag_open']   = '<li class="page-item">';
+        $config['next_tag_close']  = '</li>';
+        $config['last_tag_open']   = '<li class="page-item">';
+        $config['last_tag_close']  = '</li>';
+        $config['cur_tag_open']    = '<li class="page-item active"><span class="page-link">';
+        $config['cur_tag_close']   = '</span></li>';
+        $config['num_tag_open']    = '<li class="page-item">';
+        $config['num_tag_close']   = '</li>';
+        $config['attributes']      = ['class' => 'page-link'];
+
+        $this->pagination->initialize($config);
+
+        $offset = (int) $this->uri->segment($segment, 0);
+
+        // Truy vấn dữ liệu từng trang
+        $this->db->select('donhang.*, khachhang.ten as ten_khachhang');
+        $this->db->from('donhang');
+        $this->db->join('khachhang', 'donhang.khachhang_id = khachhang.id', 'left');
+        if (!empty($keyword)) {
             $this->db->group_start();
             $this->db->like('donhang.madon_id', $keyword);
             $this->db->or_like('khachhang.ten', $keyword);
             $this->db->or_like('donhang.ngaylap', $keyword);
             $this->db->group_end();
-            $this->db->order_by('donhang.id', 'DESC');
-            $list = $this->db->get()->result();
-        } else {
-            $list = $this->Donhang_model->get_all();
         }
+        $this->db->order_by('donhang.id', 'DESC');
+        $this->db->limit($perPage, $offset);
+        $list = $this->db->get()->result();
+
         // Lấy user role từ session/database
         $user_id = $this->session->userdata('user_id');
         $user_role = null;
@@ -57,6 +106,7 @@ class Donhang extends CI_Controller {
             $user = $this->db->get_where('users', ['id' => $user_id])->row();
             $user_role = $user ? $user->role : null;
         }
+
         // Tổng hợp mã sản phẩm cho từng đơn hàng
         $donhang_sanpham = [];
         foreach ($list as $dh) {
@@ -72,6 +122,7 @@ class Donhang extends CI_Controller {
             }
             $donhang_sanpham[$dh->id] = $ma_sp_arr;
         }
+
         $data = [
             'list' => $list,
             'donhang_sanpham' => $donhang_sanpham,
@@ -79,6 +130,8 @@ class Donhang extends CI_Controller {
             'khachhang' => $this->db->get('khachhang')->result(),
             'user_role' => $user_role,
             'keyword' => $keyword,
+            'pagination' => $this->pagination->create_links(),
+            'offset' => $offset
         ];
         $this->render('donhang/index', $data);
     }
@@ -462,4 +515,31 @@ class Donhang extends CI_Controller {
         ];
         $this->render('donhang/addkochietkhau', $data);
     }
+
+    public function detail($id) {
+        $this->load->model('Donhang_model');
+        $this->load->model('Khachhang_model');
+
+        // Lấy đơn hàng
+        $donhang = $this->Donhang_model->get_by_id($id);
+        if (!$donhang) show_404();
+
+        // Lấy khách hàng
+        $khachhang = $this->Khachhang_model->get_by_id($donhang->khachhang_id);
+
+        // Lấy chi tiết sản phẩm của đơn hàng
+        $chitiet = $this->Donhang_model->get_chitiet($id);
+
+        // Lấy danh sách sản phẩm để đối chiếu tên
+        $sanpham = $this->db->get('sanpham')->result();
+
+        $data = [
+            'donhang'   => $donhang,
+            'khachhang' => $khachhang,
+            'chitiet'   => $chitiet,
+            'sanpham'   => $sanpham,
+        ];
+        $this->render('donhang/detail', $data);
+    }
+
 }

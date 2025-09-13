@@ -56,8 +56,33 @@ class Donhang_model extends CI_Model
     }
 
     public function get_by_khachhang($khachhang_id)
-{
-    $this->db->where('khachhang_id', $khachhang_id);
-    return $this->db->get('donhang')->result();
-}
+    {
+        $this->db->where('khachhang_id', $khachhang_id);
+        return $this->db->get('donhang')->result();
+    }
+
+    public function count_all($keyword = '')
+    {
+        if ($keyword) {
+            $this->db->group_start()
+                ->like('madon_id', $keyword)
+                ->or_like('ten_khachhang', $keyword)
+                ->or_like('ngaylap', $keyword)
+                ->group_end();
+        }
+        return $this->db->count_all_results('donhang');
+    }
+
+    public function get_page($limit, $offset, $keyword = '')
+    {
+        if ($keyword) {
+            $this->db->group_start()
+                ->like('madon_id', $keyword)
+                ->or_like('ten_khachhang', $keyword)
+                ->or_like('ngaylap', $keyword)
+                ->group_end();
+        }
+        $this->db->order_by('ngaylap', 'DESC');
+        return $this->db->get('donhang', $limit, $offset)->result();
+    }
 }

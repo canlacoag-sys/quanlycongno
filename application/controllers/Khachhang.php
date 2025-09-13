@@ -99,6 +99,7 @@ class Khachhang extends CI_Controller
             'pagination' => $this->pagination->create_links(),
             'keyword'    => $keyword,
             'user_role'  => $user_role,
+            'offset'     => $offset,
         ];
         $this->render('khachhang/index', $data);
     }

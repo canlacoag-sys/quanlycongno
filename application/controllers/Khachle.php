@@ -30,21 +30,62 @@ class Khachle extends CI_Controller {
 
     // Danh sách đơn khách lẻ
     public function index() {
-            $keyword = $this->input->get('keyword', true);
-            $list = $this->Khachle_model->get_all($keyword);
-            $this->load->database();
-            $user_id = $this->session->userdata('user_id');
-            $user_role = null;
-            if ($user_id) {
-                $user = $this->db->get_where('users', ['id' => $user_id])->row();
-                $user_role = $user ? $user->role : null;
-            }
-            $data = [
-                'list' => $list,
-                'keyword' => $keyword,
-                'user_role' => $user_role,
-            ];
-            $this->render('khachle/index', $data);
+        $this->load->library('pagination');
+        $this->load->database();
+
+        $keyword = $this->input->get('keyword', true);
+        $perPage = 20;
+        $segment = 3;
+
+        // Đếm tổng số đơn khách lẻ (có thể lọc theo từ khóa)
+        $total = $this->Khachle_model->count_all($keyword);
+
+        $config['base_url'] = site_url('khachle/index');
+        $config['total_rows'] = $total;
+        $config['per_page'] = $perPage;
+        $config['uri_segment'] = $segment;
+        $config['reuse_query_string'] = true;
+
+        // Bootstrap style
+        $config['full_tag_open']   = '<nav><ul class="pagination justify-content-center mb-0">';
+        $config['full_tag_close']  = '</ul></nav>';
+        $config['first_link']      = 'Đầu';
+        $config['last_link']       = 'Cuối';
+        $config['first_tag_open']  = '<li class="page-item">';
+        $config['first_tag_close'] = '</li>';
+        $config['prev_link']       = '&laquo;';
+        $config['prev_tag_open']   = '<li class="page-item">';
+        $config['prev_tag_close']  = '</li>';
+        $config['next_link']       = '&raquo;';
+        $config['next_tag_open']   = '<li class="page-item">';
+        $config['next_tag_close']  = '</li>';
+        $config['last_tag_open']   = '<li class="page-item">';
+        $config['last_tag_close']  = '</li>';
+        $config['cur_tag_open']    = '<li class="page-item active"><span class="page-link">';
+        $config['cur_tag_close']   = '</span></li>';
+        $config['num_tag_open']    = '<li class="page-item">';
+        $config['num_tag_close']   = '</li>';
+        $config['attributes']      = ['class' => 'page-link'];
+
+        $this->pagination->initialize($config);
+
+        $offset = (int) $this->uri->segment($segment, 0);
+        $list = $this->Khachle_model->get_page($perPage, $offset, $keyword);
+
+        $user_id = $this->session->userdata('user_id');
+        $user_role = null;
+        if ($user_id) {
+            $user = $this->db->get_where('users', ['id' => $user_id])->row();
+            $user_role = $user ? $user->role : null;
+        }
+        $data = [
+            'list' => $list,
+            'keyword' => $keyword,
+            'user_role' => $user_role,
+            'pagination' => $this->pagination->create_links(),
+            'offset' => $offset
+        ];
+        $this->render('khachle/index', $data);
     }
 
     // Thêm đơn khách lẻ
@@ -233,5 +274,27 @@ class Khachle extends CI_Controller {
             'chitiet' => $chitiet,
             'sanpham' => $sanpham
         ]);
+    }
+
+    // Chi tiết đơn khách lẻ
+    public function detail($id) {
+        $this->load->model('Khachle_model');
+
+        // Lấy đơn khách lẻ
+        $khachle = $this->Khachle_model->get_by_id($id);
+        if (!$khachle) show_404();
+
+        // Lấy chi tiết sản phẩm của đơn khách lẻ
+        $chitiet = $this->Khachle_model->get_chitiet($id);
+
+        // Lấy danh sách sản phẩm để đối chiếu tên bánh
+        $sanpham = $this->db->get('sanpham')->result();
+
+        $data = [
+            'khachle' => $khachle,
+            'chitiet' => $chitiet,
+            'sanpham' => $sanpham,
+        ];
+        $this->render('khachle/detail', $data);
     }
 }

@@ -35,6 +35,7 @@
                 <th>Mã đơn</th>
                 <th>Ngày lập</th>
                 <th>Tổng tiền</th>
+                <th>Tác vụ</th>
               </tr>
             </thead>
             <tbody>
@@ -43,6 +44,9 @@
                 <td><?= htmlspecialchars($dh->madon_id) ?></td>
                 <td><?= date('d/m/Y H:i', strtotime($dh->ngaylap)) ?></td>
                 <td class="text-right"><?= number_format($dh->tongtien) ?> đ</td>
+                <td class="text-center">
+                  <a href="<?= site_url('donhang/detail/'.$dh->id) ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Xem</a>
+                </td>
               </tr>
               <?php endforeach; ?>
             </tbody>

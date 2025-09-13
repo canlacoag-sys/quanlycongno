@@ -79,6 +79,7 @@ class Sanpham extends CI_Controller
             'keyword'    => $keyword,
             'chietkhau'  => $chietkhau,
             'user_role'  => $user_role,
+            'offset'     => $offset,
         ];
 
         $this->render('sanpham/index', $data);

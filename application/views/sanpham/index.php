@@ -42,6 +42,7 @@
             <table class="table table-bordered table-striped table-hover mb-0 table-products">
               <thead>
                 <tr>
+                  <th class="text-center" style="width:44px;">STT</th>  
                   <th class="text-center" style="width:120px;">Mã bánh</th>
                   <th>Tên sản phẩm</th>
                   <th class="text-center" style="width:120px;">Giá bán</th>
@@ -51,8 +52,9 @@
                 </tr>
               </thead>
               <tbody>
-                <?php foreach($list as $sp): ?>
+                <?php if (!empty($list)): $i = 1 + ($offset ?? 0); foreach($list as $sp): ?>
                 <tr>
+                  <td class="text-center"><?= $i++ ?></td>
                   <td class="text-center col-ma-sp"><?= $sp->ma_sp ?></td>
                   <td class="col-ten-sp"><?= $sp->ten_sp ?></td>
                   <td class="text-right col-gia-sp" data-gia="<?= $sp->gia ?>"><?= number_format($sp->gia) ?></td>
@@ -74,7 +76,9 @@
                     <?php endif; ?>
                   </td>
                 </tr>
-                <?php endforeach; ?>
+                <?php endforeach; else: ?>
+                 <tr><td colspan="7" class="text-center text-muted">Chưa có sản phẩm nào.</td></tr>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
