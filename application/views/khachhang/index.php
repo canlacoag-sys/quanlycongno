@@ -35,7 +35,7 @@
           <table class="table table-bordered table-striped table-hover mb-0">
             <thead>
               <tr>
-                <th style="width:44px;">Click</th>
+                <!-- th style="width:44px;">Click</th -->
                 <th>Tên</th>
                 <th>Điện thoại</th>
                 <th>Địa chỉ</th>
@@ -53,13 +53,13 @@
               ?>
               <!-- Hàng chính -->
               <tr class="<?= $rowClass ?>">
-                <td class="align-middle">
+                <!-- td class="align-middle">
                   <button class="btn btn-sm btn-light border toggle-row" type="button"
-                          data-toggle="collapse" data-target="#<?= $collapseId ?>"
-                          aria-expanded="false" aria-controls="<?= $collapseId ?>">
+                          data-toggle="collapse" data-target="#<!?= $collapseId ?>"
+                          aria-expanded="false" aria-controls="<!?= $collapseId ?>">
                     <i class="fas fa-chevron-down"></i>
                   </button>
-                </td>
+                </td -->
                 <td class="align-middle"><?= html_escape($row->ten) ?></td>
                 <?php $this->load->helper('phone'); ?>
                 <td class="align-middle"><?= html_escape(phones_pretty($row->dienthoai)) ?></td>
@@ -69,7 +69,7 @@
                   <?php if (isset($user_role) && $user_role === 'admin'): ?>
                   <a href="#" class="btn btn-sm btn-danger btn-delete-customer" data-toggle="modal" data-target="#confirmDeleteCustomerModal" data-id="<?= $row->id ?>"><i class="fas fa-trash-alt"></i> Xóa</a>
                   <?php endif; ?>
-                  <a href="<?= site_url('congno/detail/'.$row->id) ?>" class="btn btn-info btn-sm">Xem công nợ</a>
+                  <a href="<?= site_url('congno/detail/'.$row->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xem công nợ khách hàng này?');">Xem Công Nợ</a>
                 </td>
               </tr>
               <!-- Hàng chi tiết (collapse) -->

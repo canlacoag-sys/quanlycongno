@@ -98,6 +98,10 @@ class Khachle extends CI_Controller {
                 'ghi_chu' => $this->input->post('ghi_chu', true),
             ];
             $khachle_id = $this->Khachle_model->insert($data);
+            // Ghi log thêm đơn khách lẻ
+            $this->load->model('Actionlog_model');
+            $user_id = $this->session->userdata('user_id');
+            $this->Actionlog_model->log($user_id, 'add', 'khachle', $khachle_id, null, json_encode($data, JSON_UNESCAPED_UNICODE));
 
             // Thêm chi tiết đơn hàng, lấy cả giảm giá từng dòng
             $ma_sp = $this->input->post('ma_sp');
@@ -184,7 +188,18 @@ class Khachle extends CI_Controller {
                     }
                 }
             }
-            redirect('khachle');
+            // Ghi log sửa đơn khách lẻ
+            $this->load->model('Actionlog_model');
+            $user_id = $this->session->userdata('user_id');
+            $row_before = $this->Khachle_model->get_by_id($id); // hoặc lấy trước khi update
+            $this->Actionlog_model->log($user_id, 'edit', 'khachle', $id, json_encode($row_before, JSON_UNESCAPED_UNICODE), json_encode($data, JSON_UNESCAPED_UNICODE));
+
+            if ($this->input->is_ajax_request()) {
+                echo json_encode(['id' => $id]);
+                exit;
+            } else {
+                redirect('khachle');
+            }
         }
         $data = [
             'row' => $row,
@@ -196,8 +211,14 @@ class Khachle extends CI_Controller {
 
     // Xoá đơn khách lẻ
     public function delete($id) {
+        $row_before = $this->Khachle_model->get_by_id($id);
         $this->db->where('id', $id)->delete('khachle');
         $this->db->where('khachle_id', $id)->delete('khachle_donhang');
+        // Ghi log xóa đơn khách lẻ
+        $this->load->model('Actionlog_model');
+        $user_id = $this->session->userdata('user_id');
+        $this->Actionlog_model->log($user_id, 'delete', 'khachle', $id, json_encode($row_before, JSON_UNESCAPED_UNICODE), null);
+
         redirect('khachle');
     }
 

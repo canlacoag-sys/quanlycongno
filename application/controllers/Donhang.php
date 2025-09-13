@@ -12,12 +12,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Donhang extends CI_Controller {
     public function __construct() {
-    parent::__construct();
-    $this->load->model('Donhang_model');
-    $this->load->helper(['url', 'form']);
-    $this->load->library('session');
-    $this->load->database();
-    if(!$this->session->userdata('user_id')) redirect('auth/login');
+        parent::__construct();
+        $this->load->model('Donhang_model');
+        $this->load->model('Actionlog_model');
+        $this->load->helper(['url', 'form']);
+        $this->load->library('session');
+        $this->load->database();
+        if(!$this->session->userdata('user_id')) redirect('auth/login');
     }
 
     // Hàm render dùng chung cho mọi view
@@ -32,22 +33,54 @@ class Donhang extends CI_Controller {
     }
 
     public function index() {
-            $this->load->model('Khachhang_model');
+        $this->load->model('Khachhang_model');
+        $keyword = $this->input->get('keyword');
+        if (!empty($keyword)) {
+            // Tìm kiếm theo mã đơn hàng (madon_id), khách hàng, ngày lập
+            $this->db->select('donhang.*, khachhang.ten as ten_khachhang');
+            $this->db->from('donhang');
+            $this->db->join('khachhang', 'donhang.khachhang_id = khachhang.id', 'left');
+            $this->db->group_start();
+            $this->db->like('donhang.madon_id', $keyword);
+            $this->db->or_like('khachhang.ten', $keyword);
+            $this->db->or_like('donhang.ngaylap', $keyword);
+            $this->db->group_end();
+            $this->db->order_by('donhang.id', 'DESC');
+            $list = $this->db->get()->result();
+        } else {
             $list = $this->Donhang_model->get_all();
-            // Lấy user role từ session/database
-            $user_id = $this->session->userdata('user_id');
-            $user_role = null;
-            if ($user_id) {
-                $user = $this->db->get_where('users', ['id' => $user_id])->row();
-                $user_role = $user ? $user->role : null;
+        }
+        // Lấy user role từ session/database
+        $user_id = $this->session->userdata('user_id');
+        $user_role = null;
+        if ($user_id) {
+            $user = $this->db->get_where('users', ['id' => $user_id])->row();
+            $user_role = $user ? $user->role : null;
+        }
+        // Tổng hợp mã sản phẩm cho từng đơn hàng
+        $donhang_sanpham = [];
+        foreach ($list as $dh) {
+            $chitiet = $this->Donhang_model->get_chitiet($dh->id);
+            $ma_sp_arr = [];
+            foreach ($chitiet as $ct) {
+                $ma_sps = array_map('trim', explode(',', $ct->ma_sp));
+                foreach ($ma_sps as $ma_sp) {
+                    if ($ma_sp && !in_array($ma_sp, $ma_sp_arr)) {
+                        $ma_sp_arr[] = $ma_sp;
+                    }
+                }
             }
-            $data = [
-                'list' => $list,
-                'sanpham' => $this->db->get('sanpham')->result(),
-                'khachhang' => $this->db->get('khachhang')->result(),
-                'user_role' => $user_role,
-            ];
-            $this->render('donhang/index', $data);
+            $donhang_sanpham[$dh->id] = $ma_sp_arr;
+        }
+        $data = [
+            'list' => $list,
+            'donhang_sanpham' => $donhang_sanpham,
+            'sanpham' => $this->db->get('sanpham')->result(),
+            'khachhang' => $this->db->get('khachhang')->result(),
+            'user_role' => $user_role,
+            'keyword' => $keyword,
+        ];
+        $this->render('donhang/index', $data);
     }
 
     public function autocomplete_khachhang() {
@@ -135,33 +168,43 @@ class Donhang extends CI_Controller {
             // Tạo mã đơn hàng: DH + chuỗi số từ ngày lập (YYYYMMDDHHIISS)
             $madon_id = 'DH' . date('YmdHis', strtotime($ngaylap));
 
-            $donhang_id = $this->Donhang_model->insert([
-                'madon_id' => $madon_id,
-                'khachhang_id' => $khachhang_id,
-                'tongtien' => $tongtien,
-                'ngaylap' => $ngaylap,
-                'giao_hang' => $giao_hang,
-                'nguoi_nhan' => $nguoi_nhan,
-                'ghi_chu' => $ghi_chu,
-                'co_chiet_khau' => $co_chiet_khau
-            ]);
+                $data_new = [
+                    'madon_id' => $madon_id,
+                    'khachhang_id' => $khachhang_id,
+                    'tongtien' => $tongtien,
+                    'ngaylap' => $ngaylap,
+                    'giao_hang' => $giao_hang,
+                    'nguoi_nhan' => $nguoi_nhan,
+                    'ghi_chu' => $ghi_chu,
+                    'co_chiet_khau' => $co_chiet_khau
+                ];
+                $donhang_id = $this->Donhang_model->insert($data_new);
+                // Actionlog_model đã được load trong __construct
+                $user_id = $this->session->userdata('user_id');
+                $this->Actionlog_model->log($user_id, 'add', 'donhang', $donhang_id, null, json_encode($data_new, JSON_UNESCAPED_UNICODE));
 
             $ma_sp = $this->input->post('ma_sp');
             $so_luong = $this->input->post('so_luong');
             $don_gia = $this->input->post('don_gia');
             $thanh_tien = $this->input->post('thanh_tien');
 
+            $chitiet_after = [];
             for($i=0;$i<count($ma_sp);$i++) {
                 if(!empty($ma_sp[$i]) && $so_luong[$i] > 0) {
-                    $this->Donhang_model->insert_chitiet([
+                    $row = [
                         'donhang_id' => $donhang_id,
                         'ma_sp' => $ma_sp[$i],
                         'so_luong' => $so_luong[$i],
                         'don_gia' => $don_gia[$i],
                         'thanh_tien' => $thanh_tien[$i]
-                    ]);
+                    ];
+                    $this->Donhang_model->insert_chitiet($row);
+                    $chitiet_after[] = $row;
                 }
             }
+            // Log chi tiết đơn hàng sau khi thêm
+            $user_id = $this->session->userdata('user_id');
+            $this->Actionlog_model->log($user_id, 'add', 'chitiet_donhang', $donhang_id, null, json_encode($chitiet_after, JSON_UNESCAPED_UNICODE));
             redirect('donhang/pos/'.$donhang_id);
         }
         $data = [
@@ -200,40 +243,66 @@ class Donhang extends CI_Controller {
         }
 
         if ($this->input->method() === 'post') {
-            $khachhang_id = $this->input->post('khachhang_id');
-            $tongtien = $this->input->post('tongtien');
-            $ngaylap = $this->input->post('ngaylap');
-            $giao_hang = $this->input->post('giao_hang');
-            $nguoi_nhan = $this->input->post('nguoi_nhan');
-            $ghi_chu = $this->input->post('ghi_chu');
-            if(!$ngaylap) $ngaylap = date('Y-m-d H:i:s');
+                $row_before = $this->Donhang_model->get_by_id($id);
+                $khachhang_id = $this->input->post('khachhang_id');
+                $ngaylap = $this->input->post('ngaylap');
+                $giao_hang = $this->input->post('giao_hang');
+                $nguoi_nhan = $this->input->post('nguoi_nhan');
+                $ghi_chu = $this->input->post('ghi_chu');
+                if(!$ngaylap) $ngaylap = date('Y-m-d H:i:s');
 
-            $this->Donhang_model->update($id, [
-                'khachhang_id' => $khachhang_id,
-                'tongtien' => $tongtien,
-                'ngaylap' => $ngaylap,
-                'giao_hang' => $giao_hang,
-                'nguoi_nhan' => $nguoi_nhan,
-                'ghi_chu' => $ghi_chu
-            ]);
+                $ma_sp = $this->input->post('ma_sp');
+                $so_luong = $this->input->post('so_luong');
+                $don_gia = $this->input->post('don_gia');
+                $thanh_tien = $this->input->post('thanh_tien');
 
-            $this->db->where('donhang_id', $id)->delete('chitiet_donhang');
-            $ma_sp = $this->input->post('ma_sp');
-            $so_luong = $this->input->post('so_luong');
-            $don_gia = $this->input->post('don_gia');
-            $thanh_tien = $this->input->post('thanh_tien');
-            for($i=0;$i<count($ma_sp);$i++) {
-                if(!empty($ma_sp[$i]) && $so_luong[$i] > 0) {
-                    $this->Donhang_model->insert_chitiet([
-                        'donhang_id' => $id,
-                        'ma_sp' => $ma_sp[$i],
-                        'so_luong' => $so_luong[$i],
-                        'don_gia' => $don_gia[$i],
-                        'thanh_tien' => $thanh_tien[$i]
-                    ]);
+                // Lấy chi tiết cũ để log
+                $chitiet_before = $this->Donhang_model->get_chitiet($id);
+                $this->db->where('donhang_id', $id)->delete('chitiet_donhang');
+
+                // Thêm chi tiết mới và tính lại tổng tiền
+                $tongtien = 0;
+                $chitiet_after = [];
+                for($i=0;$i<count($ma_sp);$i++) {
+                    if(!empty($ma_sp[$i]) && $so_luong[$i] > 0) {
+                        $row = [
+                            'donhang_id' => $id,
+                            'ma_sp' => $ma_sp[$i],
+                            'so_luong' => $so_luong[$i],
+                            'don_gia' => $don_gia[$i],
+                            'thanh_tien' => $thanh_tien[$i]
+                        ];
+                        $this->Donhang_model->insert_chitiet($row);
+                        $chitiet_after[] = $row;
+                        $tongtien += floatval($thanh_tien[$i]);
+                    }
                 }
-            }
-            redirect('donhang/pos/'.$id);
+                // Log chi tiết đơn hàng trước và sau khi sửa
+                $user_id = $this->session->userdata('user_id');
+                $this->Actionlog_model->log($user_id, 'edit', 'chitiet_donhang', $id, json_encode($chitiet_before, JSON_UNESCAPED_UNICODE), json_encode($chitiet_after, JSON_UNESCAPED_UNICODE));
+
+                // Cập nhật lại tổng tiền vào đơn hàng
+                $data_new = [
+                    'khachhang_id' => $khachhang_id,
+                    'tongtien' => $tongtien,
+                    'ngaylap' => $ngaylap,
+                    'giao_hang' => $giao_hang,
+                    'nguoi_nhan' => $nguoi_nhan,
+                    'ghi_chu' => $ghi_chu
+                ];
+                $this->Donhang_model->update($id, $data_new);
+                $row_after = $this->Donhang_model->get_by_id($id);
+                // Actionlog_model đã được load trong __construct
+                $user_id = $this->session->userdata('user_id');
+                $this->Actionlog_model->log($user_id, 'edit', 'donhang', $id, json_encode($row_before, JSON_UNESCAPED_UNICODE), json_encode($row_after, JSON_UNESCAPED_UNICODE));
+
+                    if ($this->input->is_ajax_request()) {
+                        echo json_encode(['id' => $id]);
+                        return;
+                    } else {
+                        redirect('donhang/pos/'.$id);
+                        return;
+                    }
         }
 
         $data = [
@@ -241,6 +310,7 @@ class Donhang extends CI_Controller {
             'chitiet' => $chitiet,
             'sanpham' => $this->db->get('sanpham')->result(),
             'khachhang' => $khachhang, // truyền đúng object khách hàng cho view
+            'active' => 'donhang/edit',
         ];
         $this->render('donhang/edit', $data);
     }
@@ -255,7 +325,13 @@ class Donhang extends CI_Controller {
         }
 
         $this->load->model('Donhang_model');
-        $ok = $this->Donhang_model->delete_with_chitiet($id);
+            $row_before = $this->Donhang_model->get_by_id($id);
+            $chitiet_before = $this->Donhang_model->get_chitiet($id);
+            $ok = $this->Donhang_model->delete_with_chitiet($id);
+            // Actionlog_model đã được load trong __construct
+            $user_id = $this->session->userdata('user_id');
+            $this->Actionlog_model->log($user_id, 'delete', 'donhang', $id, json_encode($row_before, JSON_UNESCAPED_UNICODE), null);
+            $this->Actionlog_model->log($user_id, 'delete', 'chitiet_donhang', $id, json_encode($chitiet_before, JSON_UNESCAPED_UNICODE), null);
 
         if ($this->input->is_ajax_request()) {
             $this->output->set_content_type('application/json')->set_output(json_encode(['success' => (bool)$ok]));

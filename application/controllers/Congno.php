@@ -110,8 +110,8 @@ class Congno extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-    // Ensure database is loaded for $this->db usage
-    $this->load->database();
+        $this->load->database();
+        $this->load->library('session');
         $this->load->model('Khachhang_model');
         $this->load->model('Donhang_model');
         $this->load->model('Sanpham_model');
@@ -145,7 +145,7 @@ class Congno extends CI_Controller
                             $ten_sp = $sp_obj ? $sp_obj->ten_sp : '';
                         }
                         $sanpham_chitiet[$ma_sp] = [
-                            'ten_sp' => $ten_sp,
+                            'ma_sp' => $ma_sp,
                             'co_chiet_khau' => $co_chiet_khau,
                             'so_luong' => 0,
                             'thanh_tien' => 0
@@ -162,12 +162,20 @@ class Congno extends CI_Controller
                 'sanpham_chitiet' => array_values($sanpham_chitiet)
             ];
         }
+        $user_id = $this->session->userdata('user_id');
+        $user_role = null;
+        if ($user_id) {
+            $user = $this->db->get_where('users', ['id' => $user_id])->row();
+            $user_role = $user ? $user->role : null;
+        }
         $page_data = [
             'title' => 'Công nợ khách hàng',
             'data' => $data,
-            'active' => 'congno'
+            'active' => 'congno',
+            'user_role' => $user_role
         ];
         $this->load->view('templates/header', $page_data);
+        $this->load->view('templates/navbar', $page_data);
         $this->load->view('templates/sidebar', $page_data);
         $this->load->view('congno/index', $page_data);
         $this->load->view('templates/footer');
@@ -181,12 +189,17 @@ class Congno extends CI_Controller
             $khachhang_id = $this->input->post('khachhang_id');
             $ghichu = $this->input->post('ghichu');
             $sotien = $this->input->post('sotien');
-            $this->Congno_model->insert([
-                'khachhang_id' => $khachhang_id,
-                'ghichu' => $ghichu,
-                'sotien' => $sotien,
-                'ngaytao' => date('Y-m-d H:i:s')
-            ]);
+                $data_new = [
+                    'khachhang_id' => $khachhang_id,
+                    'ghichu' => $ghichu,
+                    'sotien' => $sotien,
+                    'ngaytao' => date('Y-m-d H:i:s')
+                ];
+                $id = $this->Congno_model->insert($data_new);
+                // Log thao tác thêm
+                $this->load->model('Actionlog_model');
+                $user_id = $this->session->userdata('user_id');
+                $this->Actionlog_model->log($user_id, 'add', 'congno', $id, null, json_encode($data_new, JSON_UNESCAPED_UNICODE));
             redirect('congno');
         }
         $data['khachhangs'] = $this->Khachhang_model->get_all();
@@ -198,7 +211,13 @@ class Congno extends CI_Controller
     {
         $this->load->model('Congno_model');
         if ($this->input->method() === 'post') {
-            $this->Congno_model->delete($id);
+                // Lấy dữ liệu trước khi xoá
+                $row_before = $this->db->get_where('congno', ['id' => $id])->row_array();
+                $this->Congno_model->delete($id);
+                // Log thao tác xoá
+                $this->load->model('Actionlog_model');
+                $user_id = $this->session->userdata('user_id');
+                $this->Actionlog_model->log($user_id, 'delete', 'congno', $id, json_encode($row_before, JSON_UNESCAPED_UNICODE), null);
             redirect('congno');
         }
         $data['id'] = $id;
@@ -206,56 +225,70 @@ class Congno extends CI_Controller
     }
 
     public function detail($khachhang_id)
-    {
-        $kh = $this->Khachhang_model->get_by_id($khachhang_id);
-        if (!$kh) show_404();
+{
+    $this->load->model('Khachhang_model');
+    $this->load->model('Donhang_model');
+    $this->load->model('Sanpham_model');
+    $kh = $this->Khachhang_model->get_by_id($khachhang_id);
+    if (!$kh) show_404();
 
-        $donhangs = $this->Donhang_model->get_by_khachhang($khachhang_id);
+    $donhangs = $this->Donhang_model->get_by_khachhang($khachhang_id);
 
-        // Tổng nợ và tổng đơn hàng
-        $tong_no = 0;
-        $tong_don = count($donhangs);
+    $tong_no = 0;
+    $tong_don = count($donhangs);
 
-        // Tổng hợp chi tiết sản phẩm, bổ sung co_chiet_khau
-        $sanpham_tonghop = [];
-        foreach ($donhangs as $dh) {
-            $tong_no += $dh->tongtien;
-            $chitiet = $this->Donhang_model->get_chitiet($dh->id);
-            foreach ($chitiet as $ct) {
-                $ma_sps = explode(',', $ct->ma_sp);
-                foreach ($ma_sps as $ma_sp) {
-                    $ma_sp = trim($ma_sp);
-                    if (!isset($sanpham_tonghop[$ma_sp])) {
-                        $sp_obj = $this->Sanpham_model->get_by_ma_sp($ma_sp);
-                        $ten_sp = $sp_obj ? $sp_obj->ten_sp : '';
-                        $don_gia = $ct->don_gia;
-                        $co_chiet_khau = ($sp_obj && isset($sp_obj->co_chiet_khau)) ? $sp_obj->co_chiet_khau : 0;
-                        $sanpham_tonghop[$ma_sp] = [
-                            'ma_sp' => $ma_sp,
-                            'ten_sp' => $ten_sp,
-                            'don_gia' => $don_gia,
-                            'co_chiet_khau' => $co_chiet_khau,
-                            'so_luong' => 0,
-                            'thanh_tien' => 0
-                        ];
-                    }
-                    $sanpham_tonghop[$ma_sp]['so_luong'] += $ct->so_luong;
-                    $sanpham_tonghop[$ma_sp]['thanh_tien'] += $ct->so_luong * $ct->don_gia;
+    $sanpham_tonghop = [];
+    $ma_banh_count = [];
+    foreach ($donhangs as $dh) {
+        $tong_no += $dh->tongtien;
+        $chitiet = $this->Donhang_model->get_chitiet($dh->id);
+        foreach ($chitiet as $ct) {
+            $ma_sps = array_map('trim', explode(',', $ct->ma_sp));
+            foreach ($ma_sps as $ma_sp) {
+                if (!isset($ma_banh_count[$ma_sp])) $ma_banh_count[$ma_sp] = 0;
+                $ma_banh_count[$ma_sp]++;
+            }
+            $counts = array_count_values($ma_sps);
+            foreach ($counts as $ma_sp => $count) {
+                $sp_obj = $this->Sanpham_model->get_by_ma_sp($ma_sp);
+                $ten_sp = $sp_obj ? $sp_obj->ten_sp : '';
+                // Lấy đơn giá chuẩn từ bảng sản phẩm
+                $don_gia = $sp_obj ? $sp_obj->gia : 0;
+                $co_chiet_khau = ($sp_obj && isset($sp_obj->co_chiet_khau)) ? $sp_obj->co_chiet_khau : 0;
+                $so_luong_thuc = $count * $ct->so_luong;
+                if (!isset($sanpham_tonghop[$ma_sp])) {
+                    $sanpham_tonghop[$ma_sp] = [
+                        'ma_sp' => $ma_sp,
+                        'ten_sp' => $ten_sp,
+                        'don_gia' => $don_gia,
+                        'co_chiet_khau' => $co_chiet_khau,
+                        'so_luong' => 0,
+                        'thanh_tien' => 0,
+                        'so_lan_lap' => 0
+                    ];
                 }
+                $sanpham_tonghop[$ma_sp]['so_luong'] += $so_luong_thuc;
+                $sanpham_tonghop[$ma_sp]['so_lan_lap'] = $ma_banh_count[$ma_sp];
             }
         }
+    }
+    // Sau khi tổng hợp xong, cập nhật lại thành tiền = tổng số lượng x đơn giá chuẩn
+    foreach ($sanpham_tonghop as $ma_sp => &$sp) {
+        $sp['thanh_tien'] = $sp['so_luong'] * $sp['don_gia'];
+    }
 
-        $page_data = [
-            'khachhang' => $kh,
-            'donhangs' => $donhangs,
-            'tong_no' => $tong_no,
-            'tong_don' => $tong_don,
-            'sanpham_tonghop' => array_values($sanpham_tonghop),
-            'active' => 'congno'
-        ];
-        $this->load->view('templates/header', $page_data);
-        $this->load->view('templates/sidebar', $page_data);
-        $this->load->view('congno/detail', $page_data);
-        $this->load->view('templates/footer');
+    $page_data = [
+        'khachhang' => $kh,
+        'donhangs' => $donhangs,
+        'tong_no' => $tong_no,
+        'tong_don' => $tong_don,
+        'sanpham_tonghop' => array_values($sanpham_tonghop),
+        'active' => 'congno'
+    ];
+    $this->load->view('templates/header', $page_data);
+    $this->load->view('templates/navbar', $page_data);
+    $this->load->view('templates/sidebar', $page_data);
+    $this->load->view('congno/detail', $page_data);
+    $this->load->view('templates/footer');
     }
 }

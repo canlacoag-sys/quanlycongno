@@ -65,6 +65,12 @@ class Sanpham extends CI_Controller
 
         $list = $this->Sanpham_model->get_all($keyword, $chietkhau, $perPage, $offset);
 
+        $user_id = $this->session->userdata('user_id');
+        $user_role = null;
+        if ($user_id) {
+            $user = $this->db->get_where('users', ['id' => $user_id])->row();
+            $user_role = $user ? $user->role : null;
+        }
         $data = [
             'title'      => 'Danh sách sản phẩm',
             'active'     => 'sanpham',
@@ -72,6 +78,7 @@ class Sanpham extends CI_Controller
             'pagination' => $this->pagination->create_links(),
             'keyword'    => $keyword,
             'chietkhau'  => $chietkhau,
+            'user_role'  => $user_role,
         ];
 
         $this->render('sanpham/index', $data);
@@ -97,14 +104,18 @@ class Sanpham extends CI_Controller
             echo json_encode(['success'=>false, 'msg'=>'Mã sản phẩm đã tồn tại!']); return;
         }
 
-        $this->Sanpham_model->insert([
-            'ma_sp'  => $ma_sp,
-            'ten_sp' => $ten_sp,
-            'gia'    => $gia,
-            'co_chiet_khau' => $co_chiet_khau,
-            'combo' => $combo,
-        ]);
-        echo json_encode(['success'=>true, 'msg'=>'Đã thêm sản phẩm!']);
+            $data_new = [
+                'ma_sp'  => $ma_sp,
+                'ten_sp' => $ten_sp,
+                'gia'    => $gia,
+                'co_chiet_khau' => $co_chiet_khau,
+                'combo' => $combo,
+            ];
+            $id = $this->Sanpham_model->insert($data_new);
+            $this->load->model('Actionlog_model');
+            $user_id = $this->session->userdata('user_id');
+            $this->Actionlog_model->log($user_id, 'add', 'sanpham', $id, null, json_encode($data_new, JSON_UNESCAPED_UNICODE));
+            echo json_encode(['success'=>true, 'msg'=>'Đã thêm sản phẩm!']);
     }
 
     // Sửa sản phẩm (AJAX)
@@ -129,14 +140,20 @@ class Sanpham extends CI_Controller
             echo json_encode(['success'=>false, 'msg'=>'Mã sản phẩm đã tồn tại!']); return;
         }
 
-        $this->Sanpham_model->update($id, [
-            'ma_sp'  => $ma_sp,
-            'ten_sp' => $ten_sp,
-            'gia'    => $gia,
-            'combo' => $combo,
-            'co_chiet_khau' => $co_chiet_khau,
-        ]);
-        echo json_encode(['success'=>true, 'msg'=>'Đã cập nhật sản phẩm!']);
+            $row_before = $this->Sanpham_model->get_by_id($id);
+            $data_new = [
+                'ma_sp'  => $ma_sp,
+                'ten_sp' => $ten_sp,
+                'gia'    => $gia,
+                'combo' => $combo,
+                'co_chiet_khau' => $co_chiet_khau,
+            ];
+            $this->Sanpham_model->update($id, $data_new);
+            $row_after = $this->Sanpham_model->get_by_id($id);
+            $this->load->model('Actionlog_model');
+            $user_id = $this->session->userdata('user_id');
+            $this->Actionlog_model->log($user_id, 'edit', 'sanpham', $id, json_encode($row_before, JSON_UNESCAPED_UNICODE), json_encode($row_after, JSON_UNESCAPED_UNICODE));
+            echo json_encode(['success'=>true, 'msg'=>'Đã cập nhật sản phẩm!']);
     }
 
     // Xoá sản phẩm (AJAX)
@@ -149,8 +166,12 @@ class Sanpham extends CI_Controller
             echo json_encode(['success'=>false, 'msg'=>'Thiếu ID sản phẩm!']); return;
         }
 
-        $this->Sanpham_model->delete($id);
-        echo json_encode(['success'=>true, 'msg'=>'Đã xoá sản phẩm!']);
+            $row_before = $this->Sanpham_model->get_by_id($id);
+            $this->Sanpham_model->delete($id);
+            $this->load->model('Actionlog_model');
+            $user_id = $this->session->userdata('user_id');
+            $this->Actionlog_model->log($user_id, 'delete', 'sanpham', $id, json_encode($row_before, JSON_UNESCAPED_UNICODE), null);
+            echo json_encode(['success'=>true, 'msg'=>'Đã xoá sản phẩm!']);
     }
 
     // API kiểm tra trùng mã sản phẩm (AJAX)

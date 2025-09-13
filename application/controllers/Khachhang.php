@@ -86,12 +86,19 @@ class Khachhang extends CI_Controller
 
         $list = $this->Khachhang_model->get_all($keyword, $perPage, $offset);
 
+        $user_id = $this->session->userdata('user_id');
+        $user_role = null;
+        if ($user_id) {
+            $user = $this->db->get_where('users', ['id' => $user_id])->row();
+            $user_role = $user ? $user->role : null;
+        }
         $data = [
             'title'      => 'Khách hàng',
             'active'     => 'khachhang',
             'list'       => $list,
             'pagination' => $this->pagination->create_links(),
             'keyword'    => $keyword,
+            'user_role'  => $user_role,
         ];
         $this->render('khachhang/index', $data);
     }

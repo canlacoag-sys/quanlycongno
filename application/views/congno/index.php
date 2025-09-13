@@ -1,55 +1,80 @@
 <div class="content-wrapper">
-  <section class="content-header">
+<section class="content">
     <div class="container-fluid">
-      <h1 class="mb-3">Danh sách công nợ khách hàng</h1>
+        <br />
+      <!-- Bảng tổng hợp khách hàng nợ -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="card bg-light">
+          <div class="card-header font-weight-bold">Tổng hợp công nợ khách hàng</div>
+          <div class="card-body p-2">
+            <table class="table table-sm table-bordered mb-0">
+              <tr>
+                <th class="text-center">Số lượng khách hàng nợ</th>
+                <th class="text-center">Tổng tiền nợ</th>
+              </tr>
+              <tr>
+                <?php
+                  $tong_khachhang = count($data);
+                  $tong_tien_no = 0;
+                  foreach ($data as $row) {
+                    $tong_tien_no += $row['tong_tien'];
+                  }
+                ?>
+                <td class="text-center"><b><?= $tong_khachhang ?></b></td>
+                <td class="text-center text-danger font-weight-bold"><b><?= number_format($tong_tien_no) ?> đ</b></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
-  </section>
-  <section class="content">
-    <div class="container-fluid">
+    <!-- End bảng tổng hợp -->
       <div class="card shadow-sm">
         <div class="card-body">
           <table class="table table-bordered table-hover">
             <thead class="thead-light">
               <tr>
-                <th>STT</th>
+                <th class="text-center">STT</th>
                 <th>Tên khách hàng</th>
-                <th>Số điện thoại</th>
-                <th>Tổng số lượng</th>
-                <th>Tổng tiền</th>
+                <!-- <th>Số điện thoại</th> -->
+                <th class="text-center">Tổng số lượng</th>
+                <th class="text-center">Tổng tiền</th>
                 <th>Chi tiết sản phẩm</th>
-                <th>Thao tác</th>
+                <th class="text-center">Thao tác</th>
               </tr>
             </thead>
             <tbody>
               <?php foreach ($data as $i => $row): ?>
               <tr>
-                <td><?= $i+1 ?></td>
+                <td class="text-center"><?= $i+1 ?></td>
                 <td><?= htmlspecialchars($row['khachhang']->ten) ?></td>
-                <td><?= htmlspecialchars($row['khachhang']->dienthoai) ?></td>
-                <td><?= $row['tong_so_luong'] ?></td>
+                <!-- <td><?= htmlspecialchars($row['khachhang']->dienthoai) ?></td> -->
+                <td class="text-center"><?= $row['tong_so_luong'] ?></td>
                 <td class="text-right text-danger font-weight-bold"><?= number_format($row['tong_tien']) ?> đ</td>
                 <td>
                   <ul class="mb-0 pl-3">
                     <?php foreach ($row['sanpham_chitiet'] as $sp): ?>
                         <li>
-                        <?= htmlspecialchars($sp['ten_sp']) ?> x <?= $sp['so_luong'] ?> 
-                        (<?= number_format($sp['thanh_tien']) ?> đ)
+                        (<?= htmlspecialchars($sp['ma_sp']) ?>) x <?= $sp['so_luong'] ?> 
+                        = <?= number_format($sp['thanh_tien']) ?> đ
                         </li>
                     <?php endforeach; ?>
                     </ul>
                 </td>
-                <td>
+                <td class="text-center">
                   <?php if (isset($user_role) && $user_role === 'admin'): ?>
-                  <a href="<?= site_url('congno/del/'.$row['khachhang']->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xóa công nợ này?');">Xóa</a>
+                  <a href="<?= site_url('congno/detail/'.$row['khachhang']->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xem công nợ khách hàng này?');">Xem Công Nợ</a>
+               
                   <?php endif; ?>
                 </td>
               </tr>
               <?php endforeach; ?>
             </tbody>
           </table>
-          <?php if (isset($user_role) && $user_role === 'admin'): ?>
-          <a href="<?= site_url('congno/add') ?>" class="btn btn-primary mt-3">Thêm công nợ</a>
-          <?php endif; ?>
+          <!-- ?php if (isset($user_role) && $user_role === 'admin'): ?>
+          <a href="<!?= site_url('congno/add') ?>" class="btn btn-primary mt-3">Thêm công nợ</a>
+          <!?php endif; ? -->
         </div>
       </div>
     </div>

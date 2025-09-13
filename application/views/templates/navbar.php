@@ -15,7 +15,10 @@
             case 'donhang':   echo 'DANH SÁCH BIÊN NHẬN'; break;
             case 'donhang/addcochietkhau':   echo 'BÁNH CÓ CHIẾT KHẤU'; break;
             case 'donhang/addkochietkhau':   echo 'BÁNH KHÔNG CHIẾT KHẤU'; break;
-            case 'congno':    echo 'DANH SÁCH CÔNG NỢ'; break;
+            case 'donhang/edit':   echo 'SỬA BIÊN NHẬN'; break;
+            case 'congno':    echo 'DANH SÁCH CÔNG NỢ TẠM TÍNH'; break;
+            case 'khachle':    echo 'DANH SÁCH KHÁCH LẺ'; break;
+            case 'khachle/add':    echo 'PHIẾU BÁN HÀNG KHÁCH LẺ'; break;
             default:          echo 'BẢNG TRANG CHỦ';
           }
         ?>

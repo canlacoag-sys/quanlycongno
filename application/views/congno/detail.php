@@ -23,6 +23,12 @@
       <div class="card shadow-sm mb-3">
         <div class="card-body">
           <h4>Danh sách đơn hàng</h4>
+          <?php 
+            // Sắp xếp đơn hàng theo ngày lập giảm dần
+            usort($donhangs, function($a, $b) {
+              return strtotime($b->ngaylap) - strtotime($a->ngaylap);
+            });
+          ?>
           <table class="table table-bordered table-hover">
             <thead>
               <tr>
@@ -35,7 +41,7 @@
               <?php foreach ($donhangs as $dh): ?>
               <tr>
                 <td><?= htmlspecialchars($dh->madon_id) ?></td>
-                <td><?= date('d/m/Y', strtotime($dh->ngaylap)) ?></td>
+                <td><?= date('d/m/Y H:i', strtotime($dh->ngaylap)) ?></td>
                 <td class="text-right"><?= number_format($dh->tongtien) ?> đ</td>
               </tr>
               <?php endforeach; ?>
@@ -48,6 +54,7 @@
       <div class="card shadow-sm">
         <div class="card-body">
           <h4>Tổng hợp sản phẩm đã mua</h4>
+            
             <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#modalKetSo">Kết sổ nợ</button>
           <table class="table table-bordered table-hover">
             <thead>
@@ -62,7 +69,10 @@
             <tbody>
               <?php foreach ($sanpham_tonghop as $sp): ?>
               <tr>
-                <td class="text-center"><?= $sp['ma_sp'] ?></td>
+                <td class="text-center">
+                  <?= $sp['ma_sp'] ?>
+                  <span class="badge badge-info ml-1">x<?= $sp['so_lan_lap'] ?? 1 ?></span>
+                </td>
                 <td class="text-center">
                 <?php
                   // Hiển thị loại sản phẩm: Có chiết khấu hoặc Không chiết khấu

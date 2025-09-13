@@ -30,11 +30,10 @@
             <?php endif; ?>
           </div>
         </form>
-        <?php if (isset($user_role) && $user_role === 'admin'): ?>
+        
         <button type="button" class="btn btn-success" id="btnAddProduct" data-toggle="modal" data-target="#addProductModal">
           <i class="fas fa-plus"></i> Thêm bánh
         </button>
-        <?php endif; ?>
       </div>
 
       <div class="card">
@@ -69,8 +68,8 @@
                       ?>
                     </td>
                   <td class="text-center align-middle">
-                    <?php if (isset($user_role) && $user_role === 'admin'): ?>
                     <a href="#" class="btn btn-info btn-sm btn-edit-product" data-id="<?= $sp->id ?>" data-toggle="modal" data-target="#editProductModal"><i class="fas fa-edit"></i> Sửa</a>
+                     <?php if (isset($user_role) && $user_role === 'admin'): ?>
                     <a href="#" class="btn btn-danger btn-sm btn-delete-product" data-id="<?= $sp->id ?>" data-toggle="modal" data-target="#confirmDeleteProductModal"><i class="fas fa-trash-alt"></i> Xóa</a>
                     <?php endif; ?>
                   </td>

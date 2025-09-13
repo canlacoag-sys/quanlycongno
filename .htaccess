@@ -1,5 +1,14 @@
-php_value date.timezone "Asia/Ho_Chi_Minh"
+###############################################
+# Đặt timezone cho PHP (chỉ hoạt động nếu host hỗ trợ)
+# Nếu dùng Apache, có thể uncomment dòng dưới:
+# php_value date.timezone "Asia/Ho_Chi_Minh"
+###############################################
 
+###############################################
+# Cấu hình rewrite cho CodeIgniter
+# Nếu file hoặc thư mục tồn tại, thì bỏ qua
+# Nếu không, chuyển hướng về index.php
+###############################################
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteBase /
@@ -10,6 +19,5 @@ php_value date.timezone "Asia/Ho_Chi_Minh"
 
 	# Nếu không, chuyển hướng về index.php
 	RewriteRule ^(.*)$ index.php/$1 [L]
-	
 </IfModule>
 

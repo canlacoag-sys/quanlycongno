@@ -1,22 +1,8 @@
 <?php $this->load->view('khachhang/add'); ?>
 <div class="content-wrapper">
-  <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1><i class="fas fa-edit"></i> Sửa đơn hàng</h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="<?= site_url('donhang') ?>">Đơn hàng</a></li>
-            <li class="breadcrumb-item active">Sửa đơn hàng</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
   <section class="content">
     <div class="container-fluid">
+      <br />
       <div class="card shadow-sm">
         <div class="card-body">
           <form method="post" action="<?= site_url('donhang/edit/'.$donhang->id); ?>" id="formDonHang">
@@ -129,12 +115,12 @@
                     <td class="font-weight-bold text-right tong-tien-label">Tổng tiền:</td>
                     <td class="text-right tong-tien-value" style="width:100px;" id="tongTienView"><?= number_format($donhang->tongtien) ?></td>
                   </tr>
-                  <tr>
+                  <!-- tr>
                     <td class="font-weight-bold text-right">Ngày giờ:</td>
                     <td>
-                      <input type="text" class="form-control" id="ngaylapInput" name="ngaylap" value="<?= $donhang->ngaylap ?>" autocomplete="off">
+                      <input type="text" class="form-control" id="ngaylapInput" name="ngaylap" value="<!?= $donhang->ngaylap ?!>" autocomplete="off">
                     </td>
-                  </tr>
+                  </tr -->
                 </table>
               </div>
             </div>
@@ -150,6 +136,20 @@
 </div>
 <!-- Thêm lại JS xử lý autocomplete, sản phẩm, tổng tiền như add.php -->
 <script>
+$(function(){
+  $('#formDonHang').on('submit', function(e){
+    e.preventDefault();
+    var $form = $(this);
+    $.post($form.attr('action'), $form.serialize(), function(resp){
+      if (resp && resp.id) {
+        window.open('/donhang/pos/' + resp.id, '_blank');
+        window.location.href = '/donhang';
+      } else {
+        alert('Lưu đơn thất bại!');
+      }
+    }, 'json');
+  });
+});
 var dsSanPham = <?= json_encode($sanpham); ?>;
 $(function() {
   // Autocomplete khách hàng

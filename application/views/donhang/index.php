@@ -27,7 +27,7 @@
           <table class="table table-bordered table-hover mb-0">
             <thead>
               <tr>
-                <th style="width:44px;">Click</th>
+                <!-- <th style="width:44px;">Click</th> -->
                 <th>Mã đơn</th>
                 <th>Ngày tạo</th>
                 <th>Khách hàng</th>
@@ -47,13 +47,13 @@
               ?>
               <!-- Hàng chính -->
               <tr class="<?= $rowClass ?>">
-                <td class="align-middle">
+                <!-- td class="align-middle">
                   <button class="btn btn-sm btn-light border toggle-row" type="button"
                           data-toggle="collapse" data-target="#<?= $collapseId ?>"
                           aria-expanded="false" aria-controls="<?= $collapseId ?>">
                     <i class="fas fa-chevron-down"></i>
                   </button>
-                </td>
+                </td -->
                 <td><?= htmlspecialchars($dh->madon_id) ?></td>
                 <td><?= date('d/m/Y H:i', strtotime($dh->ngaylap)) ?></td>
                 <td><?= htmlspecialchars($dh->ten_khachhang ?? '') ?></td>
@@ -77,7 +77,7 @@
                 </td>
               </tr>
               <!-- Hàng chi tiết (collapse, nếu muốn hiển thị thêm thông tin đơn hàng) -->
-              <tr class="<?= $rowClass ?> collapse-detail">
+              <!-- <tr class="<?= $rowClass ?> collapse-detail">
                 <td colspan="7" class="p-0">
                   <div id="<?= $collapseId ?>" class="collapse" data-parent="">
                     <div class="p-3">
@@ -102,7 +102,7 @@
                     </div>
                   </div>
                 </td>
-              </tr>
+              </tr> -->
               <?php $i++; endforeach; else: ?>
                 <tr><td colspan="7" class="text-center">Chưa có đơn hàng nào.</td></tr>
               <?php endif; ?>
@@ -119,6 +119,12 @@ $(function() {
   // Xoá đơn hàng bằng modal ajax
   $('.btn-delete-donhang').click(function() {
     var id = $(this).data('id');
+    // Tìm hàng đơn hàng theo id
+    var row = $(this).closest('tr');
+    var madon = row.find('td').eq(0).text().trim();
+    var tenkh = row.find('td').eq(2).text().trim();
+    $('#delMaDH').text(madon);
+    $('#delTenKH').text(tenkh);
     $('#btnConfirmDeleteDonHang').data('id', id);
   });
   $('#btnConfirmDeleteDonHang').click(function() {

@@ -1,23 +1,10 @@
 <?php $this->load->view('khachhang/add'); ?><?php $this->load->helper('money'); ?>
 <div class="content-wrapper">
-  <section class="content-header">
+
+<section class="content">
     <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1><i class="fas fa-plus"></i> Thêm đơn khách lẻ</h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="<?= site_url('khachle') ?>">Khách lẻ</a></li>
-            <li class="breadcrumb-item active">Thêm đơn khách lẻ</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="content">
-    <div class="container-fluid">
-      <div class="card shadow-sm">
+        <br />
+        <div class="card shadow-sm">
         <div class="card-body">
           <form method="post" action="<?= site_url('khachle/add'); ?>" id="formKhachLe">
             <!-- Thông tin khách lẻ -->

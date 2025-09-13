@@ -8,7 +8,11 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>Bạn có chắc chắn muốn xoá đơn hàng này?</p>
+       Bạn có chắc chắn muốn xoá đơn hàng này?
+        <div class="mt-2 p-2 bg-secondary rounded">
+          <div><strong>Mã đơn hàng:</strong> <span id="delMaDH"></span></div>
+          <div><strong>Tên khách hàng:</strong> <span id="delTenKH"></span></div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary ml-2" data-dismiss="modal"><i class="fas fa-chevron-left mr-1"></i>Quay lại</button>
