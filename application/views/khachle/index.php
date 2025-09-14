@@ -69,6 +69,8 @@
             </tbody>
           </table>
         </div>
+        <div class="card-footer clearfix">
+         <?= isset($pagination) ? $pagination : '' ?>
       </div>
     </div>
   </section>

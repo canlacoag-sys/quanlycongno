@@ -63,20 +63,16 @@
                     </ul>
                 </td>
                 <td class="text-center">
-                  
                   <a href="<?= site_url('congno/detail/'.$row['khachhang']->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xem công nợ khách hàng này?');"><i class="fas fa-eye"></i> </a>
                   <?php if (isset($user_role) && $user_role === 'admin'): ?>
 
-                    
+
                   <?php endif; ?>
                 </td>
               </tr>
               <?php endforeach; ?>
             </tbody>
           </table>
-          <!-- ?php if (isset($user_role) && $user_role === 'admin'): ?>
-          <a href="<!?= site_url('congno/add') ?>" class="btn btn-primary mt-3">Thêm công nợ</a>
-          <!?php endif; ? -->
         </div>
       </div>
     </div>
