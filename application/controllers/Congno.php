@@ -1,6 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+/**
+ * @property Khachhang_model $Khachhang_model
+ * @property Donhang_model $Donhang_model
+ * @property Sanpham_model $Sanpham_model
+ * @property CI_Session $session
+ * @property CI_Input $input
+ * @property CI_Pagination $pagination
+ * @property CI_Output $output
+ * @property Actionlog_model $Actionlog_model
+ * @property CI_DB_query_builder $db
+ * @property Congno_model $Congno_model
+ * @property CI_Loader $load
+ */
 class Congno extends CI_Controller
 {    // Action lập phiếu kết sổ nợ
     public function ketso($khachhang_id)

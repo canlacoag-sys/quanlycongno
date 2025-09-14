@@ -48,7 +48,7 @@
                         data-username="<?= htmlspecialchars($user->username) ?>"
                         data-role="<?= $user->role ?>"
                         data-toggle="modal" data-target="#editUserModal">
-                        <i class="fas fa-edit"></i> Sửa
+                        <i class="fas fa-edit"></i> 
                       </button>
                     <?php endif; ?>
                     <?php if ($current_user->role === 'admin' && $current_user->id != $user->id): ?>
@@ -56,7 +56,7 @@
                         data-id="<?= $user->id ?>"
                         data-username="<?= htmlspecialchars($user->username) ?>"
                         data-toggle="modal" data-target="#delUserModal">
-                        <i class="fas fa-trash-alt"></i> Xoá
+                        <i class="fas fa-trash-alt"></i> 
                       </button>
                     <?php endif; ?>
                   </td>

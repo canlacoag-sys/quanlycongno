@@ -7,6 +7,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @property CI_Input $input
  * @property CI_Pagination $pagination
  * @property CI_Output $output
+ * @property CI_DB_query_builder $db
+ * @property Actionlog_model $Actionlog_model
  */
 class Khachhang extends CI_Controller
 {

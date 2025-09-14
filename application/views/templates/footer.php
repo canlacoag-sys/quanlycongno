@@ -4,10 +4,10 @@
   </aside>
 
 <footer class="main-footer">
-  <strong>Copyright &copy; 2025 <a href="https://angiangvn.com">AnGiangVN.com</a>.</strong>
+  <strong>Copyright &copy; 2025 <a href="https://banhtrungthuthanhtam.online">www.BanhTrungThuThanhTam.online</a>.</strong>
   All rights reserved.
   <div class="float-right d-sm-inline-block">
-    <b>Version</b> 3.2.0
+    <b>Version</b> 6.2.0
   </div>
 </footer>
 </div> <!-- ./wrapper -->
