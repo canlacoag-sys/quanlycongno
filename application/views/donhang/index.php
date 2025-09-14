@@ -57,10 +57,11 @@
                 <td class="text-center">
                   <a href="<?= site_url('donhang/detail/'.$dh->id) ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> </a>
                   <a href="<?= site_url('donhang/edit/'.$dh->id); ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> </a>
+                  
+                  <a href="<?= site_url('donhang/pos/'.$dh->id); ?>" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print"></i> </a>
                   <?php if ($user_role === 'admin'): ?>
                   <button type="button" class="btn btn-danger btn-sm btn-delete-donhang" data-id="<?= $dh->id ?>" data-toggle="modal" data-target="#delDonHangModal"><i class="fas fa-trash-alt"></i> </button>
                   <?php endif; ?>
-                  <a href="<?= site_url('donhang/pos/'.$dh->id); ?>" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print"></i> </a>
                 </td>
               </tr>
               <?php endforeach; else: ?>
