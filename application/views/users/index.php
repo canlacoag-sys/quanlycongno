@@ -8,23 +8,9 @@
 ?>
 
 <div class="content-wrapper">
-  <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1><i class="fas fa-users"></i> Quản lý tài khoản</h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="<?= site_url('dashboard') ?>">Trang chủ</a></li>
-            <li class="breadcrumb-item active">Tài khoản</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
   <section class="content">
     <div class="container-fluid">
+      <br>
       <div class="card shadow-sm">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">

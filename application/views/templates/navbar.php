@@ -11,14 +11,16 @@
           switch ($active ?? '') {
             case 'dashboard': echo 'TỔNG QUAN'; break;
             case 'khachhang': echo 'DANH SÁCH KHÁCH HÀNG'; break;
+            case 'users': echo 'QUẢN LÝ TÀI KHOẢN'; break;
             case 'sanpham':   echo 'MENU BÁNH TRUNG THU'; break;
             case 'donhang':   echo 'DANH SÁCH BIÊN NHẬN'; break;
             case 'donhang/addcochietkhau':   echo 'BÁNH CÓ CHIẾT KHẤU'; break;
             case 'donhang/addkochietkhau':   echo 'BÁNH KHÔNG CHIẾT KHẤU'; break;
             case 'donhang/edit':   echo 'SỬA BIÊN NHẬN'; break;
             case 'congno':    echo 'DANH SÁCH CÔNG NỢ TẠM TÍNH'; break;
-            case 'khachle':    echo 'DANH SÁCH KHÁCH LẺ'; break;
+            case 'khachle':    echo 'DANH SÁCH PHIẾU KHÁCH LẺ'; break;
             case 'khachle/add':    echo 'PHIẾU BÁN HÀNG KHÁCH LẺ'; break;
+            case 'log':    echo 'QUẢN LÝ NHẬT KÝ'; break;
             default:          echo 'BẢNG TRANG CHỦ';
           }
         ?>

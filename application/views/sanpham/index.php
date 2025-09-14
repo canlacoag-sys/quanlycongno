@@ -48,7 +48,7 @@
                   <th class="text-center" style="width:120px;">Giá bán</th>
                   <th class="text-center" style="width:120px;">Loại bánh</th>
                   <th class="text-center" style="width:120px;">Chiết khấu</th>
-                  <th class="text-center" style="width:155px;">Tác vụ</th>
+                  <th class="text-center" style="width:100px;">Tác vụ</th>
                 </tr>
               </thead>
               <tbody>
@@ -70,9 +70,9 @@
                       ?>
                     </td>
                   <td class="text-center align-middle">
-                    <a href="#" class="btn btn-info btn-sm btn-edit-product" data-id="<?= $sp->id ?>" data-toggle="modal" data-target="#editProductModal"><i class="fas fa-edit"></i> Sửa</a>
+                    <a href="#" class="btn btn-info btn-sm btn-edit-product" data-id="<?= $sp->id ?>" data-toggle="modal" data-target="#editProductModal"><i class="fas fa-edit"></i> </a>
                      <?php if (isset($user_role) && $user_role === 'admin'): ?>
-                    <a href="#" class="btn btn-danger btn-sm btn-delete-product" data-id="<?= $sp->id ?>" data-toggle="modal" data-target="#confirmDeleteProductModal"><i class="fas fa-trash-alt"></i> Xóa</a>
+                    <a href="#" class="btn btn-danger btn-sm btn-delete-product" data-id="<?= $sp->id ?>" data-toggle="modal" data-target="#confirmDeleteProductModal"><i class="fas fa-trash-alt"></i> </a>
                     <?php endif; ?>
                   </td>
                 </tr>

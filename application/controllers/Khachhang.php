@@ -14,6 +14,7 @@ class Khachhang extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Khachhang_model');
+        $this->load->model('Actionlog_model'); // Thêm dòng này
         $this->load->library(['session', 'pagination']);
         $this->load->helper(['url', 'security']);
         if (!$this->session->userdata('user_id')) redirect('auth/login');
@@ -125,6 +126,11 @@ class Khachhang extends CI_Controller
         if ($this->db->field_exists('created_at','khachhang')) $payload['created_at'] = date('Y-m-d H:i:s');
 
         $id = $this->Khachhang_model->insert($payload);
+
+        // Ghi log thêm khách hàng
+        $user_id = $this->session->userdata('user_id');
+        $this->Actionlog_model->log($user_id, 'add', 'khachhang', $id, null, json_encode($payload, JSON_UNESCAPED_UNICODE));
+
         echo json_encode(['success'=>true,'msg'=>'Đã thêm khách hàng!','id'=>$id,'ten'=>$ten,'dienthoai'=>implode(',', $phones),'diachi'=>$diachi]);
     }
 
@@ -149,7 +155,13 @@ class Khachhang extends CI_Controller
         $payload = ['ten'=>$ten, 'dienthoai'=>implode(',', $phones), 'diachi'=>$diachi];
         if ($this->db->field_exists('updated_at','khachhang')) $payload['updated_at'] = date('Y-m-d H:i:s');
 
+        $row_before = $this->Khachhang_model->get_by_id($id);
         $this->Khachhang_model->update($id, $payload);
+
+        // Ghi log sửa khách hàng
+        $user_id = $this->session->userdata('user_id');
+        $this->Actionlog_model->log($user_id, 'edit', 'khachhang', $id, json_encode($row_before, JSON_UNESCAPED_UNICODE), json_encode($payload, JSON_UNESCAPED_UNICODE));
+
         echo json_encode(['success'=>true,'msg'=>'Đã cập nhật khách hàng','id'=>$id,'ten'=>$ten,'dienthoai'=>implode(',', $phones),'diachi'=>$diachi]);
     }
 
@@ -167,6 +179,11 @@ class Khachhang extends CI_Controller
             return;
         }
         $this->Khachhang_model->delete($id);
+
+        // Ghi log xóa khách hàng
+        $user_id = $this->session->userdata('user_id');
+        $this->Actionlog_model->log($user_id, 'delete', 'khachhang', $id, json_encode($row, JSON_UNESCAPED_UNICODE), null);
+
         echo json_encode(['success'=>true]);
     }
 

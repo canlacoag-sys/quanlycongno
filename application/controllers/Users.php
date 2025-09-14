@@ -12,6 +12,7 @@ class Users extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('Users_model');
+        $this->load->model('Actionlog_model'); // Thêm dòng này
         $this->load->library('session');
         $this->load->helper(['url', 'form']);
         // Kiểm tra đăng nhập
@@ -42,13 +43,16 @@ class Users extends CI_Controller {
             'list' => $list,
             'current_user' => $this->current_user
         ];
+
+        $data['title']  = 'QuẢN LÝ TÀI KHOẢN';
+		$data['active'] = 'users';
+
         $this->render('users/index', $data);
     }
 
     public function add() {
         if ($this->input->method() === 'post') {
             $username = trim($this->input->post('username'));
-            // Chuyển thành chữ thường, không dấu, viết liền
             $username = strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $username));
             $username = preg_replace('/[^a-z0-9]/', '', $username);
             $password = $this->input->post('password');
@@ -61,6 +65,9 @@ class Users extends CI_Controller {
                 'password' => md5($password),
                 'role' => $role
             ]);
+            // Ghi log thêm tài khoản
+            $user_id = $this->session->userdata('user_id');
+            $this->Actionlog_model->log($user_id, 'add', 'users', $id, null, json_encode(['username'=>$username, 'role'=>$role], JSON_UNESCAPED_UNICODE));
             echo json_encode(['success'=>true, 'msg'=>'Đã thêm tài khoản!', 'id'=>$id]);
         }
     }
@@ -81,6 +88,9 @@ class Users extends CI_Controller {
             }
             if (!empty($data)) {
                 $this->Users_model->update($id, $data);
+                // Ghi log sửa tài khoản
+                $user_id = $this->session->userdata('user_id');
+                $this->Actionlog_model->log($user_id, 'edit', 'users', $id, json_encode($user, JSON_UNESCAPED_UNICODE), json_encode($data, JSON_UNESCAPED_UNICODE));
             }
             echo json_encode(['success'=>true, 'msg'=>'Đã cập nhật tài khoản!']);
         }
@@ -92,7 +102,11 @@ class Users extends CI_Controller {
             if ($id == $this->current_user->id) {
                 echo json_encode(['success'=>false, 'msg'=>'Không thể xoá tài khoản của chính bạn!']); return;
             }
+            $user_before = $this->Users_model->get_by_id($id);
             $this->Users_model->delete($id);
+            // Ghi log xoá tài khoản
+            $user_id = $this->session->userdata('user_id');
+            $this->Actionlog_model->log($user_id, 'delete', 'users', $id, json_encode($user_before, JSON_UNESCAPED_UNICODE), null);
             echo json_encode(['success'=>true, 'msg'=>'Đã xoá tài khoản!']);
         }
     }

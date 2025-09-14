@@ -128,6 +128,12 @@ $khachle_active = in_array(($active ?? ''), ['khachle/add', 'khachle']);
 			<p>Quản lý tài khoản</p>
 		  </a>
 		</li>
+		<li class="nav-item">
+		  <a href="<?= site_url('log'); ?>" class="nav-link<?= is_active('log', $active ?? '') ?>">
+			<i class="nav-icon fas fa-book"></i>
+			<p>Quản lý nhật ký</p>
+		  </a>
+		</li>
 		<?php endif; ?>
 		<li class="nav-item">
 		  <a href="<?= site_url('auth/logout') ?>" class="nav-link text-danger">

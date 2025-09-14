@@ -1,10 +1,6 @@
 <?php $this->load->view('khachhang/add'); ?>
 <div class="content-wrapper">
-  <section class="content-header">
-    <div class="container-fluid">
-      <h1 class="mb-3">Chi tiết đơn hàng</h1>
-    </div>
-  </section>
+
   <section class="content">
     <div class="container-fluid">
 

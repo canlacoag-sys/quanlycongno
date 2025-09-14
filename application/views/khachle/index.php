@@ -25,18 +25,18 @@
       </div>
       <div class="card">
         <div class="card-body p-0">
-          <table class="table table-bordered table-hover mb-0">
+          <table class="table table-bordered table-striped table-hover mb-0 table-products">
             <thead>
               <tr>
                 <th class="text-center" style="width:44px;">STT</th>
                 <th>Mã đơn</th>
-                <th>Ngày lập</th>
-                <th>Tên khách</th>
-                <th>Điện thoại</th>
-                <th>Địa chỉ</th>
+                <th class="text-center" style="width:150px;">Ngày lập</th>
+                <th class="text-center">Tên khách</th>
+                <th class="text-center" >Điện thoại</th>
+                <th class="text-center" style="width:350px;">Địa chỉ</th>
                 <th>Tổng tiền</th>
                 <th>Ghi chú</th>
-                <th class="text-center" style="width:235px;">Thao tác</th>
+                <th class="text-center" style="width:170px;">Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -49,17 +49,17 @@
                 <td><?= htmlspecialchars($row->madon_id) ?></td>
                 <td><?= date('d/m/Y H:i', strtotime($row->ngaylap)) ?></td>
                 <td><?= htmlspecialchars($row->ten) ?></td>
-                <td><?= htmlspecialchars($row->dienthoai) ?></td>
+                <td class="text-center"><?= htmlspecialchars($row->dienthoai) ?></td>
                 <td><?= htmlspecialchars($row->diachi) ?></td>
                 <td class="text-right"><?= number_format($row->tongcong_tien) ?></td>
                 <td><?= htmlspecialchars($row->ghi_chu) ?></td>
                 <td class="text-center">
                   <?php if (isset($user_role) && $user_role === 'admin'): ?>
-                  <a href="<?= site_url('khachle/detail/'.$row->id) ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Xem</a>
-                  <a href="<?= site_url('khachle/edit/'.$row->id); ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Sửa</a>
-                  <button type="button" class="btn btn-danger btn-sm btn-delete-khachle" data-id="<?= $row->id ?>" data-toggle="modal" data-target="#delKhachLeModal"><i class="fas fa-trash-alt"></i> Xoá</button>
+                  <button type="button" class="btn btn-danger btn-sm btn-delete-khachle" data-id="<?= $row->id ?>" data-toggle="modal" data-target="#delKhachLeModal"><i class="fas fa-trash-alt"></i> </button>
                   <?php endif; ?>
-                  <a href="<?= site_url('khachle/pos/'.$row->id); ?>" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print"></i> In POS</a>
+                  <a href="<?= site_url('khachle/detail/'.$row->id) ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> </a>
+                  <a href="<?= site_url('khachle/edit/'.$row->id); ?>" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> </a>
+                  <a href="<?= site_url('khachle/pos/'.$row->id); ?>" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print"></i> </a>
                 </td>
               </tr> 
               <?php endforeach; else: ?>

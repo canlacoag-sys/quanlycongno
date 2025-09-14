@@ -1,9 +1,5 @@
 <div class="content-wrapper">
-  <section class="content-header">
-    <div class="container-fluid">
-      <h1 class="mb-3">Chi tiết đơn khách lẻ</h1>
-    </div>
-  </section>
+ 
   <section class="content">
     <div class="container-fluid">
 
@@ -54,7 +50,7 @@
                         foreach ($ma_banhs as $ma_sp) {
                             foreach ($sanpham as $sp) {
                                 if ($sp->ma_sp == $ma_sp) {
-                                    $ten_banh .= htmlspecialchars($sp->ten_sp) . '<br>';
+                                    $ten_banh .= $sp->ten_sp . '<br>';
                                     break;
                                 }
                             }
