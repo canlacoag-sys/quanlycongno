@@ -78,7 +78,7 @@
                   <tr>
                     <td class="text-center"><?= htmlspecialchars($row->madon_id) ?></td>
                     <td class="text-center"><?= htmlspecialchars($row->ten) ?></td>
-                    <td class="text-right"><?= number_format($row->tongtien) ?> đ</td>
+                    <td class="text-right"><?= number_format($row->tongcong_tien) ?> đ</td>
                     <td class="text-center"><?= date('d/m/Y H:i', strtotime($row->created_at ?? $row->ngaylap)) ?></td>
                   </tr>
                   <?php endforeach; ?>

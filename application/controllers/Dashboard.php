@@ -47,6 +47,7 @@ class Dashboard extends CI_Controller {
 			->result();
 
 		$data = [
+			
 			'tong_tien_khachle'   => $tong_tien_khachle,
 			'tong_don_khachle'    => $tong_don_khachle,
 			'tong_khachhang_le'   => $tong_khachhang_le,
