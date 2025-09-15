@@ -194,20 +194,30 @@ class Khachle extends CI_Controller {
         if (!$row) show_404();
 
         if ($this->input->method() === 'post') {
+            
+            $ship = $this->input->post('ship', true);
+            $tongcong_tien = $this->input->post('tongcong_tien', true);
+            $tongtien = $this->input->post('tongtien', true);
+            $tongtien = $tongtien ? preg_replace('/[^0-9]/', '', $tongtien) : '0';
+
+            // Chuyển về số nguyên
+            $ship = $ship ? preg_replace('/[^0-9]/', '', $ship) : '0';
+            $tongcong_tien = $tongcong_tien ? preg_replace('/[^0-9]/', '', $tongcong_tien) : '0';
+
             $data = [
                 'madon_id' => $this->input->post('madon_id', true),
                 'ten' => $this->input->post('ten', true),
                 'dienthoai' => $this->input->post('dienthoai', true),
                 'diachi' => $this->input->post('diachi', true),
                 'ngaylap' => $this->input->post('ngaylap', true) ?: date('Y-m-d H:i:s'),
-                'tongtien' => $this->input->post('tongtien', true),
+                'tongtien' => $tongtien,
                 'giamgiatt_loai' => $this->input->post('giamgiatt_loai', true) ?: 'none',
                 'giamgiatt_giatri' => $this->input->post('giamgiatt_giatri', true) ?: 0,
                 'giamgiatt_thanhtien' => $this->input->post('giamgiatt_thanhtien', true) ?: 0,
                 'giao_hang' => $this->input->post('giao_hang', true),
                 'nguoi_nhan' => $this->input->post('nguoi_nhan', true),
-                'ship' => $this->input->post('ship', true),
-                'tongcong_tien' => $this->input->post('tongcong_tien', true),
+                'ship' => $ship,
+                'tongcong_tien' => $tongcong_tien,
                 'ghi_chu' => $this->input->post('ghi_chu', true),
             ];
             $this->Khachle_model->update($id, $data);
@@ -218,6 +228,9 @@ class Khachle extends CI_Controller {
             $so_luong = $this->input->post('so_luong');
             $don_gia = $this->input->post('don_gia');
             $thanh_tien = $this->input->post('thanh_tien');
+            $giamgiadg_loai = $this->input->post('giamgiadg_loai');
+            $giamgiadg_giatri = $this->input->post('giamgiadg_giatri');
+            $giamgiadg_thanhtien = $this->input->post('giamgiadg_thanhtien');
             if (is_array($ma_sp)) {
                 for($i=0;$i<count($ma_sp);$i++) {
                     if(!empty($ma_sp[$i]) && $so_luong[$i] > 0) {
@@ -226,7 +239,10 @@ class Khachle extends CI_Controller {
                             'ma_sp' => $ma_sp[$i],
                             'so_luong' => $so_luong[$i],
                             'don_gia' => $don_gia[$i],
-                            'thanh_tien' => $thanh_tien[$i]
+                            'thanh_tien' => $thanh_tien[$i],
+                            'giamgiadg_loai' => isset($giamgiadg_loai[$i]) ? $giamgiadg_loai[$i] : null,
+                            'giamgiadg_giatri' => isset($giamgiadg_giatri[$i]) ? $giamgiadg_giatri[$i] : null,
+                            'giamgiadg_thanhtien' => isset($giamgiadg_thanhtien[$i]) ? $giamgiadg_thanhtien[$i] : null,
                         ]);
                     }
                 }

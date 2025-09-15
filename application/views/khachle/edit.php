@@ -1,3 +1,4 @@
+<?php $this->load->helper('money'); ?>
 
 <script>
 // Đảm bảo khi trang sửa đơn được load, các dòng sản phẩm đều được cập nhật lại tên, loại bánh, giá, thành tiền
@@ -8,7 +9,6 @@ $(document).ready(function(){
 });
 </script>
 
-<?php $this->load->helper('money'); ?>
 <div class="content-wrapper">
 
 <section class="content">
@@ -162,18 +162,23 @@ $(document).ready(function(){
                     <td>
                       <div class="d-flex align-items-center">
                         <select name="giamgiatt_loai" id="giamgiatt_loai" class="form-control form-control-sm mr-2" style="width:80px;">
-                          <option value="none" <?= ($row->giamgiatt_loai ?? 'none') == 'none' ? 'selected' : '' ?>>Không</option>
-                          <option value="phantram" <?= ($row->giamgiatt_loai ?? '') == 'phantram' ? 'selected' : '' ?>>%</option>
-                          <option value="tienmat" <?= ($row->giamgiatt_loai ?? '') == 'tienmat' ? 'selected' : '' ?>>Tiền</option>
+                          <option value="none" <?= ($row->giamgiatt_loai == 'none') ? 'selected' : '' ?>>Không</option>
+                          <option value="phantram" <?= ($row->giamgiatt_loai == 'phantram') ? 'selected' : '' ?>>%</option>
+                          <option value="tienmat" <?= ($row->giamgiatt_loai == 'tienmat') ? 'selected' : '' ?>>Tiền</option>
                         </select>
-                        <input type="number" name="giamgiatt_giatri" id="giamgiatt_giatri" class="form-control form-control-sm" style="width:80px;" value="<?= (int)($row->giamgiatt_giatri ?? 0) ?>">
+                        <input type="number" name="giamgiatt_giatri" id="giamgiatt_giatri" class="form-control form-control-sm mr-2" min="0" value="<?= (int)($row->giamgiatt_giatri ?? 0) ?>" style="width:80px;">
+                        <span id="giamgiatt_thanhtien_view" class="font-weight-bold text-danger ml-2"></span>
+                        <input type="hidden" name="giamgiatt_thanhtien" id="giamgiatt_thanhtien" value="<?= (int)($row->giamgiatt_thanhtien ?? 0) ?>">
                       </div>
                     </td>
                   </tr>
                   <tr>
                     <td class="font-weight-bold text-right">Phí ship:</td>
                     <td>
-                      <input type="number" name="ship" id="ship" class="form-control form-control-sm" style="width:80px;" value="<?= (int)($row->ship ?? 0) ?>">
+                      <div class="d-flex align-items-center">
+                        <input type="text" name="ship" id="ship" class="form-control form-control-sm text-right" min="0" value="<?= (int)($row->ship ?? 0) ?>" style="width:80px;display:inline-block;">
+                        <span id="ship_view" class="font-weight-bold text-danger text-right ml-2"></span>
+                      </div>
                     </td>
                   </tr>
                   <tr>
@@ -184,8 +189,8 @@ $(document).ready(function(){
                   </tr>
                 </table>
                 <!-- Đảm bảo input hidden tổng tiền và tổng cộng tiền nằm trong form -->
-                <input type="hidden" name="tongtien" id="tongtien" value="<?= (int)($row->tongtien ?? 0) ?>">
-                <input type="hidden" name="tongcong_tien" id="tongcong_tien" value="<?= (int)($row->tongcong_tien ?? 0) ?>">
+                <input type="hidden" name="tongtien" id="tongtien" value="<?= (float)$row->tongtien ?>">
+                <input type="hidden" name="tongcong_tien" id="tongcong_tien" value="<?= (float)$row->tongcong_tien ?>">
               </div>
             </div>
             <div class="d-flex justify-content-end mt-3">
@@ -197,6 +202,45 @@ $(document).ready(function(){
       </div>
     </div>
 </section>
+</div>
+<!-- Modal giảm giá dùng chung cho từng dòng -->
+<div class="modal fade" id="modalGiamGia" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <form id="formGiamGia" action="javascript:void(0)">
+        <div class="modal-header bg-olive text-white">
+          <h5 class="modal-title"><i class="fas fa-percent mr-2"></i>Áp dụng giảm giá</h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Đóng">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="font-weight-bold mb-2">Chọn loại giảm giá:</label>
+            <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
+              <label class="btn bg-olive font-weight-bold giamgia-radio active" style="flex:1;">
+                <input type="radio" name="modal_giamgiadg_loai" value="none" autocomplete="off" checked> Không
+              </label>
+              <label class="btn bg-olive font-weight-bold giamgia-radio" style="flex:1;">
+                <input type="radio" name="modal_giamgiadg_loai" value="phantram" autocomplete="off"> %
+              </label>
+              <label class="btn bg-olive font-weight-bold giamgia-radio" style="flex:1;">
+                <input type="radio" name="modal_giamgiadg_loai" value="tienmat" autocomplete="off"> Tiền
+              </label>
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label class="font-weight-bold mb-2">Giá trị giảm giá:</label>
+            <input type="number" name="modal_giamgiadg_giatri" id="modal_giamgiadg_giatri" class="form-control" min="0" value="0">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary ml-2" data-dismiss="modal">Quay lại</button>
+          <button type="submit" class="btn btn-olive font-weight-bold">Áp dụng</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 <style>
 .btn-olive, .bg-olive { background-color: #4caf50 !important; color: #fff !important; }
@@ -253,8 +297,8 @@ function capNhatTong() {
   // Tổng tiền cuối cùng
   var tongcong = tong - tt_thanhtien + ship;
   if (tongcong < 0) tongcong = 0;
-  $('#tongcongTienView').html('<span>' + numberFormat(tongcong) + ' <span class="donvi">đ</span></span>');
-  $('#tongcong_tien').val(tongcong); // Đảm bảo luôn cập nhật input hidden tổng cộng tiền
+  $('#tongCongTienView').html('<span>' + numberFormat(tongcong) + ' <span class="donvi">đ</span></span>');
+  $('#tongcong_tien').val(tongcong);
 }
 function getLoaiBanhTooltip(ma_sp_str) {
   var arrMa = ma_sp_str.split(',').map(x => x.trim()).filter(x => x);
