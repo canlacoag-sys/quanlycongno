@@ -93,7 +93,7 @@
       <div class="row">
         <div class="col-md-12 text-right">
           <a href="<?= site_url('khachle/add') ?>" class="btn btn-primary"><i class="fas fa-plus"></i> Lên toa khách lẻ</a>
-          <a href="<?= site_url('khachle') ?>" class="btn btn-warning"><i class="fas fa-shopping-cart"></i> Bán sỉ/Đại lý</a>
+          <a href="<?= site_url('khachle') ?>" class="btn btn-warning"><i class="fas fa-shopping-cart"></i> Bán tại quầy</a>
           <br>
         </div>
       </div>
