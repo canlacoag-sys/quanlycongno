@@ -123,6 +123,13 @@ class Sanpham extends CI_Controller
 
     // Sửa sản phẩm (AJAX)
     public function ajax_edit() {
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            $this->output->set_content_type('application/json');
+            echo json_encode(['success'=>false,'msg'=>'Bạn không có quyền sửa sản phẩm!']);
+            return;
+        }
         if (!$this->input->is_ajax_request() || $this->input->method() !== 'post') show_404();
         $this->output->set_content_type('application/json');
 
@@ -161,6 +168,13 @@ class Sanpham extends CI_Controller
 
     // Xoá sản phẩm (AJAX)
     public function ajax_delete() {
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            $this->output->set_content_type('application/json');
+            echo json_encode(['success'=>false,'msg'=>'Bạn không có quyền xoá sản phẩm!']);
+            return;
+        }
         if (!$this->input->is_ajax_request() || $this->input->method() !== 'post') show_404();
         $this->output->set_content_type('application/json');
 

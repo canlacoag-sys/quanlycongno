@@ -189,6 +189,19 @@ class Khachle extends CI_Controller {
 
     // Sửa đơn khách lẻ
     public function edit($id) {
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            if ($this->input->is_ajax_request()) {
+                $this->output->set_content_type('application/json');
+                echo json_encode(['success'=>false,'msg'=>'Bạn không có quyền sửa đơn hàng!']);
+                return;
+            } else {
+                $this->session->set_flashdata('error', 'Bạn không có quyền sửa đơn hàng!');
+                redirect('khachle');
+                return;
+            }
+        }
         $row = $this->Khachle_model->get_by_id($id);
         $chitiet = $this->Khachle_model->get_chitiet($id);
         if (!$row) show_404();
@@ -270,6 +283,19 @@ class Khachle extends CI_Controller {
 
     // Xoá đơn khách lẻ
     public function delete($id) {
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            if ($this->input->is_ajax_request()) {
+                $this->output->set_content_type('application/json');
+                echo json_encode(['success'=>false,'msg'=>'Bạn không có quyền xoá đơn hàng!']);
+                return;
+            } else {
+                $this->session->set_flashdata('error', 'Bạn không có quyền xoá đơn hàng!');
+                redirect('khachle');
+                return;
+            }
+        }
         $row_before = $this->Khachle_model->get_by_id($id);
         $this->db->where('id', $id)->delete('khachle');
         $this->db->where('khachle_id', $id)->delete('khachle_donhang');
@@ -277,7 +303,6 @@ class Khachle extends CI_Controller {
         $this->load->model('Actionlog_model');
         $user_id = $this->session->userdata('user_id');
         $this->Actionlog_model->log($user_id, 'delete', 'khachle', $id, json_encode($row_before, JSON_UNESCAPED_UNICODE), null);
-
         redirect('khachle');
     }
 

@@ -75,6 +75,13 @@ class Users extends CI_Controller {
     }
 
     public function edit() {
+        // Kiểm tra quyền admin
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            show_error('Bạn không có quyền xoá đơn khách lẻ!', 403, 'Không có quyền truy cập');
+            return;
+        }
         if ($this->input->method() === 'post') {
             $id = (int)$this->input->post('id');
             $user = $this->Users_model->get_by_id($id);
@@ -99,6 +106,13 @@ class Users extends CI_Controller {
     }
 
     public function delete() {
+        // Kiểm tra quyền admin
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            show_error('Bạn không có quyền xoá đơn khách lẻ!', 403, 'Không có quyền truy cập');
+            return;
+        }
         if ($this->input->method() === 'post') {
             $id = (int)$this->input->post('id');
             if ($id == $this->current_user->id) {

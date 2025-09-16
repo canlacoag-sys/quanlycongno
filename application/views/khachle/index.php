@@ -108,3 +108,6 @@ $(function() {
   });
 });
 </script>
+<?php if ($this->session->flashdata('error')): ?>
+<script>alert("<?= $this->session->flashdata('error') ?>");</script>
+<?php endif; ?>

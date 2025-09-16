@@ -288,6 +288,19 @@ class Donhang extends CI_Controller {
     }
 
     public function edit($id) {
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            if ($this->input->is_ajax_request()) {
+                $this->output->set_content_type('application/json');
+                echo json_encode(['success'=>false,'msg'=>'Bạn không có quyền sửa đơn hàng!']);
+                return;
+            } else {
+                $this->session->set_flashdata('error', 'Bạn không có quyền sửa đơn hàng!');
+                redirect('khachle');
+                return;
+            }
+        }
         $this->load->model('Khachhang_model');
         $donhang = $this->Donhang_model->get_by_id($id);
         $chitiet = $this->Donhang_model->get_chitiet($id);
@@ -373,6 +386,20 @@ class Donhang extends CI_Controller {
 
     // Xoá đơn hàng (và chi tiết) an toàn
     public function delete($id) {
+        // Kiểm tra quyền admin
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            if ($this->input->is_ajax_request()) {
+                $this->output->set_content_type('application/json');
+                echo json_encode(['success'=>false,'msg'=>'Bạn không có quyền xoá đơn hàng!']);
+                return;
+            } else {
+                $this->session->set_flashdata('error', 'Bạn không có quyền xoá đơn hàng!');
+                redirect('khachle');
+                return;
+            }
+        }
         // allow only numeric id
         $id = (int) $id;
         if (!$id) {

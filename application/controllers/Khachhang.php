@@ -111,6 +111,7 @@ class Khachhang extends CI_Controller
 
     public function ajax_add(): void
     {
+        
         if (!$this->input->is_ajax_request() || $this->input->method() !== 'post') show_404();
         $this->output->set_content_type('application/json');
 
@@ -138,6 +139,14 @@ class Khachhang extends CI_Controller
 
     public function ajax_edit(): void
     {
+        // Kiểm tra quyền admin
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            $this->output->set_content_type('application/json');
+            echo json_encode(['success'=>false,'msg'=>'Bạn không có quyền sửa khách hàng!']);
+            return;
+        }
         if (!$this->input->is_ajax_request() || $this->input->method() !== 'post') show_404();
         $this->output->set_content_type('application/json');
 
@@ -169,6 +178,15 @@ class Khachhang extends CI_Controller
 
     public function ajax_delete()
     {
+        // Kiểm tra quyền admin
+        
+        $user_id = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $user_id])->row();
+        if (!$user || $user->role !== 'admin') {
+            $this->output->set_content_type('application/json');
+            echo json_encode(['success'=>false,'msg'=>'Bạn không có quyền xoá khách hàng!']);
+            return;
+        }
         if (!$this->input->is_ajax_request()) show_404();
         $id = (int)$this->input->post('id');
         if ($id <= 0) {
