@@ -14,6 +14,7 @@
               <p><strong>Giảm giá toàn đơn:</strong> <span class="text-danger font-weight-bold"><?= number_format($khachle->giamgiatt_thanhtien ?? 0) ?> đ</span></p>
               <p><strong>Phí ship:</strong> <span class="text-danger font-weight-bold"><?= number_format($khachle->ship ?? 0) ?> đ</span></p>
               <p><strong>Tổng tiền:</strong> <span class="text-danger font-weight-bold"><?= number_format($khachle->tongcong_tien ?? 0) ?> đ</span></p>
+              <p><strong>Ghi chú:</strong> <?= nl2br(htmlspecialchars($khachle->ghi_chu ?? '')) ?></p>
             </div>
             <div class="col-md-6">
               <h5 class="mb-3">Thông tin khách lẻ</h5>

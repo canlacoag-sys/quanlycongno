@@ -13,6 +13,7 @@
               <p><strong>Mã đơn hàng:</strong> <?= htmlspecialchars($donhang->madon_id) ?></p>
               <p><strong>Ngày lập:</strong> <?= date('d/m/Y H:i', strtotime($donhang->ngaylap)) ?></p>
               <p><strong>Tổng tiền:</strong> <span class="text-danger font-weight-bold"><?= number_format($donhang->tongtien) ?> đ</span></p>
+              <p><strong>Ghi chú:</strong> <?= nl2br(htmlspecialchars($donhang->ghi_chu ?? '')) ?></p>
             </div>
             <div class="col-md-6">
               <h5 class="mb-3">Thông tin khách hàng</h5>

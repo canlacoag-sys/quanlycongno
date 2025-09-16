@@ -32,8 +32,8 @@
                 <th>Mã đơn</th>
                 <th class="text-center" style="width:150px;">Ngày lập</th>
                 <th class="text-center">Tên khách</th>
-                <th class="text-center" >Điện thoại</th>
-                <th class="text-center" style="width:350px;">Địa chỉ</th>
+                <!-- <th class="text-center" >Điện thoại</th>
+                <th class="text-center" style="width:350px;">Địa chỉ</th> -->
                 <th>Tổng tiền</th>
                 <th>Ghi chú</th>
                 <th class="text-center" style="width:170px;">Thao tác</th>
@@ -49,8 +49,8 @@
                 <td><?= htmlspecialchars($row->madon_id) ?></td>
                 <td><?= date('d/m/Y H:i', strtotime($row->ngaylap)) ?></td>
                 <td><?= htmlspecialchars($row->ten) ?></td>
-                <td class="text-center"><?= htmlspecialchars($row->dienthoai) ?></td>
-                <td><?= htmlspecialchars($row->diachi) ?></td>
+                <!-- <td class="text-center"><!?= htmlspecialchars($row->dienthoai) ?></td>
+                <td><!?= htmlspecialchars($row->diachi) ?></td> -->
                 <td class="text-right"><?= number_format($row->tongcong_tien) ?></td>
                 <td><?= htmlspecialchars($row->ghi_chu) ?></td>
                 <td class="text-center">
