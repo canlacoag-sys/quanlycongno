@@ -45,11 +45,10 @@
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($data as $i => $row): ?>
+                <?php if (!empty($data)): $i = 1 + ($offset ?? 0); foreach ($data as $row): ?>
               <tr>
-                <td class="text-center"><?= $i+1 ?></td>
+                 <td class="text-center"><?= $i++ ?></td>
                 <td><?= htmlspecialchars($row['khachhang']->ten) ?></td>
-                <!-- <td><?= htmlspecialchars($row['khachhang']->dienthoai) ?></td> -->
                 <td class="text-center"><?= $row['tong_so_luong'] ?></td>
                 <td class="text-right text-danger font-weight-bold"><?= number_format($row['tong_tien']) ?> đ</td>
                 <td>
@@ -70,11 +69,18 @@
                   <?php endif; ?>
                 </td>
               </tr>
-              <?php endforeach; ?>
+              <?php endforeach; else: ?>
+                  <tr><td colspan="6" class="text-center">Không có dữ liệu công nợ.</td></tr>
+                <?php endif; ?>
             </tbody>
           </table>
         </div>
       </div>
+      <?php if (!empty($pagination)): ?>
+        <div class="card-footer py-2">
+          <?= $pagination ?>
+        </div>
+        <?php endif; ?>
     </div>
   </section>
 </div>

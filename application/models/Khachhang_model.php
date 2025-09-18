@@ -8,7 +8,7 @@ class Khachhang_model extends CI_Model
     }
 
     // Lấy danh sách khách hàng (có filter, phân trang)
-    public function get_all($keyword = '', $limit = 50, $offset = 0) {
+    public function get_all($keyword = '', $limit = 0, $offset = 0) {
         if ($keyword !== '') {
             $this->db->group_start()
                 ->like('ten', $keyword)
